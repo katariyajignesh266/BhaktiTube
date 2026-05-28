@@ -29,27 +29,27 @@ function openVideo(videoId){
 
 function closeVideo(){
 
-    /* STOP VIDEO */
-
     youtubePlayer.src = "";
-
-
-
-    /* HIDE POPUP */
 
     videoPopup.style.display = "none";
 
-
-
-    /* ENABLE SCROLL */
-
     document.body.style.overflow = "auto";
+
+
+
+    /* PORTRAIT BACK */
+
+    if(screen.orientation){
+
+        screen.orientation.unlock();
+
+    }
 
 }
 
 
 
-/* CLICK OUTSIDE CLOSE */
+/* CLICK OUTSIDE */
 
 videoPopup.addEventListener("click",(e)=>{
 
@@ -63,13 +63,33 @@ videoPopup.addEventListener("click",(e)=>{
 
 
 
-/* ESC KEY CLOSE */
+/* FULLSCREEN AUTO LANDSCAPE */
 
-document.addEventListener("keydown",(e)=>{
+youtubePlayer.addEventListener("fullscreenchange", async ()=>{
 
-    if(e.key === "Escape"){
+    if(document.fullscreenElement){
 
-        closeVideo();
+        try{
+
+            await screen.orientation.lock("landscape");
+
+        }catch(err){
+
+            console.log(err);
+
+        }
+
+    }else{
+
+        try{
+
+            screen.orientation.unlock();
+
+        }catch(err){
+
+            console.log(err);
+
+        }
 
     }
 
