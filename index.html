@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>BhaktiTube</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- ICONS -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body>
+
+
+
+
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <div class="left-header">
+
+      <i class="fa-solid fa-bars"></i>
+
+      <div class="logo">
+
+        <i class="fa-brands fa-youtube"></i>
+
+        <span>BhaktiTube</span>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="right-header">
+
+      <i class="fa-solid fa-magnifying-glass"></i>
+
+      <i class="fa-solid fa-bell"></i>
+
+      <div class="profile">
+        J
+      </div>
+
+    </div>
+
+  </header>
+
+
+
+
+
+
+
+  <!-- CATEGORY -->
+
+  <section class="category-section">
+
+    <button class="active">All</button>
+    <button>Bhakti</button>
+    <button>Gujarati</button>
+    <button>Motivation</button>
+    <button>Katha</button>
+    <button>Comedy</button>
+
+  </section>
+
+
+
+
+
+
+
+
+
+  <!-- VIDEOS -->
+
+  <div class="videos-container">
+
+
+
+
+
+    <!-- VIDEO 1 -->
+
+    <div
+      class="video-card"
+      onclick="openVideo('_nsCFWMFUcI')"
+    >
+
+      <div class="thumbnail">
+
+        <img
+          src="https://img.youtube.com/vi/_nsCFWMFUcI/maxresdefault.jpg"
+          alt=""
+        >
+
+        <span class="video-time">
+          11:52
+        </span>
+
+      </div>
+
+
+
+      <div class="video-info">
+
+        <div class="channel-logo">
+          S
+        </div>
+
+        <div class="video-details">
+
+          <h3>
+            જીવન દુઃખ આવે ત્યારે શું કરવું જોઈએ
+          </h3>
+
+          <p class="channel-name">
+            Samarpan TV
+          </p>
+
+          <p class="video-stats">
+            45K views • 4 days ago
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- VIDEO 2 -->
+
+    <div
+      class="video-card"
+      onclick="openVideo('xG59nuSMY-k')"
+    >
+
+      <div class="thumbnail">
+
+        <img
+          src="https://img.youtube.com/vi/xG59nuSMY-k/maxresdefault.jpg"
+          alt=""
+        >
+
+        <span class="video-time">
+          20:10
+        </span>
+
+      </div>
+
+
+
+      <div class="video-info">
+
+        <div class="channel-logo">
+          J
+        </div>
+
+        <div class="video-details">
+
+          <h3>
+            જનીતિ હાચી હશેતો ભગવાન આપવું જ પડે
+          </h3>
+
+          <p class="channel-name">
+            Jignesh Dada
+          </p>
+
+          <p class="video-stats">
+            120K views • 1 week ago
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+
+
+
+
+    <!-- VIDEO 3 -->
+
+    <div
+      class="video-card"
+      onclick="openVideo('YV5FVXsqwb4')"
+    >
+
+      <div class="thumbnail">
+
+        <img
+          src="Image/v-3.png"
+          alt=""
+        >
+
+        <span class="video-time">
+          8:15
+        </span>
+
+      </div>
+
+
+
+      <div class="video-info">
+
+        <div class="channel-logo">
+          H
+        </div>
+
+        <div class="video-details">
+
+          <h3>
+            હીરા વાળા ની અદભુત ઝલક
+          </h3>
+
+          <p class="channel-name">
+            Hitesh Antala
+          </p>
+
+          <p class="video-stats">
+            78K views • 2 days ago
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- VIDEO POPUP -->
+
+  <div class="video-popup" id="videoPopup">
+
+    <div class="popup-content">
+
+      <div class="close-btn" onclick="closeVideo()">
+
+        <i class="fa-solid fa-xmark"></i>
+
+      </div>
+
+
+
+
+
+      <div class="popup-video">
+
+        <iframe
+          id="youtubePlayer"
+          src=""
+          frameborder="0"
+
+          allow="
+          accelerometer;
+          autoplay;
+          clipboard-write;
+          encrypted-media;
+          gyroscope;
+          picture-in-picture;
+          fullscreen;
+          web-share"
+
+          allowfullscreen
+
+          webkitallowfullscreen
+          mozallowfullscreen>
+
+        </iframe>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+  <!-- JS -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
