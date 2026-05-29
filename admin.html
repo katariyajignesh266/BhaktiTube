@@ -11,61 +11,52 @@
 </head>
 <body>
 
+<body>
+
+<div class="admin-wrapper">
+
+```
 <div class="container">
 
-<h1>BhaktiTube Admin Panel</h1>
+    <h1>🎬 BhaktiTube Admin Panel</h1>
 
-<form id="videoForm">
+    <form id="videoForm">
 
-<input
-type="text"
-id="videoId"
-placeholder="YouTube Video ID"
-required
->
+        <input type="text" id="videoId" placeholder="YouTube Video ID" required>
 
-<input
-type="text"
-id="title"
-placeholder="Video Title"
-required
->
+        <input type="text" id="title" placeholder="Video Title" required>
 
-<input
-type="text"
-id="channel"
-placeholder="Channel Name"
-required
->
+        <input type="text" id="channel" placeholder="Channel Name" required>
 
-<input
-type="text"
-id="logo"
-placeholder="Logo Letter"
-required
->
+        <input type="text" id="logo" placeholder="Logo Letter" required>
 
-<input
-type="text"
-id="views"
-placeholder="Views"
-required
->
+        <input type="text" id="views" placeholder="Views" required>
 
-<input
-type="text"
-id="date"
-placeholder="Date"
-required
->
+        <input type="text" id="date" placeholder="Date" required>
 
-<button type="submit">
-Upload Video
-</button>
+        <button type="submit">
+            Upload Video
+        </button>
 
-</form>
+    </form>
 
 </div>
+
+<div class="videos-panel">
+
+    <h2>📹 Manage Videos</h2>
+
+    <div id="videosList"></div>
+
+</div>
+```
+
+</div>
+
+<script type="module" src="admin.js"></script>
+
+</body>
+
 
 <script type="module" src="admin.js"></script>
 
