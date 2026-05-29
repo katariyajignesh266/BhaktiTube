@@ -1,3 +1,16 @@
+import { db } from "./firebase-config.js";
+
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy
+}
+from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+
+
+
 console.log("BhaktiTube Loaded");
 
 const videoPopup =
@@ -94,3 +107,81 @@ youtubePlayer.addEventListener("fullscreenchange", async ()=>{
     }
 
 });
+
+
+
+const videosContainer =
+document.getElementById("videosContainer");
+
+async function loadVideos(){
+
+  videosContainer.innerHTML = "";
+
+  const q = query(
+    collection(db,"videos"),
+    orderBy("createdAt","desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach((doc)=>{
+
+    const video = doc.data();
+
+    videosContainer.innerHTML += `
+
+    <div
+      class="video-card"
+      onclick="openVideo('${video.videoId}')"
+    >
+
+      <div class="thumbnail">
+
+        <img
+          src="https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg"
+        >
+
+        <span class="video-time">
+          Video
+        </span>
+
+      </div>
+
+      <div class="video-info">
+
+        <div class="channel-logo">
+          ${video.logo}
+        </div>
+
+        <div class="video-details">
+
+          <h3>
+            ${video.title}
+          </h3>
+
+          <p class="channel-name">
+            ${video.channel}
+          </p>
+
+          <p class="video-stats">
+            ${video.views} • ${video.date}
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    `;
+
+  });
+
+}
+
+loadVideos();
+
+
+
+window.openVideo = openVideo;
+window.closeVideo = closeVideo;
