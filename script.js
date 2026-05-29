@@ -124,9 +124,13 @@ async function loadVideos(){
 
   const snapshot = await getDocs(q);
 
+  allVideos = [];
+
   snapshot.forEach((doc)=>{
 
     const video = doc.data();
+
+    allVideos.push(video);
 
     videosContainer.innerHTML += `
 
@@ -179,9 +183,168 @@ async function loadVideos(){
 
 }
 
+function renderVideos(videos){
+
+    videosContainer.innerHTML = "";
+
+    videos.forEach((video)=>{
+
+        videosContainer.innerHTML += `
+
+        <div
+          class="video-card"
+          onclick="openVideo('${video.videoId}')"
+        >
+
+          <div class="thumbnail">
+
+            <img
+              src="https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg"
+            >
+
+            <span class="video-time">
+              Video
+            </span>
+
+          </div>
+
+          <div class="video-info">
+
+            <div class="channel-logo">
+              ${video.logo}
+            </div>
+
+            <div class="video-details">
+
+              <h3>${video.title}</h3>
+
+              <p class="channel-name">
+                ${video.channel}
+              </p>
+
+              <p class="video-stats">
+                ${video.views} • ${video.date}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+let allVideos = [];
+
 loadVideos();
+
+const searchBtn =
+document.getElementById("searchBtn");
+
+const searchOverlay =
+document.getElementById("searchOverlay");
+
+searchBtn.addEventListener("click",()=>{
+
+    searchOverlay.classList.toggle("active");
+
+});
+
+const searchInput =
+document.getElementById("searchInput");
+
+searchInput.addEventListener("input",()=>{
+
+    const value =
+    searchInput.value.toLowerCase();
+
+    const filtered =
+    allVideos.filter((video)=>{
+
+        return (
+
+            video.title.toLowerCase().includes(value)
+
+            ||
+
+            video.channel.toLowerCase().includes(value)
+
+        );
+
+    });
+
+    renderVideos(filtered);
+
+});
+
+const voiceBtn =
+document.getElementById("voiceBtn");
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+    const recognition =
+    new SpeechRecognition();
+
+    recognition.lang = "gu-IN";
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    voiceBtn.addEventListener("click",()=>{
+
+        recognition.start();
+
+    });
+
+    recognition.addEventListener("result",(e)=>{
+
+        const text =
+        e.results[0][0].transcript;
+
+        searchInput.value = text;
+
+        const filtered =
+        allVideos.filter((video)=>{
+
+            return (
+
+                video.title
+                .toLowerCase()
+                .includes(text.toLowerCase())
+
+                ||
+
+                video.channel
+                .toLowerCase()
+                .includes(text.toLowerCase())
+
+            );
+
+        });
+
+        renderVideos(filtered);
+
+    });
+
+}else{
+
+    alert(
+      "Voice Search not supported"
+    );
+
+}
 
 
 
 window.openVideo = openVideo;
 window.closeVideo = closeVideo;
+

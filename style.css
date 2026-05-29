@@ -393,3 +393,87 @@ body{
 }
 
 }
+
+
+.search-overlay{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    padding:15px;
+
+    background:#0f0f0f;
+
+    z-index:99999;
+
+    display:none;
+}
+
+.search-overlay.active{
+
+    display:block;
+}
+
+.search-overlay input{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#222;
+
+    color:white;
+
+    font-size:16px;
+}
+
+
+.search-wrapper{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+}
+
+.search-wrapper input{
+
+    flex:1;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#222;
+
+    color:white;
+
+}
+
+#voiceBtn{
+
+    width:55px;
+    height:55px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#ff0000;
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+}
