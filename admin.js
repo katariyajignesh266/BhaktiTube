@@ -13,6 +13,8 @@ import {
 
 console.log("ADMIN JS LOADED");
 
+const YOUTUBE_API_KEY = "AIzaSyDo_afCx6xlSQeJP5LyYydZA2_519toMDo";
+
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
@@ -90,8 +92,133 @@ window.deleteVideo = async function(id) {
 
 };
 
+
+const fetchBtn =
+document.getElementById("fetchBtn");
+
+fetchBtn.addEventListener("click", fetchVideoDetails);
+
+async function fetchVideoDetails(){
+
+    const url =
+    document.getElementById("youtubeUrl").value;
+
+    if(!url){
+        alert("Paste YouTube URL");
+        return;
+    }
+
+    let videoId = "";
+
+if(url.includes("youtube.com/watch")){
+
+    videoId =
+    new URL(url).searchParams.get("v");
+
+}
+else if(url.includes("youtu.be/")){
+
+    videoId =
+    url.split("youtu.be/")[1].split("?")[0];
+
+}
+
+if(!videoId){
+
+    alert("Invalid YouTube URL");
+
+    return;
+}
+
+    try{
+
+        const response =
+        await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`
+        );
+
+        const data =
+        await response.json();
+
+        console.log(data);
+
+        if(data.error){
+    alert(data.error.message);
+    return;
+}
+
+        if(!data.items.length){
+            alert("Video Not Found");
+            return;
+        }
+
+        const video =
+        data.items[0];
+
+        document.getElementById("videoId").value =
+        videoId;
+
+        document.getElementById("title").value =
+        video.snippet.title;
+
+        document.getElementById("channel").value =
+        video.snippet.channelTitle;
+
+        document.getElementById("views").value =
+        Number(video.statistics.viewCount)
+        .toLocaleString() + " views";
+
+        document.getElementById("logo").value =
+        video.snippet.channelTitle.charAt(0);
+
+        document.getElementById("date").value =
+        getTimeAgo(
+        video.snippet.publishedAt
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(error.message);
+
+    }
+
+}
+
 const form =
 document.getElementById("videoForm");
+
+function getTimeAgo(dateString){
+
+    const published =
+    new Date(dateString);
+
+    const now =
+    new Date();
+
+    const diff =
+    now - published;
+
+    const days =
+    Math.floor(
+    diff / (1000*60*60*24)
+    );
+
+    if(days < 7){
+        return `${days} days ago`;
+    }
+
+    if(days < 30){
+        return `${Math.floor(days/7)} weeks ago`;
+    }
+
+    if(days < 365){
+        return `${Math.floor(days/30)} months ago`;
+    }
+
+    return `${Math.floor(days/365)} years ago`;
+}
 
 form.addEventListener("submit", async (e) => {
 
