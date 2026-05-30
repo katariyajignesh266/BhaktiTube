@@ -1,0 +1,441 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#0f0f0f;
+
+    padding:20px;
+}
+
+.auth-container{
+
+    width:100%;
+    max-width:420px;
+
+    background:#181818;
+
+    border:1px solid #2d2d2d;
+
+    border-radius:25px;
+
+    padding:35px;
+
+}
+
+.logo{
+
+    text-align:center;
+
+    font-size:50px;
+
+    margin-bottom:15px;
+}
+
+h1{
+
+    color:white;
+
+    text-align:center;
+
+    margin-bottom:30px;
+}
+
+input{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-bottom:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#252525;
+
+    color:white;
+
+    font-size:16px;
+}
+
+button{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:bold;
+}
+
+#signupBtn{
+
+    background:#ff0000;
+
+    color:white;
+
+    margin-bottom:12px;
+}
+
+.google-btn{
+
+    background:white;
+
+    color:black;
+}
+
+.switch-page{
+
+    color:#aaa;
+
+    text-align:center;
+
+    margin-top:20px;
+}
+
+.switch-page a{
+
+    color:#ff0000;
+
+    text-decoration:none;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        #000000,
+        #111111,
+        #1a1a1a
+    );
+}
+
+.auth-container{
+
+    width:min(92vw, 420px);
+
+    padding:40px 25px;
+
+    background:#0f0f0f;
+
+    border-radius:25px;
+
+    border:1px solid rgba(255,0,0,.2);
+
+    box-shadow:
+    0 0 35px rgba(255,0,0,.15);
+
+}
+
+.logo{
+
+    text-align:center;
+
+    font-size:60px;
+
+    margin-bottom:15px;
+
+}
+
+h1{
+
+    text-align:center;
+
+    color:white;
+
+    margin-bottom:30px;
+
+    font-size:40px;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:18px;
+
+    margin-bottom:15px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#1f1f1f;
+
+    color:white;
+
+    font-size:16px;
+
+}
+
+input:focus{
+
+    outline:none;
+
+    border:1px solid #ff0000;
+
+}
+
+input::placeholder{
+
+    color:#8a8a8a;
+
+}
+
+button{
+
+    width:100%;
+
+    padding:18px;
+
+    border:none;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+#loginBtn,
+#signupBtn{
+
+    background:#ff0000;
+
+    color:white;
+
+    margin-top:10px;
+
+}
+
+#loginBtn:hover,
+#signupBtn:hover{
+
+    background:#d40000;
+
+}
+
+.google-btn{
+
+    background:white;
+
+    color:black;
+
+    margin-top:15px;
+
+}
+
+.google-btn:hover{
+
+    background:#ececec;
+
+}
+
+.switch-auth{
+
+    text-align:center;
+
+    color:#bdbdbd;
+
+    margin-top:25px;
+
+}
+
+.switch-auth a{
+
+    color:#ff0000;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+}
+
+.switch-auth a:hover{
+
+    text-decoration:underline;
+
+}
+
+@media(max-width:600px){
+
+    .auth-container{
+
+        padding:30px 20px;
+
+    }
+
+    h1{
+
+        font-size:32px;
+
+    }
+
+}
+
+
+/* =========================
+   MOBILE VIEW
+========================= */
+
+@media (max-width: 768px){
+
+    body{
+        padding:20px;
+    }
+
+    .auth-container{
+
+        width:100%;
+        max-width:420px;
+
+        padding:35px 25px;
+
+        border-radius:24px;
+    }
+
+    .logo{
+        font-size:48px;
+        margin-bottom:15px;
+    }
+
+    h1{
+        font-size:38px;
+        margin-bottom:25px;
+    }
+
+    input{
+        height:58px;
+        font-size:17px;
+        padding:0 18px;
+        margin-bottom:15px;
+    }
+
+    button{
+        height:58px;
+        font-size:18px;
+        margin-top:5px;
+    }
+
+    .google-btn{
+        margin-top:12px;
+    }
+
+    .switch-auth{
+        font-size:15px;
+        margin-top:20px;
+    }
+
+}
+
+.auth-container{
+    width:min(92%, 500px);
+}
+
+
+body{
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+}
+
+@media (max-width:768px){
+
+    .profile-card{
+
+        width:100%;
+        padding:30px 20px;
+    }
+
+    .profile-img{
+        width:120px;
+        height:120px;
+    }
+
+    #userName{
+        font-size:28px;
+    }
+
+    #userEmail{
+        font-size:15px;
+        word-break:break-word;
+    }
+
+    .logout-btn{
+        height:55px;
+        font-size:17px;
+    }
+
+}
+
+
+.auth-container{
+
+    min-width:320px !important;
+
+}
+
+
+@media (max-width:768px){
+
+    .auth-container{
+
+        width:92vw;
+        max-width:none;
+
+        padding:30px 20px;
+    }
+
+    h1{
+        font-size:32px;
+    }
+
+    .logo{
+        font-size:48px;
+    }
+
+}
+
+
+
+

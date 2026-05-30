@@ -581,3 +581,67 @@ body{
     }
 
 }
+
+.videos-container{
+    padding:15px;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fill,minmax(350px,1fr));
+
+    gap:25px;
+}
+
+.video-card{
+    cursor:pointer;
+}
+
+/* DESKTOP */
+
+@media(min-width:1000px){
+
+    .videos-container{
+
+        grid-template-columns:
+        repeat(3,1fr);
+
+    }
+
+}
+
+/* LARGE DESKTOP */
+
+@media(min-width:1400px){
+
+    .videos-container{
+
+        grid-template-columns:
+        repeat(4,1fr);
+
+    }
+
+}
+
+
+.profile{
+
+    width:45px;
+    height:45px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    cursor:pointer;
+
+}
+
+.profile img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+}

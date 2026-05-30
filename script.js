@@ -1,5 +1,13 @@
 import { db } from "./firebase-config.js";
 
+import { auth }
+from "./firebase-config.js";
+
+import {
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
 import {
   collection,
   getDocs,
@@ -359,8 +367,51 @@ voiceBtn.addEventListener("click",()=>{
 
 }
 
+const profileBtn =
+document.getElementById("profileBtn");
+
+if(profileBtn){
+
+    profileBtn.addEventListener(
+        "click",
+
+        ()=>{
+
+            window.location.href =
+            "user/profile.html";
+
+        }
+
+    );
+
+}
+
 
 
 window.openVideo = openVideo;
 window.closeVideo = closeVideo;
+
+
+const profilePhoto =
+document.getElementById("profilePhoto");
+
+onAuthStateChanged(
+
+auth,
+
+(user)=>{
+
+if(user){
+
+profilePhoto.src =
+
+user.photoURL ||
+
+"https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+}
+
+}
+
+);
 
