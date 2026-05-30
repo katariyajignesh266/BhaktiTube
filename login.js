@@ -21,6 +21,11 @@ email,
 password
 );
 
+localStorage.setItem(
+    "loginTime",
+    Date.now()
+);
+
 window.location.href =
 "admin.html";
 

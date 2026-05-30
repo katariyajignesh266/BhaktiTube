@@ -15,17 +15,36 @@ console.log("ADMIN JS LOADED");
 
 const YOUTUBE_API_KEY = "AIzaSyDo_afCx6xlSQeJP5LyYydZA2_519toMDo";
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
-    if (!user) {
+    const loginTime =
+    localStorage.getItem("loginTime");
 
-        window.location.href = "login.html";
+    const now =
+    Date.now();
 
-    } else {
+    const tenMinutes =
+    10 * 60 * 1000;
 
-        loadVideos();
+    if(
+        !user ||
+        !loginTime ||
+        (now - loginTime) > tenMinutes
+    ){
 
+        await auth.signOut();
+
+        localStorage.removeItem(
+            "loginTime"
+        );
+
+        window.location.href =
+        "login.html";
+
+        return;
     }
+
+    loadVideos();
 
 });
 
@@ -91,6 +110,38 @@ window.deleteVideo = async function(id) {
     }
 
 };
+
+setInterval(async ()=>{
+
+    const loginTime =
+    localStorage.getItem("loginTime");
+
+    if(!loginTime) return;
+
+    const now =
+    Date.now();
+
+    const tenMinutes =
+    10 * 60 * 1000;
+
+    if(
+        (now - loginTime)
+        > tenMinutes
+    ){
+
+        await auth.signOut();
+
+        localStorage.removeItem(
+            "loginTime"
+        );
+
+        alert("Session Expired");
+
+        window.location.href =
+        "login.html";
+    }
+
+},1000);
 
 
 const fetchBtn =
