@@ -5,7 +5,7 @@ signInWithEmailAndPassword
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-window.login = async function() {
+window.Login = async function() {
 
 const email =
 document.getElementById("email").value;
@@ -42,4 +42,4 @@ console.log("Login Clicked");
 
 document
 .getElementById("loginBtn")
-.addEventListener("click", login);
+.addEventListener("click", Login);

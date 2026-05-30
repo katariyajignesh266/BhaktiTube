@@ -39,7 +39,7 @@ onAuthStateChanged(auth, async (user) => {
         );
 
         window.location.href =
-        "login.html";
+        "Login.html";
 
         return;
     }
@@ -138,7 +138,7 @@ setInterval(async ()=>{
         alert("Session Expired");
 
         window.location.href =
-        "login.html";
+        "Login.html";
     }
 
 },1000);
