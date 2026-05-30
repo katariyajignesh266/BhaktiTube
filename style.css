@@ -477,3 +477,107 @@ body{
 
     cursor:pointer;
 }
+
+
+#closeSearch{
+
+    width:45px;
+    height:45px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#272727;
+
+    color:white;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+}
+
+
+#voiceBtn{
+
+    width:45px;
+    height:45px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#272727;
+
+    color:white;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+#voiceBtn:hover{
+
+    background:#ff0000;
+
+}
+
+.voice-popup{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    background:rgba(0,0,0,.8);
+
+    z-index:999999;
+
+}
+
+.voice-box{
+
+    text-align:center;
+
+}
+
+.wave{
+
+    width:80px;
+    height:80px;
+
+    border-radius:50%;
+
+    background:red;
+
+    animation:pulse 1s infinite;
+
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.3);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+
+}

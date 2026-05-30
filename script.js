@@ -281,6 +281,15 @@ searchInput.addEventListener("input",()=>{
 
 });
 
+const closeSearch =
+document.getElementById("closeSearch");
+
+closeSearch.addEventListener("click",()=>{
+
+    searchOverlay.classList.remove("active");
+
+});
+
 const voiceBtn =
 document.getElementById("voiceBtn");
 
@@ -299,13 +308,20 @@ if(SpeechRecognition){
 
     recognition.interimResults = false;
 
-    voiceBtn.addEventListener("click",()=>{
+    const voicePopup =
+document.getElementById("voicePopup");
 
-        recognition.start();
+voiceBtn.addEventListener("click",()=>{
 
-    });
+    voicePopup.style.display = "flex";
+
+    recognition.start();
+
+});
 
     recognition.addEventListener("result",(e)=>{
+
+      voicePopup.style.display = "none";
 
         const text =
         e.results[0][0].transcript;

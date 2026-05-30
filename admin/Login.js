@@ -1,4 +1,4 @@
-import { auth } from "./firebase-config.js";
+import { auth } from "../firebase-config.js";
 
 import {
 signInWithEmailAndPassword
@@ -39,3 +39,7 @@ alert(error.message);
 console.log("Login Clicked");
 
 }
+
+document
+.getElementById("loginBtn")
+.addEventListener("click", login);

@@ -1,7 +1,7 @@
-import { auth } from "./firebase-config.js";
+import { auth } from "../firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-import { db } from "./firebase-config.js";
+import { db } from "../firebase-config.js";
 
 import {
   collection,

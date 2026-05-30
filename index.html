@@ -54,16 +54,20 @@
 
     <div class="search-wrapper">
 
-        <input
-        type="text"
-        id="searchInput"
-        placeholder="Search videos...">
+    <input
+    type="text"
+    id="searchInput"
+    placeholder="Search videos...">
 
-        <button id="voiceBtn">
-            🎤
-        </button>
+    <button id="closeSearch">
+        ✕
+    </button>
 
-    </div>
+    <button id="voiceBtn">
+        <i class="fa-solid fa-microphone"></i>
+    </button>
+
+</div>
 
 </div>
 
@@ -189,6 +193,18 @@
   <!-- JS -->
 
   <script type="module" src="script.js"></script>
+
+  <div id="voicePopup" class="voice-popup">
+
+    <div class="voice-box">
+
+        <div class="wave"></div>
+
+        <p>Listening...</p>
+
+    </div>
+
+</div>
 
 </body>
 </html>
