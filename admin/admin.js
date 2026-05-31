@@ -4,16 +4,21 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/fi
 import { db } from "../firebase-config.js";
 
 import {
-  collection,
-  getDocs,
-  addDoc,
-  doc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+collection,
+getDocs,
+addDoc,
+doc,
+deleteDoc,
+serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
 
 console.log("ADMIN JS LOADED");
 
 const YOUTUBE_API_KEY = "AIzaSyDo_afCx6xlSQeJP5LyYydZA2_519toMDo";
+
+
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -32,6 +37,9 @@ onAuthStateChanged(auth, async (user) => {
         (now - loginTime) > tenMinutes
     ){
 
+    
+        console.log("ADMIN UID:",user.uid);
+
         await auth.signOut();
 
         localStorage.removeItem(
@@ -45,6 +53,8 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     loadVideos();
+
+    loadAdvertisements();
 
 });
 
@@ -319,6 +329,198 @@ form.addEventListener("submit", async (e) => {
         console.error(error);
 
         alert(error.message);
+
+    }
+
+});
+
+
+const adForm =
+document.getElementById("adForm");
+
+adForm.addEventListener(
+"submit",
+
+async (e)=>{
+
+e.preventDefault();
+
+const title =
+document.getElementById(
+"adTitle"
+).value;
+
+const videoUrl =
+document.getElementById(
+"adVideoUrl"
+).value;
+
+const redirectLink =
+document.getElementById(
+"adRedirectLink"
+).value;
+
+const skipAfter =
+Number(
+document.getElementById(
+"adSkipAfter"
+).value
+);
+
+try{
+
+await addDoc(
+collection(
+db,
+"advertisements"
+),
+{
+title,
+videoUrl,
+redirectLink,
+skipAfter,
+active:true,
+views:0,
+clicks:0,
+createdAt:
+serverTimestamp()
+}
+);
+
+alert(
+"Advertisement Uploaded"
+);
+
+adForm.reset();
+
+}
+
+catch(error){
+  console.error(error);
+  console.error("ERROR CODE:", error.code);
+  console.error("ERROR MESSAGE:", error.message);
+
+  alert(error.message);
+}
+
+});
+
+
+async function loadAdvertisements(){
+
+const adsList =
+document.getElementById("adsList");
+
+adsList.innerHTML="";
+
+const snapshot =
+await getDocs(
+collection(db,"advertisements")
+);
+
+snapshot.forEach((ad)=>{
+
+const data = ad.data();
+
+adsList.innerHTML += `
+
+<div class="ad-item">
+
+<h3>${data.title}</h3>
+
+<p>Views : ${data.views || 0}</p>
+
+<p>Clicks : ${data.clicks || 0}</p>
+
+<p>Skip After :
+${data.skipAfter}s</p>
+
+<button
+class="ad-delete"
+onclick="deleteAd('${ad.id}')">
+
+Delete
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+window.deleteAd =
+async function(id){
+
+const ok =
+confirm(
+"Delete Advertisement ?"
+);
+
+if(!ok) return;
+
+await deleteDoc(
+doc(db,"advertisements",id)
+);
+
+loadAdvertisements();
+
+}
+
+const toggleVideos =
+document.getElementById("toggleVideos");
+
+const videosList =
+document.getElementById("videosList");
+
+videosList.classList.add("hidden");
+
+toggleVideos.addEventListener("click",()=>{
+
+    videosList.classList.toggle("hidden");
+
+    if(
+        videosList.classList.contains("hidden")
+    ){
+
+        toggleVideos.innerHTML =
+        "📹 Manage Videos ▼";
+
+    }else{
+
+        toggleVideos.innerHTML =
+        "📹 Manage Videos ▲";
+
+    }
+
+});
+
+const toggleAds =
+document.getElementById("toggleAds");
+
+const adsList =
+document.getElementById("adsList");
+
+adsList.classList.add("hidden");
+
+toggleAds.addEventListener("click",()=>{
+
+    adsList.classList.toggle("hidden");
+
+    if(
+        adsList.classList.contains("hidden")
+    ){
+
+        toggleAds.innerHTML =
+        "📢 Manage Advertisements ▼";
+
+    }else{
+
+        toggleAds.innerHTML =
+        "📢 Manage Advertisements ▲";
 
     }
 

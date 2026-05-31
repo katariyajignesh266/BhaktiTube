@@ -44,16 +44,63 @@
 
     </form>
 
+    <hr style="margin:30px 0;border-color:#333;">
+
+<h2>📢 Advertisement Upload</h2>
+
+<form id="adForm">
+
+<input
+type="text"
+id="adTitle"
+placeholder="Advertisement Title"
+required>
+
+<input
+type="text"
+id="adVideoUrl"
+placeholder="Advertisement Video URL"
+required>
+
+<input
+type="text"
+id="adRedirectLink"
+placeholder="Website / PlayStore Link"
+required>
+
+<input
+type="number"
+id="adSkipAfter"
+placeholder="Skip After Seconds"
+value="5">
+
+<button type="submit">
+Upload Advertisement
+</button>
+
+</form>
+
 </div>
+
+
 
 <div class="videos-panel">
 
-    <h2>📹 Manage Videos</h2>
+    <h2 id="toggleAds" class="toggle-title">
+📢 Manage Advertisements ▼
+</h2>
 
-    <div id="videosList"></div>
+<div id="adsList"></div>
 
+    <hr style="margin:30px 0;border-color:#333;">
+
+    <h2 id="toggleVideos" class="toggle-title">
+📹 Manage Videos ▼
+</h2>
+
+<div id="videosList"></div>
 </div>
-```
+
 
 </div>
 

@@ -645,3 +645,131 @@ body{
     object-fit:cover;
 
 }
+
+/* Samsung Mobile Fix */
+
+html,
+body{
+    width:100%;
+    overflow-x:hidden;
+}
+
+.videos-container{
+    width:100%;
+    max-width:100%;
+    padding:12px;
+    box-sizing:border-box;
+}
+
+.video-card{
+    width:100%;
+    max-width:100%;
+}
+
+.video-thumbnail{
+    width:100%;
+    display:block;
+}
+
+@media screen and (max-width: 420px){
+
+    .videos-container{
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+    .video-card{
+        margin-left:0;
+        margin-right:0;
+    }
+
+}
+
+.videos-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:20px;
+}
+
+@media (max-width:480px){
+
+    .videos-container{
+        grid-template-columns:1fr;
+        padding:10px;
+    }
+
+}
+
+.ad-popup{
+
+display:none;
+
+position:fixed;
+inset:0;
+
+background:rgba(0,0,0,.95);
+
+z-index:99999;
+
+justify-content:center;
+align-items:center;
+
+}
+
+.ad-content{
+
+width:90%;
+max-width:900px;
+
+}
+
+#adVideo{
+
+width:100%;
+border-radius:12px;
+
+background:black;
+
+}
+
+.ad-buttons{
+
+display:flex;
+gap:10px;
+
+margin-top:15px;
+
+}
+
+#visitAdBtn,
+#skipAdBtn{
+
+flex:1;
+
+padding:14px;
+
+border:none;
+
+border-radius:10px;
+
+font-size:16px;
+
+font-weight:600;
+
+cursor:pointer;
+
+}
+
+#visitAdBtn{
+
+background:#ff0000;
+color:white;
+
+}
+
+#skipAdBtn{
+
+background:#333;
+color:white;
+
+}

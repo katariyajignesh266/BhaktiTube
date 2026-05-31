@@ -12,7 +12,9 @@ import {
   collection,
   getDocs,
   query,
-  orderBy
+  orderBy,
+  doc,
+  getDoc
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
@@ -27,20 +29,160 @@ document.getElementById("videoPopup");
 const youtubePlayer =
 document.getElementById("youtubePlayer");
 
+const adPopup =
+document.getElementById("adPopup");
+
+const adVideo =
+document.getElementById("adVideo");
+
+const skipAdBtn =
+document.getElementById("skipAdBtn");
+
+const visitAdBtn =
+document.getElementById("visitAdBtn");
+
+
+
+async function getAdvertisement(){
+
+console.log("Loading Random Advertisement...");
+
+const snapshot =
+await getDocs(
+collection(db,"advertisements")
+);
+
+const ads = [];
+
+snapshot.forEach((doc)=>{
+
+const ad = doc.data();
+
+if(ad.active){
+
+ads.push({
+id: doc.id,
+...ad
+});
+
+}
+
+});
+
+if(ads.length === 0){
+
+return null;
+
+}
+
+const randomIndex =
+Math.floor(
+Math.random() * ads.length
+);
+
+return ads[randomIndex];
+
+}
 
 
 /* OPEN VIDEO */
 
-function openVideo(videoId){
+async function openVideo(videoId){
 
-    videoPopup.style.display = "flex";
+  console.log("Video Clicked");
 
-    document.body.style.overflow = "hidden";
+const ad =
+await getAdvertisement();
 
 
 
-    youtubePlayer.src =
-    `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=0`;
+if(ad && ad.active){
+
+adPopup.style.display = "flex";
+
+adVideo.src =
+ad.videoUrl;
+
+visitAdBtn.onclick = ()=>{
+
+window.open(
+ad.redirectLink,
+"_blank"
+);
+
+};
+
+let seconds =
+ad.skipAfter;
+
+skipAdBtn.disabled = true;
+
+skipAdBtn.textContent =
+`Skip Ad (${seconds})`;
+
+const timer =
+setInterval(()=>{
+
+seconds--;
+
+skipAdBtn.textContent =
+`Skip Ad (${seconds})`;
+
+if(seconds <= 0){
+
+clearInterval(timer);
+
+skipAdBtn.disabled = false;
+
+skipAdBtn.textContent =
+"Skip Ad";
+
+}
+
+},1000);
+
+function startMainVideo(){
+
+adPopup.style.display =
+"none";
+
+adVideo.pause();
+
+adVideo.src = "";
+
+videoPopup.style.display =
+"flex";
+
+document.body.style.overflow =
+"hidden";
+
+youtubePlayer.src =
+`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+
+}
+
+skipAdBtn.onclick = ()=>{
+
+startMainVideo();
+
+};
+
+adVideo.onended = ()=>{
+
+startMainVideo();
+
+};
+
+}
+else{
+
+videoPopup.style.display =
+"flex";
+
+youtubePlayer.src =
+`https://www.youtube.com/embed/${videoId}?autoplay=1`;
+
+}
 
 }
 

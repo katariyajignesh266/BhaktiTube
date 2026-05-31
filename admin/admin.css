@@ -214,3 +214,138 @@ button:hover{
         grid-template-columns:1fr;
     }
 }
+
+#adForm{
+    margin-top:25px;
+}
+
+#adForm h2{
+    margin-bottom:15px;
+}
+
+#adsList{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fill,minmax(320px,1fr));
+    gap:20px;
+    margin-top:20px;
+}
+
+.ad-item{
+    background:#222;
+    border:1px solid #333;
+    border-radius:18px;
+    padding:20px;
+}
+
+.ad-item h3{
+    color:white;
+    margin-bottom:12px;
+}
+
+.ad-item p{
+    color:#c7c7c7;
+    margin-bottom:8px;
+}
+
+.ad-delete{
+    width:100%;
+    margin-top:15px;
+    background:red;
+}
+
+
+@media(max-width:1000px){
+
+    .admin-wrapper{
+        flex-direction:column;
+        gap:20px;
+    }
+
+    .container{
+        width:100%;
+    }
+
+    .videos-panel{
+        width:100%;
+        min-height:auto;
+    }
+
+    #videosList,
+    #adsList{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:15px;
+    }
+
+    .video-item,
+    .ad-item{
+        width:100%;
+        padding:16px;
+    }
+
+    .video-item h3,
+    .ad-item h3{
+        font-size:16px;
+        line-height:1.4;
+        word-break:break-word;
+    }
+
+    .video-item p,
+    .ad-item p{
+        font-size:14px;
+    }
+
+    .delete-btn,
+    .ad-delete{
+        width:100%;
+        margin-top:12px;
+    }
+
+}
+
+#adsList{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fill,minmax(280px,1fr));
+    gap:20px;
+}
+
+.ad-item{
+    background:#222;
+    border:1px solid #333;
+    border-radius:18px;
+    padding:18px;
+    overflow:hidden;
+}
+
+.ad-item h3{
+    color:white;
+    font-size:18px;
+    line-height:1.5;
+    margin-bottom:12px;
+    word-break:break-word;
+}
+
+.ad-item p{
+    color:#c7c7c7;
+    margin-bottom:8px;
+}
+
+.ad-delete{
+    margin-top:15px;
+}
+
+.toggle-title{
+    cursor:pointer;
+    user-select:none;
+}
+
+.toggle-title:hover{
+    color:#ff0000;
+}
+
+.hidden{
+    display:none !important;
+}
+
