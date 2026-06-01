@@ -188,7 +188,7 @@ document.body.style.overflow =
 "hidden";
 
 youtubePlayer.src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&modestbranding=1`;
+`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1`;
 
 }
 
@@ -211,7 +211,7 @@ videoPopup.style.display =
 "flex";
 
 youtubePlayer.src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1`;
+`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1`;
 
 }
 
