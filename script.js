@@ -14,7 +14,10 @@ import {
   query,
   orderBy,
   doc,
-  getDoc
+  getDoc,
+  updateDoc,
+  increment,
+  onSnapshot
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
@@ -40,6 +43,15 @@ document.getElementById("skipAdBtn");
 
 const visitAdBtn =
 document.getElementById("visitAdBtn");
+
+const bellBtn =
+document.querySelector(".fa-bell");
+
+const notificationPopup =
+document.getElementById("notificationPopup");
+
+const notificationList =
+document.getElementById("notificationList");
 
 
 
@@ -89,11 +101,23 @@ return ads[randomIndex];
 
 async function openVideo(videoId){
 
+  notificationPopup.style.display = "none";
+
   console.log("Video Clicked");
 
 const ad =
 await getAdvertisement();
 
+if(ad){
+
+await updateDoc(
+doc(db,"advertisements",ad.id),
+{
+views: increment(1)
+}
+);
+
+}
 
 
 if(ad && ad.active){
@@ -103,7 +127,14 @@ adPopup.style.display = "flex";
 adVideo.src =
 ad.videoUrl;
 
-visitAdBtn.onclick = ()=>{
+visitAdBtn.onclick = async ()=>{
+
+await updateDoc(
+doc(db,"advertisements",ad.id),
+{
+clicks: increment(1)
+}
+);
 
 window.open(
 ad.redirectLink,
@@ -391,6 +422,8 @@ function renderVideos(videos){
 let allVideos = [];
 
 loadVideos();
+loadNotifications();
+
 
 const searchBtn =
 document.getElementById("searchBtn");
@@ -512,21 +545,25 @@ voiceBtn.addEventListener("click",()=>{
 const profileBtn =
 document.getElementById("profileBtn");
 
-if(profileBtn){
+onAuthStateChanged(auth,(user)=>{
 
-    profileBtn.addEventListener(
-        "click",
+profileBtn.addEventListener("click",()=>{
 
-        ()=>{
+if(user){
 
-            window.location.href =
-            "user/profile.html";
+window.location.href =
+"./user/profile.html";
 
-        }
+}else{
 
-    );
+window.location.href =
+"./user/signup.html";
 
 }
+
+});
+
+});
 
 
 
@@ -556,4 +593,89 @@ user.photoURL ||
 }
 
 );
+
+bellBtn.addEventListener("click", () => {
+
+  notificationPopup.style.display =
+  notificationPopup.style.display === "block"
+  ? "none"
+  : "block";
+
+});
+
+async function loadNotifications(){
+
+  let notificationCount = 0;
+
+  notificationList.innerHTML = "";
+
+  const videosRef =
+collection(db,"videos");
+
+  onSnapshot(videosRef, (snapshot) => {
+
+
+  const now = Date.now();
+
+  snapshot.forEach(docSnap => {
+
+    const video = docSnap.data();
+
+    if(!video.createdAt) return;
+
+    let createdTime;
+
+if(video.createdAt?.seconds){
+
+    createdTime =
+    video.createdAt.seconds * 1000;
+
+}else{
+
+    createdTime =
+    Number(video.createdAt);
+
+}
+    const hours24 =
+    24 * 60 * 60 * 1000;
+
+    if(now - createdTime <= hours24){
+
+    notificationCount++;
+
+   notificationList.innerHTML += `
+
+<div
+class="notification-item"
+onclick="openVideo('${video.videoId}')"
+>
+
+    <img
+    src="https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg">
+
+    <div class="notification-details">
+
+        <h4>${video.title}</h4>
+
+        <p>${video.channel}</p>
+
+        <span>🆕 New Video</span>
+
+    </div>
+
+</div>
+
+`;
+
+}
+
+  });
+
+  document.getElementById(
+"notificationCount"
+).innerText = notificationCount;
+
+});
+
+}
 

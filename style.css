@@ -773,3 +773,198 @@ background:#333;
 color:white;
 
 }
+
+#adPopup{
+    position:fixed;
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    background:rgba(0,0,0,.95);
+
+    z-index:999999;
+}
+
+.notification-popup{
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  background:#111;
+  border:1px solid #333;
+  border-radius:12px;
+
+  display:none;
+
+  z-index:99999;
+}
+
+.notification-header{
+  padding:15px;
+  font-weight:bold;
+  border-bottom:1px solid #333;
+}
+
+.notification-item{
+  padding:10px;
+  border-bottom:1px solid #222;
+  cursor:pointer;
+}
+
+.notification-item img{
+  width:100%;
+  border-radius:8px;
+}
+
+.notification-title{
+  margin-top:8px;
+  font-size:14px;
+}
+
+#notificationCount{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+
+  background:red;
+  color:white;
+
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  font-size:11px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.notification-wrapper{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+#notificationCount{
+
+    position:absolute;
+
+    top:-6px;
+
+    right:-8px;
+
+    min-width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    background:red;
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:9999;
+
+}
+
+@media(max-width:768px){
+
+#notificationCount{
+
+    top:-4px;
+
+    right:-5px;
+
+    min-width:16px;
+
+    height:16px;
+
+    font-size:10px;
+
+}
+
+}
+
+#notificationPopup{
+
+    position:fixed;
+
+    top:70px;
+
+    left:10px;
+
+    right:10px;
+
+    bottom:20px;
+
+    background:#111;
+
+    border:2px solid #ff0000;
+
+    border-radius:15px;
+
+    overflow-y:auto;
+
+    z-index:999999;
+
+    box-shadow:
+    0 0 25px rgba(255,0,0,.4);
+
+}
+
+.notification-header{
+
+    position:sticky;
+
+    top:0;
+
+    background:#181818;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    padding:15px;
+
+    border-bottom:
+    1px solid #333;
+
+}
+
+#notificationPopup{
+
+    display:none;
+
+}
+
+.notification-item{
+
+    cursor:pointer;
+
+}

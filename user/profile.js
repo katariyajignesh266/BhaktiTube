@@ -134,9 +134,9 @@ null,
 "login.html"
 );
 
-window.location.replace(
-"login.html"
-);
+window.location.href =
+"signup.html";
+
 
 }
 );

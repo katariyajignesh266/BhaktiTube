@@ -9,9 +9,12 @@ getDocs,
 addDoc,
 doc,
 deleteDoc,
-serverTimestamp
+serverTimestamp,
+query,
+orderBy
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
 
 
 console.log("ADMIN JS LOADED");
@@ -37,9 +40,6 @@ onAuthStateChanged(auth, async (user) => {
         (now - loginTime) > tenMinutes
     ){
 
-    
-        console.log("ADMIN UID:",user.uid);
-
         await auth.signOut();
 
         localStorage.removeItem(
@@ -51,6 +51,8 @@ onAuthStateChanged(auth, async (user) => {
 
         return;
     }
+
+    console.log("Logged In:", user.uid);
 
     loadVideos();
 
@@ -65,8 +67,13 @@ async function loadVideos() {
 
     videosList.innerHTML = "";
 
-    const snapshot =
-    await getDocs(collection(db, "videos"));
+    const q = query(
+collection(db, "videos"),
+orderBy("createdAt", "desc")
+);
+
+const snapshot =
+await getDocs(q);
 
     snapshot.forEach((videoDoc) => {
 
@@ -314,7 +321,7 @@ form.addEventListener("submit", async (e) => {
                 logo,
                 views,
                 date,
-                createdAt: Date.now()
+                createdAt: serverTimestamp()
             }
         );
 
@@ -413,10 +420,13 @@ document.getElementById("adsList");
 
 adsList.innerHTML="";
 
-const snapshot =
-await getDocs(
-collection(db,"advertisements")
+const q = query(
+collection(db,"advertisements"),
+orderBy("createdAt","desc")
 );
+
+const snapshot =
+await getDocs(q);
 
 snapshot.forEach((ad)=>{
 

@@ -26,7 +26,7 @@ document
         alert("Account Created Successfully");
 
         window.location.href =
-        "login.html";
+"profile.html";
 
     }
 
