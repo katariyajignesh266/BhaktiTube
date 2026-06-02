@@ -425,8 +425,15 @@ collection(db,"advertisements"),
 orderBy("createdAt","desc")
 );
 
+
+
 const snapshot =
 await getDocs(q);
+
+console.log(
+"Ads Found:",
+snapshot.size
+);
 
 snapshot.forEach((ad)=>{
 
