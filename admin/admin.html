@@ -80,6 +80,53 @@ Upload Advertisement
 
 </form>
 
+<hr style="margin:30px 0;border-color:#333;">
+
+<h2>📺 Add YouTube Channel</h2>
+
+<form id="channelForm">
+
+    <input
+    type="text"
+    id="channelUrl"
+    placeholder="Paste YouTube Channel URL">
+
+
+    <div id="channelPreview"
+style="display:none;">
+
+<img
+id="previewLogo"
+width="70"
+height="70"
+style="
+border-radius:50%;
+margin-bottom:10px;
+">
+
+<h3 id="previewName"></h3>
+
+<p id="previewSubscribers"></p>
+
+<p id="previewVideos"></p>
+
+</div>
+
+<button
+type="button"
+id="fetchChannelBtn">
+
+Fetch Channel
+
+</button>
+
+    <button type="submit">
+        Add Channel
+    </button>
+
+
+</form>
+
 </div>
 
 
@@ -92,6 +139,10 @@ Upload Advertisement
 
 <div id="adsList"></div>
 
+
+
+
+
     <hr style="margin:30px 0;border-color:#333;">
 
     <h2 id="toggleVideos" class="toggle-title">
@@ -99,7 +150,21 @@ Upload Advertisement
 </h2>
 
 <div id="videosList"></div>
+
+
+<hr style="margin:30px 0;border-color:#333;">
+
+
+<h2 id="toggleChannels" class="toggle-title">
+📺 Manage Channels ▼
+</h2>
+
+<div id="channelsList"></div>
+
+<hr style="margin:30px 0;border-color:#333;">
 </div>
+
+
 
 
 </div>

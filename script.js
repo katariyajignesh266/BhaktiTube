@@ -364,6 +364,58 @@ async function loadVideos(){
 
 }
 
+async function loadChannels(){
+
+  console.log("loadChannels started");
+
+const channelsContainer =
+document.getElementById(
+"channelsContainer"
+);
+
+channelsContainer.innerHTML = "";
+
+const snapshot =
+await getDocs(
+collection(db,"channels")
+);
+
+snapshot.forEach((doc)=>{
+
+const channel = doc.data();
+
+channelsContainer.innerHTML += `
+
+<div class="channel-card">
+
+<img
+src="${channel.channelLogo}"
+class="channel-img">
+
+<h3>${channel.channelName}</h3>
+
+<p>👥 ${channel.subscribers}</p>
+
+<p>🎬 ${channel.totalVideos} Videos</p>
+
+<a
+href="${channel.channelUrl}"
+target="_blank">
+
+Visit Channel
+
+</a>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+
 function renderVideos(videos){
 
     videosContainer.innerHTML = "";
@@ -422,6 +474,7 @@ function renderVideos(videos){
 let allVideos = [];
 
 loadVideos();
+loadChannels();
 loadNotifications();
 
 

@@ -9,6 +9,7 @@ getDocs,
 addDoc,
 doc,
 deleteDoc,
+updateDoc,
 serverTimestamp,
 query,
 orderBy
@@ -57,6 +58,10 @@ onAuthStateChanged(auth, async (user) => {
     loadVideos();
 
     loadAdvertisements();
+
+    loadChannels();
+
+
 
 });
 
@@ -256,6 +261,9 @@ if(!videoId){
 
 const form =
 document.getElementById("videoForm");
+
+const channelForm =
+document.getElementById("channelForm");
 
 function getTimeAgo(dateString){
 
@@ -497,6 +505,7 @@ videosList.classList.add("hidden");
 
 toggleVideos.addEventListener("click",()=>{
 
+
     videosList.classList.toggle("hidden");
 
     if(
@@ -525,6 +534,8 @@ adsList.classList.add("hidden");
 
 toggleAds.addEventListener("click",()=>{
 
+    console.log("ADS CLICKED");
+
     adsList.classList.toggle("hidden");
 
     if(
@@ -540,5 +551,365 @@ toggleAds.addEventListener("click",()=>{
         "📢 Manage Advertisements ▲";
 
     }
+
+});
+
+const fetchChannelBtn =
+document.getElementById(
+"fetchChannelBtn"
+);
+
+const preview =
+document.getElementById(
+"channelPreview"
+);
+
+let fetchedChannel = null;
+
+channelForm.addEventListener(
+"submit",
+
+async(e)=>{
+
+e.preventDefault();
+
+if(!fetchedChannel){
+
+alert(
+"Fetch Channel First"
+);
+
+return;
+
+}
+
+try{
+
+const snapshot =
+await getDocs(
+collection(db,"channels")
+);
+
+const exists =
+snapshot.docs.some(doc =>
+doc.data().channelId ===
+fetchedChannel.channelId
+);
+
+if(exists){
+
+alert(
+"Channel Already Added"
+);
+
+return;
+}
+
+await addDoc(
+
+collection(
+db,
+"channels"
+),
+
+{
+
+channelId:
+fetchedChannel.channelId,
+
+channelName:
+fetchedChannel.channelName,
+
+channelLogo:
+fetchedChannel.channelLogo,
+
+subscribers:
+fetchedChannel.subscribers,
+
+totalVideos:
+fetchedChannel.totalVideos,
+
+channelUrl:
+fetchedChannel.channelUrl,
+
+active:true,
+
+createdAt:
+serverTimestamp()
+
+}
+
+);
+
+alert(
+"Channel Added Successfully"
+);
+
+channelForm.reset();
+
+preview.style.display =
+"none";
+
+fetchedChannel = null;
+
+loadChannels();
+
+}
+catch(error){
+
+console.error(error);
+
+alert(
+error.message
+);
+
+}
+
+});
+
+
+async function loadChannels(){
+
+const channelsList =
+document.getElementById(
+"channelsList"
+);
+
+channelsList.innerHTML="";
+
+const q = query(
+collection(db,"channels"),
+orderBy("createdAt","desc")
+);
+
+const snapshot =
+await getDocs(q);
+
+snapshot.forEach((channel)=>{
+
+const data =
+channel.data();
+
+channelsList.innerHTML += `
+
+<div class="channel-item">
+
+<img
+src="${data.channelLogo}"
+class="channel-logo">
+
+<h3>
+${data.channelName}
+</h3>
+
+<p>
+👥 ${data.subscribers}
+Subscribers
+</p>
+
+<p>
+🎬 ${data.totalVideos}
+Videos
+</p>
+
+<a
+href="${data.channelUrl}"
+target="_blank">
+
+Visit Channel
+
+</a>
+
+<button
+class="channel-delete"
+onclick="deleteChannel('${channel.id}')">
+
+Delete
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+window.deleteChannel =
+async function(id){
+
+const ok =
+confirm(
+"Delete Channel ?"
+);
+
+if(!ok) return;
+
+await deleteDoc(
+doc(db,"channels",id)
+);
+
+loadChannels();
+
+}
+
+fetchChannelBtn.addEventListener(
+"click",
+
+async ()=>{
+
+const url =
+document.getElementById(
+"channelUrl"
+).value.trim();
+
+if(!url){
+
+alert(
+"Paste Channel URL"
+);
+
+return;
+
+}
+
+const match =
+url.match(/@([^/?]+)/);
+
+if(!match){
+
+alert(
+"Invalid Channel URL"
+);
+
+return;
+
+}
+
+const handle =
+match[1];
+
+console.log(
+"CHANNEL HANDLE:",
+handle
+);
+
+try{
+
+const response =
+await fetch(
+
+`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${handle}&maxResults=1&key=${YOUTUBE_API_KEY}`
+
+);
+
+const data =
+await response.json();
+
+console.log(data);
+
+if(!data.items.length){
+
+alert(
+"Channel Not Found"
+);
+
+return;
+
+}
+
+const channelId =
+data.items[0].snippet.channelId;
+
+const channelResponse =
+await fetch(
+
+`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`
+
+);
+
+const channelData =
+await channelResponse.json();
+
+console.log(
+channelData
+);
+
+const channel =
+channelData.items[0];
+
+const channelName =
+channel.snippet.title;
+
+const subscribers =
+Number(
+channel.statistics.subscriberCount
+).toLocaleString();
+
+const totalVideos =
+Number(
+channel.statistics.videoCount
+).toLocaleString();
+
+const logo =
+channel.snippet.thumbnails.high.url;
+
+console.log(
+channelName,
+subscribers,
+totalVideos,
+logo
+);
+
+fetchedChannel = {
+
+channelId,
+
+channelName,
+
+channelLogo: logo,
+
+subscribers,
+
+totalVideos,
+
+channelUrl: url
+
+};
+
+preview.style.display = "block";
+
+document.getElementById(
+"previewLogo"
+).src = logo;
+
+document.getElementById(
+"previewName"
+).textContent =
+channelName;
+
+document.getElementById(
+"previewSubscribers"
+).textContent =
+"Subscribers : " +
+subscribers;
+
+document.getElementById(
+"previewVideos"
+).textContent =
+"Videos : " +
+totalVideos;
+
+
+
+}
+catch(error){
+
+console.error(error);
+
+alert(error.message);
+
+}
 
 });
