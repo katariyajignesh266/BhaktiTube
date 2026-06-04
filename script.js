@@ -399,10 +399,9 @@ class="channel-img">
 <p>🎬 ${channel.totalVideos} Videos</p>
 
 <a
-href="${channel.channelUrl}"
-target="_blank">
+href="channel.html?id=${channel.channelId}">
 
-Visit Channel
+View Channel
 
 </a>
 

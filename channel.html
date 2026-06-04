@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Channel</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="channel-header">
+
+<img id="channelLogo">
+
+<h1 id="channelName"></h1>
+
+<p id="channelSubscribers"></p>
+
+<p id="channelVideos"></p>
+
+</div>
+
+<div id="channelVideosContainer"></div>
+
+<div id="loader" class="loader"></div>
+
+<div id="loadMoreTrigger"></div>
+
+<div id="videoPopup" class="video-popup">
+
+  <div class="popup-content">
+
+    <span class="close-btn"
+          onclick="closeVideo()">
+      ✕
+    </span>
+
+    <iframe
+      id="youtubePlayer"
+      src=""
+      frameborder="0"
+      allowfullscreen>
+    </iframe>
+
+  </div>
+
+</div>
+
+<script type="module" src="channel.js"></script>
+
+</body>
+
+</html>
