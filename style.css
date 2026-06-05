@@ -1721,3 +1721,31 @@ rgba(139,92,246,.45);
 
 }
 
+.video-popup .close-btn{
+
+position:fixed !important;
+
+top:15px !important;
+
+left:15px !important;
+
+right:auto !important;
+
+width:55px !important;
+
+height:55px !important;
+
+display:flex !important;
+
+align-items:center !important;
+
+justify-content:center !important;
+
+background:rgba(0,0,0,.7) !important;
+
+border-radius:50% !important;
+
+z-index:99999999 !important;
+
+}
+
