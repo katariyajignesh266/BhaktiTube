@@ -172,16 +172,37 @@ loader.style.display = "none";
 }
 
 
-window.openVideo = function(videoId){
+window.openVideo = async function(videoId){
 
-document.getElementById(
-"videoPopup"
-).style.display = "flex";
+const popup =
+document.getElementById("videoPopup");
 
-document.getElementById(
-"youtubePlayer"
-).src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&playsinline=0&controls=1&rel=0`;
+const player =
+document.getElementById("youtubePlayer");
+
+popup.style.display = "flex";
+
+player.src =
+`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&playsinline=0&fs=1`;
+
+setTimeout(async()=>{
+
+try{
+
+if(player.requestFullscreen){
+
+await player.requestFullscreen();
+
+}
+
+}
+catch(err){
+
+console.log(err);
+
+}
+
+},1000);
 
 }
 
