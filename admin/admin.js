@@ -216,11 +216,15 @@ if(!videoId){
         console.log(data);
 
         if(data.error){
-    alert(data.error.message);
-    return;
+
+console.log(data);
+
+alert(data.error.message);
+
+return;
 }
 
-        if(!data.items.length){
+        if(!data.items || !data.items.length){
             alert("Video Not Found");
             return;
         }
@@ -559,6 +563,11 @@ document.getElementById(
 "fetchChannelBtn"
 );
 
+const manualAddChannelBtn =
+document.getElementById(
+"manualAddChannelBtn"
+);
+
 const preview =
 document.getElementById(
 "channelPreview"
@@ -632,10 +641,15 @@ fetchedChannel.totalVideos,
 channelUrl:
 fetchedChannel.channelUrl,
 
+uploadsPlaylistId:
+fetchedChannel.uploadsPlaylistId,
+
 active:true,
 
 createdAt:
 serverTimestamp()
+
+
 
 }
 
@@ -809,8 +823,11 @@ await response.json();
 
 console.log(data);
 
-if(!data.items.length){
+alert(
+JSON.stringify(data)
+);
 
+if(!data.items || !data.items.length){
 alert(
 "Channel Not Found"
 );
@@ -824,20 +841,24 @@ data.items[0].snippet.channelId;
 
 const channelResponse =
 await fetch(
-
-`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`
-
+`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`
 );
 
 const channelData =
 await channelResponse.json();
 
+const channel =
+channelData.items[0];
+
+const uploadsPlaylistId =
+channel.contentDetails
+.relatedPlaylists
+.uploads;
+
 console.log(
 channelData
 );
 
-const channel =
-channelData.items[0];
 
 const channelName =
 channel.snippet.title;
@@ -865,6 +886,8 @@ logo
 fetchedChannel = {
 
 channelId,
+
+uploadsPlaylistId,
 
 channelName,
 
@@ -902,6 +925,106 @@ document.getElementById(
 totalVideos;
 
 
+
+}
+catch(error){
+
+console.error(error);
+
+alert(error.message);
+
+}
+
+});
+
+
+manualAddChannelBtn.addEventListener(
+"click",
+
+async ()=>{
+
+const channelId =
+document.getElementById(
+"manualChannelId"
+).value.trim();
+
+const uploadsPlaylistId =
+document.getElementById(
+"manualUploadsPlaylistId"
+).value.trim();
+
+const channelName =
+document.getElementById(
+"manualChannelName"
+).value.trim();
+
+const channelLogo =
+document.getElementById(
+"manualChannelLogo"
+).value.trim();
+
+const subscribers =
+document.getElementById(
+"manualSubscribers"
+).value.trim();
+
+const totalVideos =
+document.getElementById(
+"manualTotalVideos"
+).value.trim();
+
+const channelUrl =
+document.getElementById(
+"channelUrl"
+).value.trim();
+
+if(
+!channelId ||
+!uploadsPlaylistId ||
+!channelName
+){
+
+alert(
+"Fill Required Fields"
+);
+
+return;
+
+}
+
+try{
+
+await addDoc(
+collection(db,"channels"),
+{
+
+channelId,
+
+uploadsPlaylistId,
+
+channelName,
+
+channelLogo,
+
+subscribers,
+
+totalVideos,
+
+channelUrl,
+
+active:true,
+
+createdAt:
+serverTimestamp()
+
+}
+);
+
+alert(
+"Channel Added Successfully"
+);
+
+loadChannels();
 
 }
 catch(error){

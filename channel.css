@@ -1,0 +1,237 @@
+/* CHANNEL HEADER */
+
+.channel-header{
+
+padding:25px 15px;
+
+text-align:center;
+
+background:#181818;
+
+border-bottom:1px solid #333;
+}
+
+#channelLogo{
+
+width:90px;
+height:90px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+margin-bottom:12px;
+}
+
+/* Channel Name */
+
+#channelName{
+
+font-size:28px;
+
+font-weight:700;
+
+color:white;
+
+margin-bottom:10px;
+}
+
+/* Subscribers */
+
+#channelSubscribers{
+
+font-size:18px;
+
+color:#cfcfcf;
+
+margin-bottom:6px;
+}
+
+/* Total Videos */
+
+#channelVideos{
+
+font-size:18px;
+
+color:#cfcfcf;
+}
+
+/* VIDEO GRID */
+
+#channelVideosContainer{
+
+padding:15px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+}
+
+/* VIDEO CARD */
+
+.video-card{
+
+background:#1c1c1c;
+
+border-radius:16px;
+
+overflow:hidden;
+
+cursor:pointer;
+}
+
+.video-card img{
+
+width:100%;
+
+display:block;
+}
+
+.video-card h3{
+
+font-size:20px;
+
+line-height:1.5;
+
+font-weight:600;
+
+color:white;
+
+padding:12px;
+
+word-break:break-word;
+}
+
+
+
+#channelName{
+font-size:50px !important;
+font-weight:700;
+color:#ffffff !important;
+margin-bottom:12px;
+
+}
+
+#channelSubscribers{
+font-size:30px !important;
+color:#aaaaaa !important;
+margin-bottom:8px;
+
+}
+
+#channelVideos{
+font-size:30px !important;
+color:#8f8f8f !important;
+margin-bottom:15px;
+
+}
+
+.video-card h3{
+font-size:43px !important;
+font-weight:600;
+color:#ffffff !important;
+line-height:1.4;
+padding:14px;
+}
+
+.back-home{
+
+position:fixed;
+
+top:15px;
+left:15px;
+
+width:45px;
+height:45px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:#202020;
+
+border-radius:50%;
+
+color:white;
+
+font-size:22px;
+
+cursor:pointer;
+
+z-index:9999;
+
+box-shadow:0 4px 10px rgba(0,0,0,.4);
+}
+
+.back-home{
+
+position:fixed;
+
+top:40px;
+left:40px;
+
+color:white;
+
+font-size:50px;
+
+cursor:pointer;
+
+z-index:9999;
+
+background:none;
+
+}
+
+.back-home:hover{
+
+background:#303030;
+
+}
+
+/* MOBILE */
+
+@media (max-width:768px){
+
+.channel-header{
+padding:20px 12px;
+}
+
+#channelLogo{
+width:80px;
+height:80px;
+margin-bottom:10px;
+}
+
+#channelName{
+font-size:34px !important;
+margin-bottom:10px;
+}
+
+#channelSubscribers{
+font-size:20px !important;
+margin-bottom:6px;
+}
+
+#channelVideos{
+font-size:20px !important;
+margin-bottom:12px;
+}
+
+#channelVideosContainer{
+padding:10px;
+gap:15px;
+}
+
+.video-card{
+border-radius:12px;
+}
+
+.video-card h3{
+font-size:24px !important;
+line-height:1.5;
+padding:12px;
+}
+
+}

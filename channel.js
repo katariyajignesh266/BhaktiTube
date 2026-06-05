@@ -181,7 +181,7 @@ document.getElementById(
 document.getElementById(
 "youtubePlayer"
 ).src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+`https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&playsinline=0&controls=1&rel=0`;
 
 }
 
@@ -229,3 +229,52 @@ document.getElementById(
 "loadMoreTrigger"
 )
 );
+
+
+const youtubePlayer =
+document.getElementById(
+"youtubePlayer"
+);
+
+document.addEventListener(
+"fullscreenchange",
+
+async ()=>{
+
+if(document.fullscreenElement){
+
+try{
+
+await screen.orientation.lock(
+"landscape"
+);
+
+}catch(err){
+
+console.log(err);
+
+}
+
+}else{
+
+try{
+
+screen.orientation.unlock();
+
+}catch(err){
+
+console.log(err);
+
+}
+
+}
+
+}
+);
+
+window.goHome = function(){
+
+window.location.href =
+"index.html";
+
+}
