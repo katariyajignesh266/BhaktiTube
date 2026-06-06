@@ -382,8 +382,6 @@ async function loadVideos(){
 
 async function loadChannels(){
 
-  console.log("loadChannels started");
-
 const channelsContainer =
 document.getElementById(
 "channelsContainer"
@@ -391,14 +389,22 @@ document.getElementById(
 
 channelsContainer.innerHTML = "";
 
-const snapshot =
-await getDocs(
-collection(db,"channels")
+const q = query(
+collection(db,"channels"),
+orderBy("createdAt","desc")
 );
 
-snapshot.forEach((doc)=>{
+const snapshot =
+await getDocs(q);
 
-const channel = doc.data();
+snapshot.forEach((docSnap)=>{
+
+const channel =
+docSnap.data();
+
+if(channel.enabled !== true){
+return;
+}
 
 channelsContainer.innerHTML += `
 

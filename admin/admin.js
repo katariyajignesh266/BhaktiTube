@@ -23,6 +23,41 @@ console.log("ADMIN JS LOADED");
 const YOUTUBE_API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
 
+document.addEventListener("click", async(e)=>{
+
+if(
+e.target.classList.contains(
+"toggleChannelBtn"
+)
+){
+
+const channelDocId =
+e.target.dataset.id;
+
+const currentState =
+e.target.dataset.enabled === "true";
+
+await updateDoc(
+
+doc(
+db,
+"channels",
+channelDocId
+),
+
+{
+enabled: !currentState
+}
+
+);
+
+loadChannels();
+
+}
+
+});
+
+
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -558,6 +593,34 @@ toggleAds.addEventListener("click",()=>{
 
 });
 
+const toggleChannels =
+document.getElementById("toggleChannels");
+
+const channelsList =
+document.getElementById("channelsList");
+
+channelsList.classList.add("hidden");
+
+toggleChannels.addEventListener("click",()=>{
+
+    channelsList.classList.toggle("hidden");
+
+    if(
+        channelsList.classList.contains("hidden")
+    ){
+
+        toggleChannels.innerHTML =
+        "📺 Manage Channels ▼";
+
+    }else{
+
+        toggleChannels.innerHTML =
+        "📺 Manage Channels ▲";
+
+    }
+
+});
+
 const fetchChannelBtn =
 document.getElementById(
 "fetchChannelBtn"
@@ -644,7 +707,7 @@ fetchedChannel.channelUrl,
 uploadsPlaylistId:
 fetchedChannel.uploadsPlaylistId,
 
-active:true,
+enabled:true,
 
 createdAt:
 serverTimestamp()
@@ -740,6 +803,13 @@ onclick="deleteChannel('${channel.id}')">
 
 Delete
 
+</button>
+
+<button
+class="toggleChannelBtn"
+data-id="${channel.id}"
+data-enabled="${data.enabled}">
+${data.enabled ? "Disable" : "Enable"}
 </button>
 
 </div>
@@ -1013,6 +1083,8 @@ totalVideos,
 channelUrl,
 
 active:true,
+
+enabled:true,
 
 createdAt:
 serverTimestamp()

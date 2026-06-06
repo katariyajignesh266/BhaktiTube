@@ -2451,3 +2451,33 @@ transform:rotate(360deg);
 #sidebar a{
     margin: 0 0cap;
 }
+
+@media(max-width:768px){
+
+.channel-card{
+
+width:100%;
+padding:20px;
+
+}
+
+.channel-card img{
+
+width:90px;
+height:90px;
+
+}
+
+.channel-card h3{
+
+font-size:30px;
+
+}
+
+.channel-card button{
+
+width:100%;
+
+}
+
+}
