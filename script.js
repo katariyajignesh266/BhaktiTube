@@ -21,6 +21,22 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
+import {
+signOut
+}
+from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+const logoutBtn =
+document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click",async()=>{
+
+await signOut(auth);
+
+window.location.href =
+"./user/signup.html";
+
+});
 
 
 
@@ -472,9 +488,176 @@ function renderVideos(videos){
 
 let allVideos = [];
 
+
+const savedTheme =
+localStorage.getItem("theme");
+
+if(savedTheme === "light"){
+
+document.body.classList.add(
+"light-mode"
+);
+
+}
+
 loadVideos();
 loadChannels();
 loadNotifications();
+
+const menuBtn =
+document.querySelector(".fa-bars");
+
+const sidebar =
+document.getElementById("sidebar");
+
+const sidebarOverlay =
+document.getElementById("sidebarOverlay");
+
+menuBtn.addEventListener("click",()=>{
+
+sidebar.classList.add("active");
+
+sidebarOverlay.classList.add("active");
+
+});
+
+sidebarOverlay.addEventListener("click",()=>{
+
+sidebar.classList.remove("active");
+
+sidebarOverlay.classList.remove("active");
+
+});
+
+const dashboardBtn =
+document.getElementById("dashboardBtn");
+
+const videosBtn =
+document.getElementById("videosBtn");
+
+const channelsBtn =
+document.getElementById("channelsBtn");
+
+const categorySection =
+document.getElementById("categorySection");
+
+const channelsSection =
+document.getElementById("channelsSection");
+
+const videosSection =
+document.getElementById("videosContainer");
+
+dashboardBtn.addEventListener("click",(e)=>{
+
+e.preventDefault();
+
+categorySection.style.display =
+"flex";
+
+channelsSection.style.display =
+"block";
+
+videosSection.style.display =
+"grid";
+
+sidebar.classList.remove("active");
+
+sidebarOverlay.classList.remove("active");
+
+});
+
+videosBtn.addEventListener("click",(e)=>{
+
+e.preventDefault();
+
+categorySection.style.display =
+"none";
+
+channelsSection.style.display =
+"none";
+
+videosSection.style.display =
+"grid";
+
+sidebar.classList.remove("active");
+
+sidebarOverlay.classList.remove("active");
+
+});
+
+channelsBtn.addEventListener("click",(e)=>{
+
+e.preventDefault();
+
+categorySection.style.display =
+"none";
+
+channelsSection.style.display =
+"block";
+
+videosSection.style.display =
+"none";
+
+sidebar.classList.remove("active");
+
+sidebarOverlay.classList.remove("active");
+
+});
+
+
+const settingsBtn =
+document.getElementById("settingsBtn");
+
+const settingsModal =
+document.getElementById("settingsModal");
+
+const closeSettings =
+document.getElementById("closeSettings");
+
+settingsBtn.addEventListener("click",(e)=>{
+
+e.preventDefault();
+
+settingsModal.style.display =
+"flex";
+
+});
+
+closeSettings.addEventListener("click",()=>{
+
+settingsModal.style.display =
+"none";
+
+});
+
+
+const darkModeBtn =
+document.getElementById("darkModeBtn");
+
+darkModeBtn.addEventListener("click",()=>{
+
+document.body.classList.remove("light-mode");
+
+localStorage.setItem(
+"theme",
+"dark"
+);
+
+});
+
+const lightModeBtn =
+document.getElementById("lightModeBtn");
+
+lightModeBtn.addEventListener("click",()=>{
+
+document.body.classList.add("light-mode");
+
+localStorage.setItem(
+"theme",
+"light"
+);
+
+});
 
 
 const searchBtn =
@@ -731,3 +914,23 @@ onclick="openVideo('${video.videoId}')"
 
 }
 
+
+document.getElementById(
+"channelsLoader"
+).style.display = "none";
+
+document.getElementById(
+"videosLoader"
+).style.display = "none";
+
+
+document.querySelectorAll('.logo,.sidebar-logo')
+.forEach(el => {
+
+    el.addEventListener('click',()=>{
+
+        window.location.href = "index.html";
+
+    });
+
+});

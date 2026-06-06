@@ -14,7 +14,7 @@
   <!-- ICONS -->
   <link
     rel="icon"
-    href="./Image/Youtube logo...webp"
+    href="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
   />
   <link
     rel="stylesheet"
@@ -23,6 +23,8 @@
 </head>
 
 <body>
+
+  
 
 
 
@@ -36,13 +38,18 @@
 
       <i class="fa-solid fa-bars"></i>
 
-      <div class="logo">
+      <div href="index.html" class="logo">
 
-        <i class="fa-brands fa-youtube"></i>
+  <img
+    src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+    alt="BhaktiTube Logo"
+    class="site-logo"
+  >
+</div>
 
-        <span>BhaktiTube</span>
-
-      </div>
+<div href="index.html" class="logo">
+  <span>BhaktiTube</span>
+</div>
 
     </div>
 
@@ -102,13 +109,70 @@
     <img
     id="profilePhoto"
 
-    src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+    src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780734336/bdb9892b-22d0-404d-ac50-075eb8fc006c_ollmi3.jpg"
 
     alt="Profile">
 
     </div>
 
     </div>
+
+
+
+    <!-- SIDEBAR -->
+
+<div id="sidebarOverlay"></div>
+
+<div id="sidebar">
+
+    <div class="sidebar-top">
+
+        <div class="sidebar-brand"
+     onclick="window.location.href='index.html'">
+
+    <img
+      src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+      class="sidebar-brand-logo"
+      alt="BhaktiTube">
+
+    <span>
+      BhaktiTube
+    </span>
+
+</div>
+
+        <a href="#" id="dashboardBtn">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+        </a>
+
+        <a href="#" id="videosBtn">
+            <i class="fa-solid fa-play"></i>
+            Videos
+        </a>
+
+        <a href="#" id="channelsBtn">
+            <i class="fa-solid fa-users"></i>
+            Channels
+        </a>
+
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <a href="#" id="settingsBtn">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+        </a>
+
+        <a href="#" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+
+    </div>
+
+</div>
 
 
     
@@ -127,8 +191,7 @@
 
   <!-- CATEGORY -->
 
-  <section class="category-section">
-
+<section class="category-section" id="categorySection">
     <button class="active">All</button>
     <button>Bhakti</button>
     <button>Gujarati</button>
@@ -142,9 +205,13 @@
 
 <!-- CHANNELS SECTION -->
 
-<section class="channels-section">
+<section class="channels-section" id="channelsSection">
 
-  <h2>📺 Featured Channels</h2>
+  <h2>Featured Channels</h2>
+
+  <div id="channelsLoader" class="section-loader">
+  <div class="spinner"></div>
+</div>
 
   <div id="channelsContainer"
        class="channels-container">
@@ -158,6 +225,11 @@
 
 
   <!-- VIDEOS -->
+
+  <div id="videosLoader" class="section-loader">
+  <div class="spinner"></div>
+</div>
+
 
   <div
     class="videos-container"
@@ -265,5 +337,30 @@ allowfullscreen>
 
 </div>
 
+
+<!-- SETTINGS POPUP -->
+
+<div id="settingsModal" class="settings-modal">
+
+  <div class="settings-box">
+
+    <h2>Settings</h2>
+
+    <button id="darkModeBtn">
+      🌙 Dark Mode
+    </button>
+
+    <button id="lightModeBtn">
+      ☀️ Light Mode
+    </button>
+
+    <button id="closeSettings">
+      Close
+    </button>
+
+  </div>
+
+</div>
+
 </body>
-</html>>
+</html>

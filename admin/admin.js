@@ -20,7 +20,7 @@ from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 console.log("ADMIN JS LOADED");
 
-const YOUTUBE_API_KEY = "AIzaSyDo_afCx6xlSQeJP5LyYydZA2_519toMDo";
+const YOUTUBE_API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
 
 
