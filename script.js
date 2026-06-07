@@ -940,3 +940,21 @@ document.querySelectorAll('.logo,.sidebar-logo')
     });
 
 });
+
+const openShortsBtn =
+document.getElementById(
+"openShortsBtn"
+);
+
+if(openShortsBtn){
+
+openShortsBtn.addEventListener(
+"click",
+()=>{
+
+window.location.href =
+"shorts.html";
+
+});
+
+}

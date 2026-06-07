@@ -11,6 +11,8 @@ const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 let nextPageToken = "";
 let loading = false;
 
+let uploadsPlaylistId = "";
+
 const params =
 new URLSearchParams(
 window.location.search
@@ -61,7 +63,12 @@ document.getElementById(
 "Videos : " +
 channel.totalVideos;
 
-getUploadsPlaylist(channel.channelId);
+uploadsPlaylistId =
+channel.uploadsPlaylistId;
+
+loadYouTubeVideos(
+    channel.uploadsPlaylistId
+);
 
 }
 
@@ -69,58 +76,7 @@ getUploadsPlaylist(channel.channelId);
 
 }
 
-async function getUploadsPlaylist(channelId){
 
-try{
-
-const response = await fetch(
-`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${API_KEY}`
-);
-
-const data = await response.json();
-
-console.log(data);
-
-if(data.error){
-
-console.error(
-"YouTube API Error:",
-data.error.message
-);
-
-alert(
-"YouTube API Error: " +
-data.error.message
-);
-
-return;
-}
-
-if(!data.items || data.items.length === 0){
-
-alert("Channel not found");
-
-return;
-}
-
-const uploadsPlaylistId =
-data.items[0]
-.contentDetails
-.relatedPlaylists
-.uploads;
-
-loadYouTubeVideos(
-uploadsPlaylistId
-);
-
-}
-catch(error){
-
-console.error(error);
-
-}
-
-}
 
 
 
@@ -169,6 +125,10 @@ const container =
 document.getElementById(
 "channelVideosContainer"
 );
+
+if(pageToken === ""){
+container.innerHTML = "";
+}
 
 data.items.forEach(video=>{
 
@@ -267,7 +227,7 @@ nextPageToken
 loading = true;
 
 await loadYouTubeVideos(
-channelId,
+uploadsPlaylistId,
 nextPageToken
 );
 
