@@ -243,8 +243,8 @@ position:fixed;
 top:20px;
 left:20px;
 
-width:50px;
-height:50px;
+width:120px;
+height:120px;
 
 display:flex;
 align-items:center;
@@ -254,7 +254,7 @@ background:rgba(0,0,0,.6);
 
 border-radius:50%;
 
-font-size:28px;
+font-size:55px;
 
 color:white;
 
