@@ -13,6 +13,8 @@ collection(db,"channels")
 
 let currentIframe = null;
 
+let observer;
+
 const enabledChannels = [];
 
 channelsSnapshot.forEach((doc)=>{
@@ -87,7 +89,107 @@ const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
 const allShorts = [];
 
-for(const channel of enabledChannels){
+const shortsContainer =
+document.getElementById(
+"shortsContainer"
+);
+
+let currentRenderIndex = 0;
+
+function renderNextShorts(count = 1){
+
+for(
+let i = 0;
+i < count &&
+currentRenderIndex < allShorts.length;
+i++
+){
+
+const short =
+allShorts[currentRenderIndex];
+
+const tempDiv =
+document.createElement("div");
+
+tempDiv.innerHTML = `
+
+<div class="short-card">
+
+<iframe
+loading="lazy"
+src="https://www.youtube.com/embed/${short.videoId}?enablejsapi=1&controls=0&modestbranding=1&rel=0&playsinline=1"
+data-videoid="${short.videoId}"
+allowfullscreen>
+</iframe>
+
+<div class="top-mask"></div>
+
+<div class="gradient"></div>
+
+<div class="channel-overlay">
+
+<img
+src="${short.channelLogo}"
+class="channel-logo">
+
+<div>
+
+<h4>${short.channelName}</h4>
+
+<p>${short.title}</p>
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button class="action-btn">❤️</button>
+
+<button class="action-btn">👍</button>
+
+<button
+class="action-btn share-btn"
+data-videoid="${short.videoId}">
+🔗
+</button>
+
+</div>
+
+</div>
+
+`;
+
+const newCard =
+tempDiv.firstElementChild;
+
+shortsContainer.appendChild(
+newCard
+);
+
+if(observer){
+
+observer.observe(
+newCard
+);
+
+}
+
+currentRenderIndex++;
+
+}
+
+}
+
+const channelFetchPromises = [];
+
+const channelShorts = {};
+
+enabledChannels.forEach(channel => {
+
+channelFetchPromises.push(
+
+(async()=>{
 
 const response = await fetch(
 `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channel.uploadsPlaylistId}&maxResults=50&key=${API_KEY}`
@@ -95,24 +197,30 @@ const response = await fetch(
 
 const data = await response.json();
 
-for(const item of data.items){
-
-const videoId =
-item.snippet.resourceId.videoId;
+const videoIds =
+data.items.map(
+item =>
+item.snippet.resourceId.videoId
+);
 
 const detailsResponse =
 await fetch(
-`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoId}&key=${API_KEY}`
+`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(",")}&key=${API_KEY}`
 );
 
 const detailsData =
 await detailsResponse.json();
 
-if(!detailsData.items.length)
-continue;
+for(let i = 0; i < data.items.length; i++){
+
+const item =
+data.items[i];
 
 const videoDetails =
-detailsData.items[0];
+detailsData.items[i];
+
+const videoId =
+item.snippet.resourceId.videoId;
 
 if(
 !videoDetails ||
@@ -135,20 +243,62 @@ item.snippet.title,
 seconds
 );
 
-allShorts.push({
+if(!channelShorts[channel.channelName]){
+
+channelShorts[channel.channelName] = [];
+
+}
+
+channelShorts[channel.channelName].push({
 
 videoId,
-
-title:
-item.snippet.title,
-
-channelName:
-channel.channelName,
-
-channelLogo:
-channel.channelLogo
+title:item.snippet.title,
+channelName:channel.channelName,
+channelLogo:channel.channelLogo
 
 });
+
+}
+
+}
+
+})()
+
+);
+
+});
+
+
+await Promise.all(
+channelFetchPromises
+);
+
+console.log(
+"CHANNEL SHORTS:",
+channelShorts
+);
+
+const channelNames =
+Object.keys(channelShorts);
+
+let shortsRemaining = true;
+
+while(shortsRemaining){
+
+shortsRemaining = false;
+
+for(const channelName of channelNames){
+
+if(
+channelShorts[channelName] &&
+channelShorts[channelName].length
+){
+
+allShorts.push(
+channelShorts[channelName].shift()
+);
+
+shortsRemaining = true;
 
 }
 
@@ -161,72 +311,13 @@ console.log(
 allShorts
 );
 
-
-const shortsContainer =
-document.getElementById(
-"shortsContainer"
-);
-
-allShorts.forEach((short,index) => {
-
-shortsContainer.innerHTML += `
-
-<div class="short-card">
-
-<iframe
-loading="lazy"
-src="https://www.youtube.com/embed/${short.videoId}?enablejsapi=1&controls=0&modestbranding=1&rel=0&playsinline=1"
-data-videoid="${short.videoId}"
-allowfullscreen>
-</iframe>
-
-<div class="gradient"></div>
-
-<div class="channel-overlay">
-
-<img
-src="${short.channelLogo}"
-class="channel-logo">
-
-<div>
-
-<h4>${short.channelName}</h4>
-
-<p>${short.title}</p>
-
-</div>
-
-</div>
-
-<div class="actions">
-
-<button class="action-btn">
-❤️
-</button>
-
-<button class="action-btn">
-👍
-</button>
-
-<button
-class="action-btn share-btn"
-data-videoid="${short.videoId}">
-🔗
-</button>
-
-</div>
-
-</div>
-
-`;
-
-});
+renderNextShorts(3);
 
 document.getElementById(
 "shortsLoader"
 ).style.display = "none";
 
-const observer =
+observer =
 new IntersectionObserver(
 
 (entries)=>{
@@ -245,6 +336,11 @@ currentIframe &&
 currentIframe !== iframe
 ){
 
+console.log(
+"VISIBLE:",
+entry.target
+);
+
 currentIframe.contentWindow.postMessage(
 JSON.stringify({
 event:"command",
@@ -257,6 +353,8 @@ args:[]
 }
 
 currentIframe = iframe;
+
+renderNextShorts(2);
 
 }
 

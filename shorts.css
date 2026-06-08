@@ -94,7 +94,13 @@ scroll-snap-type:y mandatory;
 }
 
 #shortsContainer{
-width:100%;
+    width:100%;
+    height:100vh;
+    overflow-y:scroll;
+
+    scroll-snap-type:y mandatory;
+
+    scroll-behavior:smooth;
 }
 
 .short-card{
@@ -247,9 +253,15 @@ line-height:1.4;
 
 .short-card{
 
-position:relative;
+    position:relative;
 
-overflow:hidden;
+    overflow:hidden;
+
+    height:100vh;
+
+    scroll-snap-align:start;
+
+    scroll-snap-stop:always;
 
 }
 
@@ -420,4 +432,21 @@ background:#ffb300;
 
 }
 
+.top-mask{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:90px;
+background:linear-gradient(
+to bottom,
+rgb(0, 0, 0),
+rgba(0, 0, 0, 0)
+);
+z-index:10;
+pointer-events:none;
+}
 
+body{
+    overflow:hidden;
+}
