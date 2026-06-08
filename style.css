@@ -2510,7 +2510,7 @@ backdrop-filter: blur(20px);
 box-shadow:
 0 -10px 30px rgba(42, 42, 43, 0.25);
 
-height:85px;
+height:65px;
 
 border-radius:
 80px 80px 0 0;
@@ -2545,21 +2545,14 @@ width:120px;
 
 height:40px;
 
-background:
-radial-gradient(
-circle,
-rgba(59,130,246,.20),
-transparent 75%
-);
-
 pointer-events:none;
 
 }
 
 #openShortsBtn{
 
-width:65px;
-height:65px;
+width:50px;
+height:50px;
 
 top:-12px;
 
