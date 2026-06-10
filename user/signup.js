@@ -1,9 +1,39 @@
 import { auth } from "../firebase-config.js";
 
 import {
-createUserWithEmailAndPassword
+createUserWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+const provider = new GoogleAuthProvider();
+
+document
+.getElementById("googleSignupBtn")
+.addEventListener("click", async () => {
+
+    try {
+
+        await signInWithPopup(
+            auth,
+            provider
+        );
+
+        alert("Google Sign In Successful");
+
+        window.location.href =
+        "profile.html";
+
+    }
+
+    catch(error){
+
+        alert(error.message);
+
+    }
+
+});
 
 document
 .getElementById("signupBtn")

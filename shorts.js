@@ -1,8 +1,14 @@
-import { db } from "./firebase-config.js";
+import {
+db,
+auth
+}
+from "./firebase-config.js";
 
 import {
 collection,
-getDocs
+getDocs,
+doc,
+setDoc
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
@@ -11,11 +17,69 @@ await getDocs(
 collection(db,"channels")
 );
 
-let currentIframe = null;
+const players = {};
+
+const watchTimers = {};
+
+let currentPlayerDiv = null;
 
 let observer;
 
+const watchedCache =
+new Set();
+
 const enabledChannels = [];
+
+const watchedVideoIds =
+new Set();
+
+const localWatchedVideos =
+JSON.parse(
+localStorage.getItem(
+"watchedVideos"
+) || "[]"
+);
+
+localWatchedVideos.forEach(
+videoId => {
+
+watchedVideoIds.add(
+videoId
+);
+
+}
+);
+
+const user = auth.currentUser;
+
+if(user){
+
+const watchedSnapshot =
+await getDocs(
+
+collection(
+db,
+"users",
+user.uid,
+"watchedShorts"
+)
+
+);
+
+watchedSnapshot.forEach(doc=>{
+
+watchedVideoIds.add(
+doc.id
+);
+
+});
+
+console.log(
+"WATCHED:",
+watchedVideoIds.size
+);
+
+}
 
 channelsSnapshot.forEach((doc)=>{
 
@@ -85,6 +149,85 @@ seconds
 }
 
 
+async function markShortAsWatched(videoId){
+
+if(
+watchedCache.has(videoId)
+){
+return;
+}
+
+watchedCache.add(videoId);
+
+const savedVideos =
+JSON.parse(
+localStorage.getItem(
+"watchedVideos"
+) || "[]"
+);
+
+if(
+!savedVideos.includes(
+videoId
+)
+){
+
+savedVideos.push(
+videoId
+);
+
+localStorage.setItem(
+"watchedVideos",
+JSON.stringify(
+savedVideos
+)
+);
+
+}
+
+const user =
+auth.currentUser;
+
+if(!user)
+return;
+
+try{
+
+await setDoc(
+
+doc(
+db,
+"users",
+user.uid,
+"watchedShorts",
+videoId
+),
+
+{
+videoId,
+watchedAt:
+Date.now()
+}
+
+);
+
+console.log(
+"WATCHED SAVED:",
+videoId
+);
+
+}
+catch(error){
+
+console.error(
+error
+);
+
+}
+
+}
+
+
 const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
 const allShorts = [];
@@ -115,12 +258,11 @@ tempDiv.innerHTML = `
 
 <div class="short-card">
 
-<iframe
-loading="lazy"
-src="https://www.youtube.com/embed/${short.videoId}?enablejsapi=1&controls=0&modestbranding=1&rel=0&playsinline=1"
-data-videoid="${short.videoId}"
-allowfullscreen>
-</iframe>
+<div
+class="youtube-player"
+id="player-${short.videoId}"
+data-videoid="${short.videoId}">
+</div>
 
 <div class="top-mask"></div>
 
@@ -167,6 +309,94 @@ shortsContainer.appendChild(
 newCard
 );
 
+setTimeout(()=>{
+
+const videoId =
+short.videoId;
+
+players[videoId] =
+new YT.Player(
+
+`player-${videoId}`,
+
+{
+
+videoId,
+
+playerVars:{
+controls:0,
+modestbranding:1,
+rel:0,
+playsinline:1
+},
+
+events:{
+
+onReady:(event)=>{
+
+console.log(
+"PLAYER READY:",
+videoId
+);
+
+},
+
+onStateChange:(event)=>{
+
+    
+
+if(
+event.data ===
+YT.PlayerState.PLAYING
+){
+
+if(
+watchTimers[videoId]
+){
+return;
+}
+
+watchTimers[videoId] =
+setTimeout(()=>{
+
+markShortAsWatched(
+videoId
+);
+
+},5000);
+
+}
+
+if(
+
+event.data ===
+YT.PlayerState.PAUSED ||
+
+event.data ===
+YT.PlayerState.ENDED
+
+){
+
+clearTimeout(
+watchTimers[videoId]
+);
+
+delete watchTimers[
+videoId
+];
+
+}
+
+}
+
+}
+
+}
+
+);
+
+},100);
+
 if(observer){
 
 observer.observe(
@@ -191,11 +421,23 @@ channelFetchPromises.push(
 
 (async()=>{
 
+let nextPageToken = "";
+
+let unseenFound = 0;
+
+while(unseenFound < 30){
+
 const response = await fetch(
-`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channel.uploadsPlaylistId}&maxResults=50&key=${API_KEY}`
+
+`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${channel.uploadsPlaylistId}&maxResults=50&pageToken=${nextPageToken}&key=${API_KEY}`
+
 );
 
 const data = await response.json();
+
+if(!data.items?.length){
+break;
+}
 
 const videoIds =
 data.items.map(
@@ -205,13 +447,19 @@ item.snippet.resourceId.videoId
 
 const detailsResponse =
 await fetch(
+
 `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(",")}&key=${API_KEY}`
+
 );
 
 const detailsData =
 await detailsResponse.json();
 
-for(let i = 0; i < data.items.length; i++){
+for(
+let i = 0;
+i < data.items.length;
+i++
+){
 
 const item =
 data.items[i];
@@ -237,6 +485,16 @@ convertDurationToSeconds(duration);
 
 if(seconds <= 60){
 
+if(
+watchedVideoIds.has(
+videoId
+)
+){
+continue;
+}
+
+
+
 console.log(
 "SHORT FOUND:",
 item.snippet.title,
@@ -258,15 +516,26 @@ channelLogo:channel.channelLogo
 
 });
 
-}
+unseenFound++;
 
 }
+}
+
+nextPageToken =
+data.nextPageToken;
+
+if(!nextPageToken){
+break;
+}
+}
+
 
 })()
 
 );
 
 });
+
 
 
 await Promise.all(
@@ -324,35 +593,41 @@ new IntersectionObserver(
 
 entries.forEach(entry=>{
 
-const iframe =
-entry.target.querySelector("iframe");
+const playerDiv =
+entry.target.querySelector(
+".youtube-player"
+);
 
-if(!iframe) return;
+if(!playerDiv) return;
 
 if(entry.isIntersecting){
 
-if(
-currentIframe &&
-currentIframe !== iframe
-){
+Object.keys(players)
+.forEach(id=>{
 
-console.log(
-"VISIBLE:",
-entry.target
-);
+try{
 
-currentIframe.contentWindow.postMessage(
-JSON.stringify({
-event:"command",
-func:"pauseVideo",
-args:[]
-}),
-"*"
-);
+players[id].pauseVideo();
 
 }
+catch(err){}
 
-currentIframe = iframe;
+});
+
+currentPlayerDiv =
+playerDiv;
+
+const currentVideoId =
+playerDiv.dataset.videoid;
+
+if(
+players[currentVideoId]
+){
+
+players[currentVideoId]
+.playVideo();
+
+}
 
 renderNextShorts(2);
 

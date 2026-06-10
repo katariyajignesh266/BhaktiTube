@@ -83,6 +83,16 @@ auth,
 
     if(user){
 
+        console.log("User =", user);
+console.log("PhotoURL =", user.photoURL);
+
+document.getElementById("profileImage").src =
+user.photoURL;
+
+console.log(
+document.getElementById("profileImage").src
+);
+
         userName.textContent =
         user.displayName || "BhaktiTube User";
 
@@ -97,8 +107,22 @@ auth,
 
         joinedDate.textContent = new Date( user.metadata.creationTime ).toLocaleDateString();
 
-        document.getElementById("profileImage").src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        // document.getElementById("profileImage").src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
+        const profileImg =
+document.getElementById("profileImage");
+
+profileImg.src = user.photoURL;
+
+profileImg.onerror = () => {
+    console.log("Image Failed");
+    profileImg.src =
+    "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+};
+
+profileImg.onload = () => {
+    console.log("Image Loaded");
+};
         accountType.textContent = user.providerData[0].providerId ===
         "google.com"
         ? "Google Account"
