@@ -175,6 +175,40 @@ function initPlayers() {
     });
 }
 
+// આ સીએસએસ સ્ટાઇલ ડાયનેમિકલી એડ કરવાથી સિંગલ લાઇન સ્ટ્રક્ચર પ્રોપર સેટ થઈ જશે અને મોટું નામ થતાં જ ઓટોમેટિક '...' આવી જશે.
+const style = document.createElement('style');
+style.innerHTML = `
+    .channel-profile-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: calc(100vw - 90px); /* એક્શન્સ બટન અને સ્પેસિંગ છોડીને પ્રોપર કન્ટેનર વિડ્થ */
+        gap: 8px;
+        overflow: hidden;
+    }
+    .channel-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        flex-shrink: 0; /* લોગો ક્યારેય દબાવો કે અડધો કટ ન થવો જોઈએ */
+    }
+    .channel-profile-row h4 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* વધારે લાંબુ નામ હોય તો પાછળ ત્રણ ટપકા (...) કરવા માટે */
+        flex-grow: 1;
+        min-width: 0; /* સીએસએસ ફ્લેક્સ બોક્સમાં એલિપ્સિસ કામ કરવા માટે જરૂરી */
+    }
+    .subscribe-btn {
+        flex-shrink: 0; /* બટન પણ પોતાની સાઈઝમાં ફિક્સ રહેશે */
+    }
+`;
+document.head.appendChild(style);
+
 function checkAndInitializePreloader(resolve) {
     const dummyPreload = document.createElement("div");
     dummyPreload.id = "yt-preload-element";
@@ -207,7 +241,7 @@ function preloadNextVideo(index) {
     }
 }
 
-// 5. શોર્ટ્સカード્સ રેન્ડર કરવા (ઓરિજિનલ લાઇક્સ સાથે)
+// 5. શોર્ટ્સカード્સ રેન્ડર કરવા (ઓરિજિનલ લાઇક્સ અને ફિક્સ નામ સ્ટ્રક્ચર સાથે)
 function renderNextShorts(count = 1) {
     if (!shortsContainer) return;
     for (let i = 0; i < count && currentRenderIndex < allShorts.length; i++) {

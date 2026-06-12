@@ -263,3 +263,77 @@ z-index:999999;
 cursor:pointer;
 
 }
+
+/* ૧. વિડિયો પોપઅપ કન્ટેનર (આખી સ્ક્રીન કવર કરશે અને બ્લેક બેકગ્રાઉન્ડ આપશે) */
+.video-popup {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: #000000 !important;
+    z-index: 99999 !important; /* સૌથી ઉપર દેખાય તે માટે */
+    display: none; /* JS થી flex થશે */
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+/* પોપઅપની અંદરનું મેઈન કન્ટેન્ટ બોક્સ */
+.popup-content {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+/* ૨. આઇફ્રેમ પ્લેયર - મેજિક સ્કેલિંગ સેટિંગ */
+.popup-content iframe {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    
+    /* સાઇઝને ૨ ગણી (200%) મોટી કરો - જેથી અંદરના ફોન્ટ અને આઇકન મીડિયમ-નાના (Medium-Small) થઈ જશે, જે સ્ક્રીનશોટ જેવા જ લાગશે */
+    width: 200vw !important;
+    height: 200vh !important;
+    
+    /* સેન્ટરમાં લાવીને પાછું 0.5 (અડધું) સ્કેલ ડાઉન કરો, જેથી વિડિયો પરફેક્ટ સાઇઝમાં આખી સ્ક્રીન કવર કરી લે */
+    transform: translate(-50%, -50%) scale(0.5) !important;
+    transform-origin: center center !important;
+    
+    border: none !important;
+    object-fit: cover !important;
+}
+
+/* ૩. વિડિયો ક્લોઝ (બંધ કરવાનું) બટન */
+.channel-close-btn {
+    position: absolute !important;
+    top: 15px !important;
+    right: 20px !important;
+    font-size: 22px !important;
+    color: #ffffff !important;
+    background: rgba(0, 0, 0, 0.6) !important; /* પાછળ બ્લેક શેડ જેથી વિડિયો ચાલુ હોય તો પણ ચોખ્ખું દેખાય */
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 100000 !important; /* આઇફ્રેમની ઉપર રાખવા માટે */
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+}
+
+/* યુટ્યુબના નકામા મોટા ઓવરલે અને બટન્સને હાઇડ કરવા માટે */
+.ytp-large-play-button, 
+.ytp-pause-overlay, 
+.ytp-youtube-button,
+.ytp-chrome-top, 
+.ytp-gradient-top {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
