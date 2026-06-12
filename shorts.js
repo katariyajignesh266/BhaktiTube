@@ -18,7 +18,18 @@ let watchTimer = null;
 let globalPlayer = null; 
 let isPlayerReady = false;
 
-// સિંગલ પ્લેયર કન્ટેનર
+// લોડિંગ વગર ઇન્સ્ટન્ટ પ્લે કરવા માટે બેકગ્રાઉન્ડ પ્રીલોડર આઇફ્રેમ (Hidden Preloader)
+const preloaderContainer = document.createElement("div");
+preloaderContainer.id = "hidden-preloader-container";
+preloaderContainer.style.position = "fixed";
+preloaderContainer.style.width = "1px";
+preloaderContainer.style.height = "1px";
+preloaderContainer.style.opacity = "0.01";
+preloaderContainer.style.pointerEvents = "none";
+document.body.appendChild(preloaderContainer);
+let preloaderPlayer = null;
+
+// મેઈન સિંગલ પ્લેયર કન્ટેનર - પ્રોફેશનલ લુક અને ઇન્સ્ટન્ટ હાઇડ માટે CSS સ્કેલિંગ ટ્રીક
 const globalPlayerContainer = document.createElement("div");
 globalPlayerContainer.id = "global-player-container";
 globalPlayerContainer.style.position = "fixed";
@@ -27,8 +38,9 @@ globalPlayerContainer.style.left = "0";
 globalPlayerContainer.style.width = "100%";
 globalPlayerContainer.style.height = "100%";
 globalPlayerContainer.style.zIndex = "1"; 
-globalPlayerContainer.style.pointerEvents = "none"; 
+globalPlayerContainer.style.pointerEvents = "none"; // યુટ્યુબના ઓવરલે UI ને નડતું અટકાવવા માટે 'none' જ શ્રેષ્ઠ છે
 globalPlayerContainer.style.display = "none";
+globalPlayerContainer.style.overflow = "hidden"; // આઇફ્રેમના કંટ્રોલ્સ બહાર કાઢીને છુપાવવા માટે
 document.body.appendChild(globalPlayerContainer);
 
 const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
@@ -42,7 +54,6 @@ if (user) {
     const watchedSnapshot = await getDocs(collection(db, "users", user.uid, "watchedShorts"));
     watchedSnapshot.forEach(doc => watchedVideoIds.add(doc.id));
 }
-console.log("શરૂઆતમાં લોડ થયેલા જોયેલા વિડિયોની સંખ્યા:", watchedVideoIds.size);
 
 // 2. સક્રિય ચેનલો મેળવવી
 const channelsSnapshot = await getDocs(collection(db, "channels"));
@@ -60,21 +71,18 @@ function convertDurationToSeconds(duration) {
     return (parseInt(match[1] || 0) * 3600 + parseInt(match[2] || 0) * 60 + parseInt(match[3] || 0));
 }
 
-// 3. વિડિયો સેવ કરવાનું પાવરફુલ લોજિક
+// 3. વિડિયો સેવ કરવાનું લોજિક (Firebase + LocalStorage)
 async function markShortAsWatched(videoId) {
     if (watchedCache.has(videoId)) return;
     watchedCache.add(videoId);
     watchedVideoIds.add(videoId); 
 
-    // A. LocalStorage માં સેવ કરો
     const savedVideos = JSON.parse(localStorage.getItem("watchedVideos") || "[]");
     if (!savedVideos.includes(videoId)) {
         savedVideos.push(videoId);
         localStorage.setItem("watchedVideos", JSON.stringify(savedVideos));
-        console.log("LOCAL STORAGE SAVED:", videoId);
     }
 
-    // B. Firebase Firestore માં સેવ કરો
     const currentUser = auth.currentUser;
     if (!currentUser) return;
 
@@ -83,50 +91,55 @@ async function markShortAsWatched(videoId) {
             videoId,
             watchedAt: Date.now()
         });
-        console.log("FIREBASE SAVED:", videoId);
     } catch (error) {
-        console.error("ફાયરબેઝમાં સેવ કરવામાં એરર:", error);
+        console.error(error);
     }
 }
 
-// એરર આવે ત્યારે નેક્સ્ટ વિડિયો પર આપોઆપ સ્ક્રોલ કરવાનું ફંક્શન
 function skipToNextShort() {
     setTimeout(() => {
         const currentScroll = shortsContainer.scrollTop;
         const viewHeight = window.innerHeight;
-        // આગામી શોર્ટ કાર્ડ પર સ્મૂધ સ્ક્રોલ કરો
         shortsContainer.scrollTo({
             top: currentScroll + viewHeight,
             behavior: 'smooth'
         });
-        console.log("Unavailable વિડિયો હતો એટલે આપોઆપ આગળ સ્ક્રોલ કર્યું.");
-    }, 300); // યુઝરને ખબર પણ નહીં પડે અને સ્ક્રોલ થઈ જશે
+    }, 300);
 }
 
-// 4. ગ્લોબલ પ્લેયર સેટઅપ (Error Handling સાથે)
-function initGlobalPlayer() {
+// 4. મેઈન પ્લેયર અને બેકગ્રાઉન્ડ પ્રીલોડર સેટઅપ
+function initPlayers() {
     return new Promise((resolve) => {
-        const dummyDiv = document.createElement("div");
-        dummyDiv.id = "yt-player-element";
-        globalPlayerContainer.appendChild(dummyDiv);
+        const dummyMain = document.createElement("div");
+        dummyMain.id = "yt-main-element";
+        
+        // YouTube ની ડિફોલ્ટ આઇફ્રેમ ફ્રેમના કંટ્રોલ્સ (પ્લે/પોઝ) ને સ્ક્રીન બહાર ધકેલવા માટે CSS સ્ટાઇલિંગ
+        dummyMain.style.width = "100%";
+        dummyMain.style.height = "100%";
+        dummyMain.style.transform = "scale(1.3)"; // વિડિયો સહેજ ઝૂમ થશે જેથી કંટ્રોલ્સ બોર્ડરની બહાર જતા રહે
+        globalPlayerContainer.appendChild(dummyMain);
 
-        globalPlayer = new YT.Player("yt-player-element", {
+        // A. મેઈન પ્લેયર લોડ કરવો
+        globalPlayer = new YT.Player("yt-main-element", {
             height: '100%',
             width: '100%',
             playerVars: {
-                controls: 0,
-                modestbranding: 1,
+                controls: 0,            // કંટ્રોલ્સ બંધ કરવા
+                modestbranding: 1,      // યુટ્યુબ લોગો ઓછો કરવો
                 rel: 0,
                 playsinline: 1,
                 autoplay: 1,
                 iv_load_policy: 3,
+                disablekb: 1,
+                fs: 0,
+                showinfo: 0,            // વધારાની માહિતી છુપાવવા
+                autohide: 1,            // આઇફ્રેમ ઓટોમેટિક ઇન્સ્ટન્ટ હાઇડ કરવા માટે
                 origin: window.location.origin 
             },
             events: {
                 onReady: () => {
-                    console.log("GLOBAL FIXED PLAYER READY");
                     isPlayerReady = true;
-                    resolve();
+                    checkAndInitializePreloader(resolve);
                 },
                 onStateChange: (event) => {
                     const currentVideoId = globalPlayerContainer.dataset.videoid;
@@ -134,7 +147,6 @@ function initGlobalPlayer() {
 
                     if (event.data === YT.PlayerState.PLAYING) {
                         if (watchTimer) clearTimeout(watchTimer);
-                        
                         watchTimer = setTimeout(() => {
                             markShortAsWatched(currentVideoId);
                         }, 5000); 
@@ -151,16 +163,10 @@ function initGlobalPlayer() {
                         globalPlayer.playVideo(); 
                     }
                 },
-                // CRITICAL FIX: વિડિયો એરર પકડવા માટેનું લોજિક
                 onError: (event) => {
                     const brokenVideoId = globalPlayerContainer.dataset.videoid;
-                    console.warn(`વિડિયો એરર આવી! ID: ${brokenVideoId}, એરર કોડ: ${event.data}`);
-                    
                     if (brokenVideoId) {
-                        // ૧. એ જ માઇક્રોસેકન્ડે જોયેલા (Unavailable) વિડિયો તરીકે સેવ કરો
                         markShortAsWatched(brokenVideoId);
-                        
-                        // ૨. સ્ક્રીન પર એરર દેખાય તે પહેલા જ આગલા વિડિયો પર સ્ક્રોલ કરી દો
                         skipToNextShort();
                     }
                 }
@@ -169,14 +175,50 @@ function initGlobalPlayer() {
     });
 }
 
-// 5. શોર્ટ્સ કાર્ડ્સ રેન્ડર કરવા
+// બેકગ્રાઉન્ડ પ્રીલોડર પ્લેયર શરૂ કરવાનું ફંક્શન
+function checkAndInitializePreloader(resolve) {
+    const dummyPreload = document.createElement("div");
+    dummyPreload.id = "yt-preload-element";
+    preloaderContainer.appendChild(dummyPreload);
+
+    preloaderPlayer = new YT.Player("yt-preload-element", {
+        height: '100%',
+        width: '100%',
+        playerVars: {
+            controls: 0,
+            autoplay: 0,
+            mute: 1, 
+            playsinline: 1,
+            origin: window.location.origin
+        },
+        events: {
+            onReady: () => {
+                console.log("મેઈન પ્લેયર અને પ્રીલોડર બંને રેડી થઈ ગયા છે.");
+                resolve();
+            }
+        }
+    });
+}
+
+// આગામી વિડિયોને બેકગ્રાઉન્ડમાં પ્રી-લોડ (Preload) કરવાનું ફંક્શન
+function preloadNextVideo(index) {
+    if (preloaderPlayer && allShorts[index]) {
+        const nextVideoId = allShorts[index].videoId;
+        try {
+            preloaderPlayer.cueVideoById(nextVideoId);
+            console.log("બેકગ્રાઉન્ડમાં પ્રી-લોડ થયો વિડિયો ID:", nextVideoId);
+        } catch (e) {}
+    }
+}
+
+// 5. શોર્ટ્સ કાર્ડ્સ રેન્ડર કરવા (તમારો ઓરિજિનલ પ્રોફેશનલ લુક લાઇટ અને સેમ રહેશે)
 function renderNextShorts(count = 1) {
     for (let i = 0; i < count && currentRenderIndex < allShorts.length; i++) {
         const short = allShorts[currentRenderIndex];
         const tempDiv = document.createElement("div");
 
         tempDiv.innerHTML = `
-            <div class="short-card" data-videoid="${short.videoId}">
+            <div class="short-card" data-videoid="${short.videoId}" data-index="${currentRenderIndex}">
                 <div class="youtube-player" style="pointer-events: none;"></div>
                 
                 <div class="top-mask"></div>
@@ -239,9 +281,7 @@ enabledChannels.forEach(channel => {
                 const seconds = convertDurationToSeconds(duration);
 
                 if (seconds <= 60) {
-                    if (watchedVideoIds.has(videoId)) {
-                        continue; 
-                    }
+                    if (watchedVideoIds.has(videoId)) continue; 
 
                     if (!channelShorts[channel.channelName]) {
                         channelShorts[channel.channelName] = [];
@@ -276,12 +316,13 @@ while (shortsRemaining) {
     }
 }
 
-// 7. ઇન્ટરસેક્શન ઓબ્ઝર્વર
+// 7. ઇન્ટરસેક્શન ઓબ્ઝર્વર (મેઈન સ્વિચિંગ અને પ્રીલોડિંગ કંટ્રોલ)
 observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             const card = entry.target;
             const videoId = card.dataset.videoid;
+            const cardIndex = parseInt(card.dataset.index);
 
             if (!isPlayerReady) return;
 
@@ -294,7 +335,11 @@ observer = new IntersectionObserver((entries) => {
             globalPlayerContainer.dataset.videoid = videoId;
 
             try {
+                // કરંટ વિડિયોને ઇન્સ્ટન્ટ લોડ કરી પ્લે કરો
                 globalPlayer.loadVideoById(videoId);
+                
+                // આના પછીના (Next) વિડિયોને અત્યારથી જ છુપી રીતે પ્રી-લોડ કરો
+                preloadNextVideo(cardIndex + 1);
             } catch (err) {
                 console.error("Error swapping video:", err);
             }
@@ -308,14 +353,14 @@ observer = new IntersectionObserver((entries) => {
 
 async function startApp() {
     if (typeof YT !== 'undefined' && YT.loaded) {
-        await initGlobalPlayer();
+        await initPlayers();
     } else {
         window.onYouTubeIframeAPIReady = async () => {
-            await initGlobalPlayer();
+            await initPlayers();
         };
     }
     
-    renderNextShorts(3);
+    renderNextShorts(4); 
     shortsLoader.style.display = "none";
     
     const firstCards = document.querySelectorAll(".short-card");
