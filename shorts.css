@@ -432,20 +432,7 @@ background:#ffb300;
 
 }
 
-.top-mask{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:90px;
-background:linear-gradient(
-to bottom,
-rgb(0, 0, 0),
-rgba(0, 0, 0, 0)
-);
-z-index:10;
-pointer-events:none;
-}
+
 
 body{
     overflow:hidden;
@@ -455,3 +442,226 @@ body{
 width:100%;
 height:100%;
 }
+
+
+/* શોર્ટ્સ કાર્ડનું મેઈન કન્ટેનર */
+.short-card {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    scroll-snap-align: start;
+    background-color: #000;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* નીચેનો બ્લેક ગ્રેડિઅન્ટ શેડો જેથી ટેક્સ્ટ ચોખ્ખું વંચાય */
+.short-card .gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* બોટમ ચેનલ ઓવરલે (ડાબી બાજુ નીચે) */
+.short-card .channel-overlay {
+    position: absolute;
+    bottom: 30px;
+    left: 16px;
+    right: 80px; /* જમણી બાજુના બટન્સ ન નડે તે માટે */
+    z-index: 3;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto; /* અહીં ક્લિક થઈ શકે તે માટે */
+}
+
+/* પ્રોફાઇલ અને સબસ્ક્રાઇબ વાળી લાઇન */
+.channel-profile-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.short-card .channel-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.short-card .channel-overlay h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+/* ઓરિજિનલ વ્હાઇટ સબસ્ક્રાઇબ બટન */
+.subscribe-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 18px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 4px;
+}
+
+/* શોર્ટ્સનું ટાઇટલ ડિસ્ક્રિપ્શન */
+.short-card .channel-overlay p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 400;
+    max-height: 3.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* જમણી બાજુના એક્શન બટન્સનું આખું કન્ટેનર */
+.short-card .actions {
+    position: absolute;
+    bottom: 30px;
+    right: 12px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    pointer-events: auto;
+}
+
+/* દરેક સિંગલ એક્શન બટનનું બોક્સ (આઇકન + નીચે લખાણ) */
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* SVG આઇકન્સ માટેની સેટિંગ */
+.action-item svg {
+    width: 28px;
+    height: 28px;
+    fill: #ffffff;
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+/* બટનની નીચે લખાતા આંકડા (લાઈક્સ, કોમેન્ટ કાઉન્ટ) */
+.action-item span {
+    font-size: 12px;
+    font-weight: 400;
+    text-shadow: 0px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* છેલ્લે નીચે દેખાતો ચેનલ સાઉન્ડ/પ્રોફાઇલ નાનો આઇકન */
+.audio-track-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid #ffffff;
+    object-fit: cover;
+    margin-top: 4px;
+}
+
+
+/* ૨. ડાબી બાજુ ઉપરના બેક એરો (બટન) માટે એકદમ નાની પ્રોફેશનલ સાઇઝ */
+.back-arrow-btn, .back-btn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    position: fixed !important;
+    top: 15px !important;
+    left: 15px !important;
+    z-index: 10 !important; /* સૌથી ઉપર રાખવા માટે */
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.back-arrow-btn:active {
+    transform: scale(0.9);
+}
+
+
+/* પ્લેયરનું મેઈન કન્ટેનર */
+#global-player-container {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1 !important;
+    pointer-events: none !important; /* યુટ્યુબના પોતાના કંટ્રોલ્સ પર ક્લિક ન થાય */
+    overflow: hidden !important;     /* મોટી થયેલી આઇફ્રેમ બહાર કટ થઈ જશે */
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* આઇફ્રેમ એલિમેન્ટ - ફોન્ટ અને આઇકન માઇક્રો કરવા માટેનું સેટિંગ */
+#yt-main-element {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    
+    /* વિડ્થ અને હાઇટ ૩ ગણી મોટી કરો (આનાથી યુટ્યુબના કંટ્રોલ્સ અને ફોન્ટ્સ ઓટોમેટીક એકદમ સ્મોલ થઈ જશે) */
+    width: 300vw !important;  
+    height: 300vh !important; 
+    
+    /* આ મેજિક લાઈન છે: 300% કન્ટેનરને પાછું સ્કેલ ડાઉન કરીને (0.334) સ્ક્રીનમાં ફિટ કરશે. */
+    /* આનાથી વિડિયો પ્રોપર સાઇઝમાં આવી જશે, પણ અંદરના બટન્સ અને ટેક્સ્ટ એકદમ માઇક્રો સ્મોલ થઈ જશે! */
+    transform: translate(-50%, -50%) scale(0.4) !important; 
+    transform-origin: center center !important;
+    
+    pointer-events: none !important;
+}
+
+/* જો બીજી કોઈ આઇફ્રેમ જનરેટ થતી હોય તો તેને પણ આ જ રીતે સ્મોલ કરો */
+.youtube-player iframe, 
+.short-card iframe {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 300vw !important;
+    height: 300vh !important;
+    transform: translate(-50%, -50%) scale(0.334) !important;
+    transform-origin: center center !important;
+    pointer-events: none !important;
+}
+
+/* યુટ્યુબના ડિફોલ્ટ પ્લે બટન અને ઓવરલેને ફોર્સફુલી ગાયબ કરવા માટે */
+.ytp-large-play-button, 
+.ytp-pause-overlay, 
+.ytp-youtube-button,
+.play-pause-center-btn,
+.center-action-overlay,
+.ytp-chrome-top, 
+.ytp-gradient-top {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+

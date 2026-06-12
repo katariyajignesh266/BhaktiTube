@@ -29,18 +29,9 @@ preloaderContainer.style.pointerEvents = "none";
 document.body.appendChild(preloaderContainer);
 let preloaderPlayer = null;
 
-// મેઈન સિંગલ પ્લેયર કન્ટેનર - પ્રોફેશનલ લુક અને ઇન્સ્ટન્ટ હાઇડ માટે CSS સ્કેલિંગ ટ્રીક
+// મેઈન સિંગલ પ્લેયર કન્ટેનર
 const globalPlayerContainer = document.createElement("div");
 globalPlayerContainer.id = "global-player-container";
-globalPlayerContainer.style.position = "fixed";
-globalPlayerContainer.style.top = "0";
-globalPlayerContainer.style.left = "0";
-globalPlayerContainer.style.width = "100%";
-globalPlayerContainer.style.height = "100%";
-globalPlayerContainer.style.zIndex = "1"; 
-globalPlayerContainer.style.pointerEvents = "none"; // યુટ્યુબના ઓવરલે UI ને નડતું અટકાવવા માટે 'none' જ શ્રેષ્ઠ છે
-globalPlayerContainer.style.display = "none";
-globalPlayerContainer.style.overflow = "hidden"; // આઇફ્રેમના કંટ્રોલ્સ બહાર કાઢીને છુપાવવા માટે
 document.body.appendChild(globalPlayerContainer);
 
 const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
@@ -62,13 +53,27 @@ channelsSnapshot.forEach((doc) => {
     if (channel.enabled) enabledChannels.push(channel);
 });
 
-shortsLoader.innerHTML = `Found ${enabledChannels.length} Channels`;
+if (shortsLoader) {
+    shortsLoader.innerHTML = `Found ${enabledChannels.length} Channels`;
+}
 
 function convertDurationToSeconds(duration) {
     if (!duration) return 9999;
     const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
     if (!match) return 9999;
     return (parseInt(match[1] || 0) * 3600 + parseInt(match[2] || 0) * 60 + parseInt(match[3] || 0));
+}
+
+// સંખ્યાને યુટ્યુબ શોર્ટ્સ ફોર્મેટ (Lakh/K) માં ફોર્મેટ કરવાનું ફંક્શન
+function formatLikes(count) {
+    if (!count) return "Like";
+    const num = parseInt(count);
+    if (num >= 100000) {
+        return (num / 100000).toFixed(1) + " Lakh";
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + "K";
+    }
+    return num;
 }
 
 // 3. વિડિયો સેવ કરવાનું લોજિક (Firebase + LocalStorage)
@@ -97,6 +102,7 @@ async function markShortAsWatched(videoId) {
 }
 
 function skipToNextShort() {
+    if (!shortsContainer) return;
     setTimeout(() => {
         const currentScroll = shortsContainer.scrollTop;
         const viewHeight = window.innerHeight;
@@ -112,28 +118,22 @@ function initPlayers() {
     return new Promise((resolve) => {
         const dummyMain = document.createElement("div");
         dummyMain.id = "yt-main-element";
-        
-        // YouTube ની ડિફોલ્ટ આઇફ્રેમ ફ્રેમના કંટ્રોલ્સ (પ્લે/પોઝ) ને સ્ક્રીન બહાર ધકેલવા માટે CSS સ્ટાઇલિંગ
-        dummyMain.style.width = "100%";
-        dummyMain.style.height = "100%";
-        dummyMain.style.transform = "scale(1.3)"; // વિડિયો સહેજ ઝૂમ થશે જેથી કંટ્રોલ્સ બોર્ડરની બહાર જતા રહે
         globalPlayerContainer.appendChild(dummyMain);
 
-        // A. મેઈન પ્લેયર લોડ કરવો
         globalPlayer = new YT.Player("yt-main-element", {
             height: '100%',
             width: '100%',
             playerVars: {
-                controls: 0,            // કંટ્રોલ્સ બંધ કરવા
-                modestbranding: 1,      // યુટ્યુબ લોગો ઓછો કરવો
-                rel: 0,
+                controls: 0,            // બધા કંટ્રોલ્સ કમ્પલસરી હાઇડ
+                modestbranding: 1,      // યુટ્યુબ બ્રાન્ડિંગ ઓફ
+                rel: 0,                 
                 playsinline: 1,
                 autoplay: 1,
                 iv_load_policy: 3,
                 disablekb: 1,
                 fs: 0,
-                showinfo: 0,            // વધારાની માહિતી છુપાવવા
-                autohide: 1,            // આઇફ્રેમ ઓટોમેટિક ઇન્સ્ટન્ટ હાઇડ કરવા માટે
+                showinfo: 0,            
+                autohide: 1,            
                 origin: window.location.origin 
             },
             events: {
@@ -160,7 +160,7 @@ function initPlayers() {
                     }
 
                     if (event.data === YT.PlayerState.ENDED) {
-                        globalPlayer.playVideo(); 
+                        globalPlayer.playVideo(); // લૂપમાં ચલાવવા માટે
                     }
                 },
                 onError: (event) => {
@@ -175,7 +175,6 @@ function initPlayers() {
     });
 }
 
-// બેકગ્રાઉન્ડ પ્રીલોડર પ્લેયર શરૂ કરવાનું ફંક્શન
 function checkAndInitializePreloader(resolve) {
     const dummyPreload = document.createElement("div");
     dummyPreload.id = "yt-preload-element";
@@ -193,29 +192,29 @@ function checkAndInitializePreloader(resolve) {
         },
         events: {
             onReady: () => {
-                console.log("મેઈન પ્લેયર અને પ્રીલોડર બંને રેડી થઈ ગયા છે.");
                 resolve();
             }
         }
     });
 }
 
-// આગામી વિડિયોને બેકગ્રાઉન્ડમાં પ્રી-લોડ (Preload) કરવાનું ફંક્શન
 function preloadNextVideo(index) {
     if (preloaderPlayer && allShorts[index]) {
         const nextVideoId = allShorts[index].videoId;
         try {
             preloaderPlayer.cueVideoById(nextVideoId);
-            console.log("બેકગ્રાઉન્ડમાં પ્રી-લોડ થયો વિડિયો ID:", nextVideoId);
         } catch (e) {}
     }
 }
 
-// 5. શોર્ટ્સ કાર્ડ્સ રેન્ડર કરવા (તમારો ઓરિજિનલ પ્રોફેશનલ લુક લાઇટ અને સેમ રહેશે)
+// 5. શોર્ટ્સカード્સ રેન્ડર કરવા (ઓરિજિનલ લાઇક્સ સાથે)
 function renderNextShorts(count = 1) {
+    if (!shortsContainer) return;
     for (let i = 0; i < count && currentRenderIndex < allShorts.length; i++) {
         const short = allShorts[currentRenderIndex];
         const tempDiv = document.createElement("div");
+
+        const displayLikes = formatLikes(short.likeCount);
 
         tempDiv.innerHTML = `
             <div class="short-card" data-videoid="${short.videoId}" data-index="${currentRenderIndex}">
@@ -225,17 +224,41 @@ function renderNextShorts(count = 1) {
                 <div class="gradient"></div>
                 
                 <div class="channel-overlay">
-                    <img src="${short.channelLogo}" class="channel-logo">
-                    <div>
-                        <h4>${short.channelName}</h4>
-                        <p>${short.title}</p>
+                    <div class="channel-profile-row">
+                        <img src="${short.channelLogo}" class="channel-logo">
+                        <h4>@${short.channelName.replace(/\s+/g, '_').toLowerCase()}</h4>
+                        <button class="subscribe-btn">Subscribe</button>
                     </div>
+                    <p>${short.title}</p>
                 </div>
                 
                 <div class="actions">
-                    <button class="action-btn">❤️</button>
-                    <button class="action-btn">👍</button>
-                    <button class="action-btn share-btn" data-videoid="${short.videoId}">🔗</button>
+                    <div class="action-item" id="like-btn-${short.videoId}" data-rawlikes="${short.likeCount || 0}">
+                        <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                        <span>${displayLikes}</span>
+                    </div>
+
+                    <div class="action-item">
+                        <svg viewBox="0 0 24 24"><path d="M19 15h4V3h-4v12zm-4 0c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V4c0-1.1-.9-2-2-2H9c-.83 0-1.54.5-1.84 1.22L4.14 10.27c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L12.83 23l6.58-6.59c.37-.36.59-.86.59-1.41z"/></svg>
+                        <span>Dislike</span>
+                    </div>
+
+                    <div class="action-item">
+                        <svg viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                        <span>232</span>
+                    </div>
+
+                    <div class="action-item share-btn" data-videoid="${short.videoId}" data-title="${short.title}">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                        <span>Share</span>
+                    </div>
+
+                    <div class="action-item">
+                        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                        <span>Remix</span>
+                    </div>
+
+                    <img src="${short.channelLogo}" class="audio-track-icon">
                 </div>
             </div>
         `;
@@ -266,7 +289,7 @@ enabledChannels.forEach(channel => {
 
             const videoIds = data.items.map(item => item.snippet.resourceId.videoId);
             const detailsResponse = await fetch(
-                `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds.join(",")}&key=${API_KEY}`
+                `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${videoIds.join(",")}&key=${API_KEY}`
             );
             const detailsData = await detailsResponse.json();
 
@@ -287,11 +310,14 @@ enabledChannels.forEach(channel => {
                         channelShorts[channel.channelName] = [];
                     }
 
+                    const originalLikes = videoDetails.statistics ? videoDetails.statistics.likeCount : 0;
+
                     channelShorts[channel.channelName].push({
                         videoId,
                         title: item.snippet.title,
                         channelName: channel.channelName,
-                        channelLogo: channel.channelLogo
+                        channelLogo: channel.channelLogo,
+                        likeCount: originalLikes
                     });
                     unseenFound++;
                 }
@@ -316,7 +342,7 @@ while (shortsRemaining) {
     }
 }
 
-// 7. ઇન્ટરસેક્શન ઓબ્ઝર્વર (મેઈન સ્વિચિંગ અને પ્રીલોડિંગ કંટ્રોલ)
+// 7. ઇન્ટરસેક્શન ઓબ્ઝર્વર
 observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -335,10 +361,11 @@ observer = new IntersectionObserver((entries) => {
             globalPlayerContainer.dataset.videoid = videoId;
 
             try {
-                // કરંટ વિડિયોને ઇન્સ્ટન્ટ લોડ કરી પ્લે કરો
                 globalPlayer.loadVideoById(videoId);
-                
-                // આના પછીના (Next) વિડિયોને અત્યારથી જ છુપી રીતે પ્રી-લોડ કરો
+                // પ્લેલિસ્ટમાં પણ વિડિયો એડ કરો જેથી લૂપ માટે બેકઅપ આઈડી મળે
+                if (globalPlayer.setLoop) {
+                    globalPlayer.setLoop(true);
+                }
                 preloadNextVideo(cardIndex + 1);
             } catch (err) {
                 console.error("Error swapping video:", err);
@@ -351,6 +378,79 @@ observer = new IntersectionObserver((entries) => {
     threshold: 0.6 
 });
 
+// બૅક એરો બટન પર ક્લિક કરવાથી હોમપેજ (index.html) પર રીડાયરેક્ટ કરવું
+document.addEventListener("click", (e) => {
+    const backBtn = e.target.closest(".back-arrow-btn") || e.target.closest(".fa-arrow-left") || e.target.closest(".back-btn");
+    if (backBtn) {
+        window.location.href = "index.html";
+    }
+});
+
+// લાઈક અને સબસ્ક્રાઇબ ક્લિક ઇવેન્ટ્સ
+document.addEventListener("click", (e) => {
+    const likeItem = e.target.closest(".action-item");
+    if (likeItem && likeItem.id && likeItem.id.startsWith("like-btn-")) {
+        const svg = likeItem.querySelector("svg");
+        const span = likeItem.querySelector("span");
+        const rawLikes = parseInt(likeItem.dataset.rawlikes || 0);
+        
+        if (likeItem.classList.contains("liked")) {
+            likeItem.classList.remove("liked");
+            svg.style.fill = "#ffffff"; 
+            span.innerText = formatLikes(rawLikes);
+        } else {
+            likeItem.classList.add("liked");
+            svg.style.fill = "#ff0000"; 
+            span.innerText = formatLikes(rawLikes + 1);
+        }
+    }
+    
+    if (e.target.classList.contains("subscribe-btn")) {
+        if (e.target.innerText === "Subscribe") {
+            e.target.innerText = "Subscribed";
+            e.target.style.backgroundColor = "rgba(255,255,255,0.2)";
+            e.target.style.color = "#ffffff";
+        } else {
+            e.target.innerText = "Subscribe";
+            e.target.style.backgroundColor = "#ffffff";
+            e.target.style.color = "#000000";
+        }
+    }
+});
+
+// ઓરિજિનલ નેટિવ શેર પોપઅપ લોજિક
+document.addEventListener("click", async (e) => {
+    const shareBtn = e.target.closest(".share-btn");
+    if (shareBtn) {
+        const videoId = shareBtn.dataset.videoid;
+        const videoTitle = shareBtn.dataset.title || "Check out this Short!";
+        const shortLink = `https://youtube.com/shorts/${videoId}`;
+        const span = shareBtn.querySelector("span");
+        
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: videoTitle,
+                    text: videoTitle,
+                    url: shortLink
+                });
+            } catch (err) {
+                console.log("Share failed:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shortLink);
+                if (span) {
+                    span.innerText = "Copied!";
+                    setTimeout(() => { span.innerText = "Share"; }, 1500);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+});
+
 async function startApp() {
     if (typeof YT !== 'undefined' && YT.loaded) {
         await initPlayers();
@@ -361,38 +461,12 @@ async function startApp() {
     }
     
     renderNextShorts(4); 
-    shortsLoader.style.display = "none";
+    if (shortsLoader) {
+        shortsLoader.style.display = "none";
+    }
     
     const firstCards = document.querySelectorAll(".short-card");
     firstCards.forEach(card => observer.observe(card));
 }
 
 startApp();
-
-// લાઈક, શેર બટન ઈવેન્ટ્સ
-document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("action-btn")) {
-        if (e.target.innerText === "❤️") {
-            e.target.classList.toggle("like-active");
-            e.target.classList.toggle("active");
-        }
-        if (e.target.innerText === "👍") {
-            e.target.classList.toggle("thumb-active");
-            e.target.classList.toggle("active");
-        }
-    }
-});
-
-document.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("share-btn")) {
-        const videoId = e.target.dataset.videoid;
-        const shortLink = `https://youtube.com/shorts/${videoId}`;
-        try {
-            await navigator.clipboard.writeText(shortLink);
-            e.target.innerText = "✅";
-            setTimeout(() => { e.target.innerText = "🔗"; }, 1500);
-        } catch (err) {
-            console.error(err);
-        }
-    }
-});
