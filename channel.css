@@ -511,8 +511,8 @@ body {
 
 /* ચેનલ લોગો ગોળ અને યોગ્ય સાઈઝનો કરવા */
 #channelLogo {
-    width: 80px;  /* લોગોની પરફેક્ટ સાઈઝ */
-    height: 80px;
+    width: 45px;  /* લોગોની પરફેક્ટ સાઈઝ */
+    height: 45px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ff0000; /* લોગોની આજુબાજુ રેડ બોર્ડર */
@@ -568,14 +568,119 @@ body {
 
 
 
-
-/* ફૂલ સ્ક્રીનમાં કંટ્રોલ્સ સામાન્ય રીતે હાઇડ રહેશે */
-:fullscreen .custom-controls {
-    opacity: 0;
-    transition: opacity 0.3s;
+/* ============================================================
+   ૧. નોર્મલ મોડ - પ્રીમિયમ મિનિમલિસ્ટ લુક (Normal Screen)
+   ============================================================ */
+.custom-controls {
+    display: flex;
+    gap: 16px; /* બટન્સ વચ્ચેની જગ્યા વધારી */
+    justify-content: center;
+    margin-top: 20px;
+    padding: 10px 16px; /* પેડિંગ વધાર્યું */
+    background: rgba(255, 255, 255, 0.04); /* હળવો પ્રીમિયમ બ્લેક ટિન્ટ */
+    border-radius: 40px; /* મોટું રાઉન્ડ કન્ટેનર */
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px); /* સ્મૂધ ગ્લાસ ઇફેક્ટ */
 }
 
-/* પણ જ્યારે યુઝર માઉસ હલાવશે (Hover કરશે) ત્યારે દેખાશે */
-:fullscreen #video-container:hover .custom-controls {
+.control-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f5f5f7; /* એપલ સ્ટાઇલ વ્હાઇટ કલર */
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    width: 52px;  /* બટનની સાઇઝ મોટી કરી (પહેલા 42px હતી) */
+    height: 52px; /* બટનની સાઇઝ મોટી કરી (પહેલા 42px હતી) */
+    border-radius: 50%; 
+    cursor: pointer;
+    font-size: 20px; /* આઇકોન મોટા કર્યા (પહેલા 15px હતી) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* હોવર અને ટચ ઇફેક્ટ (નોર્મલ મોડ માટે) */
+.control-btn:hover {
+    background: #ffffff;
+    color: #111111;
+    transform: scale(1.1); /* હોવર વખતે થોડું વધારે મોટું થશે */
+    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.2);
+}
+
+.control-btn:active {
+    transform: scale(0.93);
+}
+
+
+/* ============================================================
+   ૨. ફૂલ સ્ક્રીન મોડ - અલ્ટ્રા પ્રીમિયમ OTT લુક (Full Screen)
+   ============================================================ */
+
+/* ફૂલ સ્ક્રીન કંટ્રોલ્સ કન્ટેનર */
+.video-container:fullscreen .custom-controls,
+.video-container:-webkit-full-screen .custom-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important; /* જમણી બાજુ */
+    align-items: flex-end !important;    /* નીચેની બાજુ */
+    padding: 35px !important;            /* ખૂણાથી અંતર થોડું વધાર્યું જેથી આરામથી ક્લિક થાય */
+    box-sizing: border-box !important;
+    pointer-events: none;                 /* પાછળ ટચ ડિસ્ટર્બ ન થાય */
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     opacity: 1;
+    z-index: 2147483647;
+}
+
+/* ફૂલ સ્ક્રીનમાં પ્લે, પોઝ, મ્યુટ સાવ હાઇડ */
+.video-container:fullscreen .custom-controls button:not(:last-child),
+.video-container:-webkit-full-screen .custom-controls button:not(:last-child) {
+    display: none !important;
+}
+
+/* ફૂલ સ્ક્રીનમાં માત્ર છેલ્લું બટન (Netflix/Hotstar સ્ટાઈલ) - એકદમ મોટું અને પ્રીમિયમ */
+.video-container:fullscreen .custom-controls button:last-child,
+.video-container:-webkit-full-screen .custom-controls button:last-child {
+    pointer-events: auto !important;      /* માત્ર આ બટન પર જ ક્લિક થશે */
+    font-size: 26px !important;           /* ફૂલ સ્ક્રીનમાં આઇકોન ઘણો મોટો કર્યો (પહેલા 20px હતો) */
+    background: rgba(15, 15, 15, 0.7) !important; /* ડાર્ક પ્રીમિયમ કાચ જેવો લુક */
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    width: 68px !important;               /* બટનની સાઇઝ એકદમ સિનેમેટિક મોટી કરી (પહેલા 56px હતી) */
+    height: 68px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(15px) !important; /* બટનની પાછળ વધુ સ્મૂધ બ્લર ઇફેક્ટ */
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ફૂલ સ્ક્રીનમાં બટન પર ટચ કે ક્લિક કરો ત્યારે ઇફેક્ટ */
+.video-container:fullscreen .custom-controls button:last-child:active,
+.video-container:-webkit-full-screen .custom-controls button:last-child:active {
+    transform: scale(0.88) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* ============================================================
+   ૩. ઓટો-હાઇડ એનિમેશન ક્લાસ (૨ સેકન્ડ પછી સ્મૂધલી ગાયબ થશે)
+   ============================================================ */
+.video-container:fullscreen.hide-controls-active .custom-controls,
+.video-container:-webkit-full-screen.hide-controls-active .custom-controls {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(15px); /* ગાયબ થતી વખતે બટન થોડું વધારે નીચે નમશે */
+    transition: opacity 0.5s ease, transform 0.5s ease !important;
 }

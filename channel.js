@@ -1,5 +1,4 @@
 import { db } from "./firebase-config.js";
-
 import {
   collection,
   getDocs
@@ -14,6 +13,7 @@ let uploadsPlaylistId = "";
 // YouTube Player Instance અને મ્યુટ સ્ટેટ રાખવા માટેના ગ્લોબલ વેરીએબલ્સ
 let ytPlayer = null;
 let isMuted = false;
+let controlsTimeout = null; // ઓટો-હાઇડ ટાઈમર રાખવા માટેનો વેરીએબલ
 
 const params = new URLSearchParams(window.location.search);
 const channelId = params.get("id");
@@ -69,32 +69,31 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
       container.innerHTML = "";
     }
 
-data.items.forEach(video => {
-  if (video.snippet && video.snippet.resourceId) {
-    container.innerHTML += `
-      <div class="video-card" onclick="openVideo('${video.snippet.resourceId.videoId}')" style="margin-bottom: 20px; background: #1f1f1f; border-radius: 8px; overflow: hidden; padding-bottom: 10px;">
-        <img src="${video.snippet.thumbnails.high.url}" style="width: 100%; display: block;">
-        
-        <!-- અક્ષરો નાના કરવા, લાઇન વચ્ચે સ્પેસ રાખવા અને ટેક્સ્ટ કપાય નહીં તે માટેનું ફિક્સ -->
-        <h3 style="
-          font-size: 14px !important; 
-          font-weight: 500; 
-          line-height: 1.5 !important; 
-          margin: 10px; 
-          color: #ffffff;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          height: 50px;
-        ">
-          ${video.snippet.title}
-        </h3>
-      </div>
-    `;
-  }
-});
+    data.items.forEach(video => {
+      if (video.snippet && video.snippet.resourceId) {
+        container.innerHTML += `
+          <div class="video-card" onclick="openVideo('${video.snippet.resourceId.videoId}')" style="margin-bottom: 20px; background: #1f1f1f; border-radius: 8px; overflow: hidden; padding-bottom: 10px; cursor: pointer;">
+            <img src="${video.snippet.thumbnails.high.url}" style="width: 100%; display: block;">
+            
+            <h3 style="
+              font-size: 14px !important; 
+              font-weight: 500; 
+              line-height: 1.5 !important; 
+              margin: 10px; 
+              color: #ffffff;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              height: 50px;
+            ">
+              ${video.snippet.title}
+            </h3>
+          </div>
+        `;
+      }
+    });
 
   } catch (error) {
     console.error(error);
@@ -129,7 +128,7 @@ window.openVideo = async function(videoId) {
   }
 }
 
-// કસ્ટમ બટન્સ માટેના કંટ્રોલ ફંક્શન્સ (HTML માંથી ઓન-ક્લિક પર ચાલશે)
+// કસ્ટમ બટન્સ માટેના કંટ્રોલ ફંક્શન્સ
 window.playVideo = function() {
   if (ytPlayer && typeof ytPlayer.playVideo === "function") {
     ytPlayer.playVideo();
@@ -169,15 +168,25 @@ window.toggleFullScreen = function() {
   }
 }
 
-// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન સેટ કરવું
+// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન અને ક્લાસ સેટ કરવા
 document.addEventListener("fullscreenchange", async () => {
   const playerIframe = document.getElementById("youtubePlayer");
+  const container = document.querySelector('.video-container');
+  
   if (document.fullscreenElement) {
     try {
       if (screen.orientation && screen.orientation.lock) {
         await screen.orientation.lock("landscape");
       }
       playerIframe.classList.add("fullscreen");
+      
+      // ફૂલ સ્ક્રીન થતાં જ ઓટો-હાઇડ લોજિક શરૂ કરો
+      showControlsAndSetTimeout();
+      
+      // મોબાઈલમાં સ્ક્રીન ટચ કરવાથી અથવા કમ્પ્યુટરમાં માઉસ હલાવવાથી બટન દેખાશે
+      container.addEventListener('mousemove', showControlsAndSetTimeout);
+      container.addEventListener('touchstart', showControlsAndSetTimeout);
+
     } catch (err) {
       console.log("Orientation Lock Error: ", err);
     }
@@ -187,11 +196,37 @@ document.addEventListener("fullscreenchange", async () => {
         screen.orientation.unlock();
       }
       playerIframe.classList.remove("fullscreen");
+      
+      // નોર્મલ સ્ક્રીન થતાં ઇવેન્ટ્સ અને ટાઈમર રિમૂવ કરવા
+      clearTimeout(controlsTimeout);
+      container.removeEventListener('mousemove', showControlsAndSetTimeout);
+      container.removeEventListener('touchstart', showControlsAndSetTimeout);
+      
+      // બટન્સને નોર્મલ સ્થિતિમાં લાવવા ક્લાસ હટાવો
+      container.classList.remove('hide-controls-active');
     } catch (err) {
       console.log(err);
     }
   }
 });
+
+// બટન બતાવવા અને ૨ સેકન્ડ પછી છુપાવવાનું ફંક્શન
+function showControlsAndSetTimeout() {
+  const container = document.querySelector('.video-container');
+  
+  // પહેલા કંટ્રોલ્સ બતાવો
+  container.classList.remove('hide-controls-active');
+  
+  // જૂનું ટાઈમર કેન્સલ કરો
+  clearTimeout(controlsTimeout);
+  
+  // ૨ સેકન્ડ (2000ms) પછી ઓટોમેટિક ક્લાસ ઉમેરો જે બટનને છુપાવશે
+  controlsTimeout = setTimeout(() => {
+    if (document.fullscreenElement) {
+      container.classList.add('hide-controls-active');
+    }
+  }, 2000); 
+}
 
 // વિડિયો બંધ કરવાનું ફંક્શન
 window.closeVideo = function() {
@@ -203,7 +238,7 @@ window.closeVideo = function() {
   }
 }
 
-// ઇન્ફિનิต સ્ક્રોલ લોડર (Intersection Observer)
+// ઇન્ફિનિટ સ્ક્રોલ લોડર (Intersection Observer)
 const observer = new IntersectionObserver(
   async (entries) => {
     if (entries[0].isIntersecting && !loading && nextPageToken) {
