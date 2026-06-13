@@ -569,7 +569,7 @@ body {
 
 
 /* ============================================================
-   ૧. નોર્મલ મોડ - તમારા ચારેય બટન (જેમ છે તેમ જ પ્રોપર રહેશે)
+   ૧. નોર્મલ મોડ - આ પહેલાની જેમ જ પ્રોપર રહેશે
    ============================================================ */
 .custom-controls {
     display: flex;
@@ -602,70 +602,66 @@ body {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
-.control-btn:hover {
-    background: #ffffff;
-    color: #111111;
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.2);
-}
-
-.control-btn:active {
-    transform: scale(0.93);
-}
-
 /* ============================================================
-   ૨. ફૂલ સ્ક્રીન મોડ - કાયમી માટે જમણી બાજુ નીચે નાનું બટન
+   ૨. ફૂલ સ્ક્રીન મોડ - બટનને સાવ જમણે ખૂણામાં ફિક્સ કરવાનો ફિક્સ
    ============================================================ */
 
-/* ફૂલ સ્ક્રીનમાં કંટ્રોલ્સ બોક્સ આખી સ્ક્રીન પર ફેલાશે પણ બટન ખૂણામાં રાખશે */
+/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ્સ પેનલને આખી સ્ક્રીન પર ફોર્સ કરો */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     position: absolute !important;
-    bottom: 0 !important;
+    top: 0 !important;
     left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: 100vw !important;  /* આખી સ્ક્રીનની પહોળાઈ */
+    height: 100vh !important; /* આખી સ્ક્રીનની ઊંચાઈ */
     background: transparent !important;
     border: none !important;
     backdrop-filter: none !important;
     border-radius: 0 !important;
+    
+    /* આ રૂલ્સ બટનને એકદમ જમણી બાજુ નીચે ધકેલશે */
     display: flex !important;
-    justify-content: flex-end !important; /* બટન જમણી બાજુ જશે */
-    align-items: flex-end !important;    /* બટન સાવ નીચે જશે */
-    padding: 15px !important;            /* ખૂણામાં બરાબર ફિક્સ કરવા ઓછું પેડિંગ */
+    flex-direction: row !important;
+    justify-content: flex-end !important; /* સાવ જમણે */
+    align-items: flex-end !important;    /* સાવ નીચે */
+    
+    padding: 12px !important;            /* ખૂણાથી અંતર (સ્ક્રીનની બોર્ડર પાસે રાખવા ઓછું કર્યું) */
     box-sizing: border-box !important;
-    pointer-events: none !important;      /* વીડિયો પ્લેયરના ટચમાં નડે નહીં */
-    opacity: 1 !important;                /* ઓટો-હાઇડ બંધ, હંમેશા દેખાશે */
+    pointer-events: none !important;
     z-index: 2147483647 !important;
+    margin: 0 !important;
 }
 
-/* ફૂલ સ્ક્રીનમાં પહેલા ત્રણ બટન (Play, Pause, Mute) સાવ ગાયબ */
+/* પ્લે, પોઝ, મ્યુટ બટન સાવ ગાયબ */
 .video-container:fullscreen .custom-controls button:not(:last-child),
 .video-container:-webkit-full-screen .custom-controls button:not(:last-child) {
     display: none !important;
 }
 
-/* ફૂલ સ્ક્રીનમાં માત્ર છેલ્લું બટન - એકદમ નાનું અને ખૂણામાં ફિક્સ */
+/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન - સાવ ખૂણામાં નાનું અને ફિક્સ */
 .video-container:fullscreen .custom-controls button:last-child,
 .video-container:-webkit-full-screen .custom-controls button:last-child {
-    pointer-events: auto !important;      /* આ બટન પર ક્લિક ચાલુ રહેશે */
-    font-size: 14px !important;           /* આઇકોન સાવ નાનો કર્યો */
-    background: rgba(0, 0, 0, 0.5) !important; /* પાછળ હળવો કાળો કલર */
+    pointer-events: auto !important;
+    font-size: 14px !important;
+    background: rgba(0, 0, 0, 0.6) !important; /* વીડિયો પર સરસ દેખાય તેવું બ્લેક બેકગ્રાઉન્ડ */
     color: #ffffff !important;
-    border-radius: 6px !important;        /* સહેજ ગોળ ખૂણા (Squareish-round) */
-    width: 35px !important;               /* બટનની પહોળાઈ નાની કરી */
-    height: 35px !important;              /* બટનની ઊંચાઈ નાની કરી */
+    border-radius: 6px !important;
+    width: 38px !important;               /* નાની કમ્ફર્ટેબલ સાઇઝ */
+    height: 38px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.5) !important;
+    
+    /* બટનને સેન્ટરમાં આવતા રોકવા માટે ફોર્સ પ્રોપર્ટીઝ */
     margin: 0 !important;
-    transition: background 0.2s !important;
+    position: relative !important;
 }
 
-/* બટન પર ક્લિક કરતી વખતે હળવી ઇફેક્ટ */
+/* બટન ટચ ઇફેક્ટ */
 .video-container:fullscreen .custom-controls button:last-child:active,
 .video-container:-webkit-full-screen .custom-controls button:last-child:active {
     background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(0.95) !important;
 }
