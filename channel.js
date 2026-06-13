@@ -42,7 +42,7 @@ async function loadChannel() {
 
 async function loadYouTubeVideos(playlistId, pageToken = "") {
   const loader = document.getElementById("loader");
-  loader.style.display = "block";
+  if (loader) loader.style.display = "block";
 
   try {
     const response = await fetch(
@@ -66,11 +66,11 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
     const container = document.getElementById("channelVideosContainer");
 
     if (pageToken === "") {
-      container.innerHTML = "";
+      if (container) container.innerHTML = "";
     }
 
     data.items.forEach(video => {
-      if (video.snippet && video.snippet.resourceId) {
+      if (video.snippet && video.snippet.resourceId && container) {
         container.innerHTML += `
           <div class="video-card" onclick="openVideo('${video.snippet.resourceId.videoId}')" style="margin-bottom: 20px; background: #1f1f1f; border-radius: 8px; overflow: hidden; padding-bottom: 10px; cursor: pointer;">
             <img src="${video.snippet.thumbnails.high.url}" style="width: 100%; display: block;">
@@ -98,7 +98,7 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
   } catch (error) {
     console.error(error);
   } finally {
-    loader.style.display = "none";
+    if (loader) loader.style.display = "none";
   }
 }
 
@@ -107,18 +107,18 @@ window.openVideo = async function(videoId) {
   const popup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
 
-  popup.style.display = "flex";
+  if (popup) popup.style.display = "flex";
 
-  // controls=0 થી જુના નાના કંટ્રોલ્સ ગાયબ થશે, અને enablejsapi=1 થી API એક્ટિવેટ થશે
-  playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
+  // controls=0 થી કંટ્રોલ્સ ગાયબ થશે અનેenablejsapi=1 એક્ટિવેટ થશે
+  if (playerIframe) {
+    playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
+  }
 
-  // જો આઈફ્રેમ પ્લેયર પહેલેથી બનેલું ન હોય, તો નવું કન્સ્ટ્રક્ટ કરવું
   if (!ytPlayer) {
     ytPlayer = new YT.Player('youtubePlayer', {
       events: {
         'onReady': (event) => {
           event.target.playVideo();
-          // મ્યુટ સ્ટેટ રીસેટ કરવું
           isMuted = false;
           const muteBtn = document.getElementById('muteBtn');
           if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
@@ -159,93 +159,103 @@ window.toggleMute = function() {
 // કસ્ટમ ફૂલસ્ક્રીન અને આડી (Landscape) સ્ક્રીન લોક કરવાનું લોજિક
 window.toggleFullScreen = function() {
   const container = document.querySelector('.video-container');
-  if (!document.fullscreenElement) {
-    container.requestFullscreen().catch(err => {
-      console.log(`Error full screen: ${err.message}`);
-    });
+  if (!container) return;
+  
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (container.requestFullscreen) {
+      container.requestFullscreen().catch(err => console.log(err.message));
+    } else if (container.webkitRequestFullscreen) {
+      container.webkitRequestFullscreen();
+    }
   } else {
-    document.exitFullscreen();
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
   }
 }
 
-// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન અને ક્લાસ સેટ કરવા
-// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન અને ક્લાસ સેટ કરવા
-document.addEventListener("fullscreenchange", async () => {
+// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે કંટ્રોલ્સ સેટ કરવા
+const handleFullscreenChange = async () => {
   const playerIframe = document.getElementById("youtubePlayer");
   const container = document.querySelector('.video-container');
-  // છેલ્લું બટન (જે એક્ઝિટ ફૂલસ્ક્રીન માટેનું છે)
   const lastBtn = document.querySelector('.custom-controls button:last-child');
   
-  if (document.fullscreenElement) {
+  const isFS = document.fullscreenElement || document.webkitFullscreenElement;
+  
+  if (isFS) {
     try {
       if (screen.orientation && screen.orientation.lock) {
-        await screen.orientation.lock("landscape");
+        await screen.orientation.lock("landscape").catch(e => console.log(e));
       }
-      playerIframe.classList.add("fullscreen");
+      if (playerIframe) playerIframe.classList.add("fullscreen");
       
-      // મોબાઈલ ડિફોલ્ટ ઓવરરાઈડ તોડવા માટે બટનને ફોર્સફુલી સાવ જમણે અને નીચે લોક કરો
+      // પાવરફુલ જાવાસ્ક્રિપ્ટ ફિક્સ: બટનને સેન્ટરમાંથી ખેંચીને સાવ જમણે નીચે ફિક્સ કરવા માટે
       if (lastBtn) {
         lastBtn.style.setProperty('position', 'fixed', 'important');
-        lastBtn.style.setProperty('right', '16px', 'important');
-        lastBtn.style.setProperty('bottom', '16px', 'important');
+        lastBtn.style.setProperty('right', '20px', 'important');
+        lastBtn.style.setProperty('bottom', '20px', 'important');
         lastBtn.style.setProperty('left', 'auto', 'important');
         lastBtn.style.setProperty('top', 'auto', 'important');
+        lastBtn.style.setProperty('margin', '0', 'important');
         lastBtn.style.setProperty('transform', 'none', 'important');
       }
       
-      // ફૂલ સ્ક્રીન થતાં જ ઓટો-હાઇડ લોજિક શરૂ કરો
       showControlsAndSetTimeout();
       
-      // મોબાઈલમાં સ્ક્રીન ટચ કરવાથી અથવા કમ્પ્યુટરમાં માઉસ હલાવવાથી બટન દેખાશે
-      container.addEventListener('mousemove', showControlsAndSetTimeout);
-      container.addEventListener('touchstart', showControlsAndSetTimeout);
+      if (container) {
+        container.addEventListener('mousemove', showControlsAndSetTimeout);
+        container.addEventListener('touchstart', showControlsAndSetTimeout);
+      }
 
     } catch (err) {
-      console.log("Orientation Lock Error: ", err);
+      console.log("FS Entry Error: ", err);
     }
   } else {
     try {
       if (screen.orientation && screen.orientation.unlock) {
         screen.orientation.unlock();
       }
-      playerIframe.classList.remove("fullscreen");
+      if (playerIframe) playerIframe.classList.remove("fullscreen");
       
-      // નોર્મલ મોડમાં આવતા જ ફોર્સ કરેલી સ્ટાઈલ હટાવી દો જેથી તે પાછું તેની જગ્યાએ ગોઠવાઈ જાય
+      // નોર્મલ મોડમાં આવતા જ ફોર્સ કરેલી સ્ટાઈલ હટાવી દો
       if (lastBtn) {
         lastBtn.style.removeProperty('position');
         lastBtn.style.removeProperty('right');
         lastBtn.style.removeProperty('bottom');
         lastBtn.style.removeProperty('left');
         lastBtn.style.removeProperty('top');
+        lastBtn.style.removeProperty('margin');
         lastBtn.style.removeProperty('transform');
       }
       
-      // નોર્મલ સ્ક્રીન થતાં ઇવેન્ટ્સ અને ટાઈમર રિમૂવ કરવા
       clearTimeout(controlsTimeout);
-      container.removeEventListener('mousemove', showControlsAndSetTimeout);
-      container.removeEventListener('touchstart', showControlsAndSetTimeout);
-      
-      // બટન્સને નોર્મલ સ્થિતિમાં લાવવા ક્લાસ હટાવો
-      container.classList.remove('hide-controls-active');
+      if (container) {
+        container.removeEventListener('mousemove', showControlsAndSetTimeout);
+        container.removeEventListener('touchstart', showControlsAndSetTimeout);
+        container.classList.remove('hide-controls-active');
+      }
     } catch (err) {
       console.log(err);
     }
   }
-});
+};
+
+document.addEventListener("fullscreenchange", handleFullscreenChange);
+document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
 // બટન બતાવવા અને ૨ સેકન્ડ પછી છુપાવવાનું ફંક્શન
 function showControlsAndSetTimeout() {
   const container = document.querySelector('.video-container');
+  if (!container) return;
   
-  // પહેલા કંટ્રોલ્સ બતાવો
   container.classList.remove('hide-controls-active');
-  
-  // જૂનું ટાઈમર કેન્સલ કરો
   clearTimeout(controlsTimeout);
   
-  // ૨ સેકન્ડ (2000ms) પછી ઓટોમેટિક ક્લાસ ઉમેરો જે બટનને છુપાવશે
   controlsTimeout = setTimeout(() => {
-    if (document.fullscreenElement) {
+    const isFS = document.fullscreenElement || document.webkitFullscreenElement;
+    if (isFS) {
       container.classList.add('hide-controls-active');
     }
   }, 2000); 
@@ -253,8 +263,11 @@ function showControlsAndSetTimeout() {
 
 // વિડિયો બંધ કરવાનું ફંક્શન
 window.closeVideo = function() {
-  document.getElementById("videoPopup").style.display = "none";
-  document.getElementById("youtubePlayer").src = "";
+  const popup = document.getElementById("videoPopup");
+  const playerIframe = document.getElementById("youtubePlayer");
+  
+  if (popup) popup.style.display = "none";
+  if (playerIframe) playerIframe.src = "";
   
   if (ytPlayer && typeof ytPlayer.stopVideo === "function") {
     ytPlayer.stopVideo();
@@ -262,18 +275,20 @@ window.closeVideo = function() {
 }
 
 // ઇન્ફિનિટ સ્ક્રોલ લોડર (Intersection Observer)
-const observer = new IntersectionObserver(
-  async (entries) => {
-    if (entries[0].isIntersecting && !loading && nextPageToken) {
-      loading = true;
-      await loadYouTubeVideos(uploadsPlaylistId, nextPageToken);
-      loading = false;
-    }
-  },
-  { threshold: 0.1 }
-);
-
-observer.observe(document.getElementById("loadMoreTrigger"));
+const trigger = document.getElementById("loadMoreTrigger");
+if (trigger) {
+  const observer = new IntersectionObserver(
+    async (entries) => {
+      if (entries[0].isIntersecting && !loading && nextPageToken) {
+        loading = true;
+        await loadYouTubeVideos(uploadsPlaylistId, nextPageToken);
+        loading = false;
+      }
+    },
+    { threshold: 0.1 }
+  );
+  observer.observe(trigger);
+}
 
 window.goHome = function() {
   window.location.href = "index.html";
@@ -282,7 +297,6 @@ window.goHome = function() {
 // જ્યારે વેબસાઇટ બેકગ્રાઉન્ડમાં જાય ત્યારે વિડિયો સ્ટોપ થાય
 document.addEventListener("visibilitychange", function() {
   if (document.hidden) {
-    console.log("વેબસાઇટ બેકગ્રાઉન્ડમાં ગઈ, વિડિયો સ્ટોપ થાય છે...");
     if (typeof window.closeVideo === "function") {
       window.closeVideo();
     }
