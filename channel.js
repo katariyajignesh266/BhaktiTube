@@ -11,6 +11,10 @@ let nextPageToken = "";
 let loading = false;
 let uploadsPlaylistId = "";
 
+// YouTube Player Instance અને મ્યુટ સ્ટેટ રાખવા માટેના ગ્લોબલ વેરીએબલ્સ
+let ytPlayer = null;
+let isMuted = false;
+
 const params = new URLSearchParams(window.location.search);
 const channelId = params.get("id");
 
@@ -65,16 +69,32 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
       container.innerHTML = "";
     }
 
-    data.items.forEach(video => {
-      if (video.snippet && video.snippet.resourceId) {
-        container.innerHTML += `
-          <div class="video-card" onclick="openVideo('${video.snippet.resourceId.videoId}')">
-            <img src="${video.snippet.thumbnails.high.url}">
-            <h3>${video.snippet.title}</h3>
-          </div>
-        `;
-      }
-    });
+data.items.forEach(video => {
+  if (video.snippet && video.snippet.resourceId) {
+    container.innerHTML += `
+      <div class="video-card" onclick="openVideo('${video.snippet.resourceId.videoId}')" style="margin-bottom: 20px; background: #1f1f1f; border-radius: 8px; overflow: hidden; padding-bottom: 10px;">
+        <img src="${video.snippet.thumbnails.high.url}" style="width: 100%; display: block;">
+        
+        <!-- અક્ષરો નાના કરવા, લાઇન વચ્ચે સ્પેસ રાખવા અને ટેક્સ્ટ કપાય નહીં તે માટેનું ફિક્સ -->
+        <h3 style="
+          font-size: 14px !important; 
+          font-weight: 500; 
+          line-height: 1.5 !important; 
+          margin: 10px; 
+          color: #ffffff;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          height: 50px;
+        ">
+          ${video.snippet.title}
+        </h3>
+      </div>
+    `;
+  }
+});
 
   } catch (error) {
     console.error(error);
@@ -83,41 +103,81 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
   }
 }
 
+// વિડિયો પર ક્લિક કરવાથી પોપઅપ ખુલશે અને કસ્ટમ કંટ્રોલ્સ સેટ થશે
 window.openVideo = async function(videoId) {
   const popup = document.getElementById("videoPopup");
-  const player = document.getElementById("youtubePlayer");
+  const playerIframe = document.getElementById("youtubePlayer");
 
   popup.style.display = "flex";
 
-  // અહીં આપણે થોડા વધારાના પેરામીટર્સ (iv_load_policy, modestbranding, અને controls) ઉમેર્યા છે
-  // જેથી પ્લેયરનો લુક એકદમ પ્રીમિયમ અને મીડિયમ સાઇઝના ફોન્ટ વાળો લાગે
-  player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&playsinline=0&fs=1&modestbranding=1&iv_load_policy=3&controls=1`;
+  // controls=0 થી જુના નાના કંટ્રોલ્સ ગાયબ થશે, અને enablejsapi=1 થી API એક્ટિવેટ થશે
+  playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
 
-  setTimeout(async () => {
-    try {
-      if (player.requestFullscreen) {
-        await player.requestFullscreen();
-        player.classList.add("fullscreen");
-      } else if (player.webkitRequestFullscreen) { /* Safari / iOS માટે */
-        await player.webkitRequestFullscreen();
-        player.classList.add("fullscreen");
+  // જો આઈફ્રેમ પ્લેયર પહેલેથી બનેલું ન હોય, તો નવું કન્સ્ટ્રક્ટ કરવું
+  if (!ytPlayer) {
+    ytPlayer = new YT.Player('youtubePlayer', {
+      events: {
+        'onReady': (event) => {
+          event.target.playVideo();
+          // મ્યુટ સ્ટેટ રીસેટ કરવું
+          isMuted = false;
+          const muteBtn = document.getElementById('muteBtn');
+          if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        }
       }
-    } catch (err) {
-      console.log("Fullscreen Error: ", err);
-    }
-  }, 400); // ૧ સેકન્ડ (1000ms) ના બદલે 400ms કર્યું જેથી યુઝરને બહુ મોટો લેગ (ઝટકો) ન દેખાય
+    });
+  }
 }
 
-// ફૂલસ્ક્રીન ચેન્જ લોજિક અને વેરિએબલ ડિક્લેરેશન (ફક્ત એક જ વાર)
-const youtubePlayer = document.getElementById("youtubePlayer");
+// કસ્ટમ બટન્સ માટેના કંટ્રોલ ફંક્શન્સ (HTML માંથી ઓન-ક્લિક પર ચાલશે)
+window.playVideo = function() {
+  if (ytPlayer && typeof ytPlayer.playVideo === "function") {
+    ytPlayer.playVideo();
+  }
+}
 
+window.pauseVideo = function() {
+  if (ytPlayer && typeof ytPlayer.pauseVideo === "function") {
+    ytPlayer.pauseVideo();
+  }
+}
+
+window.toggleMute = function() {
+  const muteBtn = document.getElementById('muteBtn');
+  if (ytPlayer && typeof ytPlayer.mute === "function") {
+    if (isMuted) {
+      ytPlayer.unMute();
+      isMuted = false;
+      if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+    } else {
+      ytPlayer.mute();
+      isMuted = true;
+      if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+    }
+  }
+}
+
+// કસ્ટમ ફૂલસ્ક્રીન અને આડી (Landscape) સ્ક્રીન લોક કરવાનું લોજિક
+window.toggleFullScreen = function() {
+  const container = document.querySelector('.video-container');
+  if (!document.fullscreenElement) {
+    container.requestFullscreen().catch(err => {
+      console.log(`Error full screen: ${err.message}`);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન સેટ કરવું
 document.addEventListener("fullscreenchange", async () => {
+  const playerIframe = document.getElementById("youtubePlayer");
   if (document.fullscreenElement) {
     try {
-      // સ્ક્રીનને લેન્ડસ્કેપ લોક કરવી
       if (screen.orientation && screen.orientation.lock) {
         await screen.orientation.lock("landscape");
       }
+      playerIframe.classList.add("fullscreen");
     } catch (err) {
       console.log("Orientation Lock Error: ", err);
     }
@@ -126,18 +186,24 @@ document.addEventListener("fullscreenchange", async () => {
       if (screen.orientation && screen.orientation.unlock) {
         screen.orientation.unlock();
       }
-      youtubePlayer.classList.remove("fullscreen");
+      playerIframe.classList.remove("fullscreen");
     } catch (err) {
       console.log(err);
     }
   }
 });
 
+// વિડિયો બંધ કરવાનું ફંક્શન
 window.closeVideo = function() {
   document.getElementById("videoPopup").style.display = "none";
   document.getElementById("youtubePlayer").src = "";
+  
+  if (ytPlayer && typeof ytPlayer.stopVideo === "function") {
+    ytPlayer.stopVideo();
+  }
 }
 
+// ઇન્ફિનิต સ્ક્રોલ લોડર (Intersection Observer)
 const observer = new IntersectionObserver(
   async (entries) => {
     if (entries[0].isIntersecting && !loading && nextPageToken) {
@@ -155,13 +221,10 @@ window.goHome = function() {
   window.location.href = "index.html";
 }
 
-// જ્યારે યુઝર હોમ બટન દબાવે અથવા સ્ક્રીન ઓફ કરે ત્યારે આ ઇવેન્ટ ટ્રિગર થશે
+// જ્યારે વેબસાઇટ બેકગ્રાઉન્ડમાં જાય ત્યારે વિડિયો સ્ટોપ થાય
 document.addEventListener("visibilitychange", function() {
-  // જો વેબસાઇટ બેકગ્રાઉન્ડમાં જતી રહે (Hidden થઈ જાય)
   if (document.hidden) {
     console.log("વેબસાઇટ બેકગ્રાઉન્ડમાં ગઈ, વિડિયો સ્ટોપ થાય છે...");
-    
-    // રીત ૧: જો વિડિયો પોપઅપમાં પ્લે થતો હોય, તો તેને બંધ (Close) કરી દો
     if (typeof window.closeVideo === "function") {
       window.closeVideo();
     }

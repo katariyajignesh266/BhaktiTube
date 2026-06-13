@@ -143,8 +143,8 @@ position:fixed;
 top:15px;
 left:15px;
 
-width:45px;
-height:45px;
+width:70px;
+height:70px;
 
 display:flex;
 align-items:center;
@@ -174,7 +174,7 @@ left:40px;
 
 color:white;
 
-font-size:50px;
+font-size:70px;
 
 cursor:pointer;
 
@@ -312,12 +312,12 @@ cursor:pointer;
 .channel-close-btn {
     position: absolute !important;
     top: 30px !important;       /* મોટું બટન હોવાથી જગ્યા વધારી */
-    right: 40px !important;     /* મોટું બટન હોવાથી જગ્યા વધારી */
-    font-size: 66px !important; /* ૨૨px ના ૩ ગણા = ૬૬px કર્યા */
+    right: 30px !important;     /* મોટું બટન હોવાથી જગ્યા વધારી */
+    font-size: 30px !important; /* ૨૨px ના ૩ ગણા = ૬૬px કર્યા */
     color: #ffffff !important;
     background: rgba(0, 0, 0, 0.7) !important; /* થોડો ડાર્ક શેડ આપ્યો જેથી મોટા બટન પાછળ સારું લાગે */
-    width: 120px !important;    /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
-    height: 120px !important;   /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
+    width: 70px !important;    /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
+    height: 70px !important;   /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
@@ -391,4 +391,177 @@ cursor:pointer;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+}
+
+
+/* ૧. આખી સ્ક્રીનમાં ફિટ કરવા માટેનું મેઈન વિડિયો કન્ટેનર */
+.video-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #000000;
+    overflow: hidden;
+}
+
+/* ૨. આઈફ્રેમ (YouTube પ્લેયર) નું સેટિંગ */
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    object-fit: cover;
+    pointer-events: auto; /* જેથી કસ્ટમ બટન સિવાયની જગ્યાએ ક્લિક કરવાથી વિડિયો પોઝ ન થાય */
+}
+
+/* ૩. કસ્ટમ કંટ્રોલ્સ પેનલ (બટનોનું મેઈન બોક્સ જે વીડિયોની ઉપર દેખાશે) */
+.custom-controls {
+    position: absolute;
+    bottom: 30px; /* મોબાઈલ સ્ક્રીનથી થોડું ઉપર રાખવા માટે */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 25px; /* બટનો વચ્ચે પરફેક્ટ જગ્યા */
+    z-index: 2147483647; /* ફૂલસ્ક્રીન મોડમાં પણ કંટ્રોલ્સ ઉપર રાખવા માટે સૌથી હાઈએસ્ટ વેલ્યુ */
+    background: rgba(0, 0, 0, 0.5); /* કંટ્રોલ્સની પાછળ ટ્રાન્સપરન્ટ કાળો શેડ */
+    padding: 12px 28px;
+    border-radius: 50px; /* આખું બોક્સ કેપ્સ્યુલ જેવું રાઉન્ડ દેખાશે */
+    backdrop-filter: blur(8px); /* પ્રીમિયમ લુક માટે બેકગ્રાઉન્ડ બ્લર ઈફેક્ટ */
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* ૪. સ્માર્ટફોન માટે એકદમ મોટા અને ક્લિયર કસ્ટમ બટન્સ */
+.control-btn {
+    background: rgba(255, 255, 255, 0.1); /* બટનની અંદર હળવો સફેદ શેડ */
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.4); /* આછો બોર્ડર કલર */
+    border-radius: 50%; /* બટનને ગોળ કરવા માટે */
+    width: 65px;  /* મોબાઈલમાં આસાનીથી ટચ થાય તેવી મોટી સાઈઝ */
+    height: 65px; /* મોબાઈલમાં આસાનીથી ટચ થાય તેવી મોટી સાઈઝ */
+    font-size: 26px; /* આઈકન (Play, Pause) ને એકદમ મોટા બતાવવા */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    -webkit-tap-highlight-color: transparent; /* મોબાઈલમાં ક્લિક કરતી વખતે આવતી વાદળી લાઈન હટાવવા */
+    transition: all 0.2s ease-in-out;
+}
+
+/* ૫. બટન પર આંગળી અડે કે ક્લિક થાય ત્યારની ઈફેક્ટ */
+.control-btn:active {
+    transform: scale(0.9); /* ક્લિક કરવાથી બટન સહેજ દબાશે */
+    background: rgba(255, 255, 255, 0.3); /* બેકગ્રાઉન્ડ થોડું ડાર્ક થશે */
+    color: #ff0000; /* આઈકનનો કલર લાલ (YouTube કલર) થઈ જશે */
+    border-color: #ff0000;
+}
+
+/* ૬. ફુલસ્ક્રીન મોડ માટે ખાસ વધારાનું સેટિંગ */
+.fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+
+.back-home {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 20px; /* આનાથી તીર (Arrow) નાનું થઈ જશે */
+    color: white;
+    cursor: pointer;
+    z-index: 100;
+}
+
+
+/* --- ૧. આખા પેજનું બેઝિક રીસેટ (ખૂબ જ જરૂરી) --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #121212; /* ડાર્ક થીમ */
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+
+.back-home i {
+    font-size: 18px; /* એરોની સાઈઝ અહીંથી નાની કરી */
+    color: #ffffff;
+}
+
+.back-home:active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- ૩. ચેનલ હેડર સેક્શન (લોગો અને નામ લાઈનમાં ગોઠવવા) --- */
+.channel-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 20px 20px 20px; /* ઉપરથી 60px જગ્યા મૂકી જેથી બેક બટન ન નડે */
+    border-bottom: 1px solid #282828;
+}
+
+/* ચેનલ લોગો ગોળ અને યોગ્ય સાઈઝનો કરવા */
+#channelLogo {
+    width: 80px;  /* લોગોની પરફેક્ટ સાઈઝ */
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ff0000; /* લોગોની આજુબાજુ રેડ બોર્ડર */
+    margin-bottom: 10px;
+}
+
+/* ચેનલનું નામ */
+#channelName {
+    font-size: 30px !important;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+/* સબસ્ક્રાઈબર્સ અને વિડિયો કાઉન્ટની ટેક્સ્ટ */
+#channelSubscribers, #channelVideos {
+    font-size: 5px; /* અક્ષરો નાના અને ડિસેન્ટ કર્યા */
+    color: #aaaaaa; /* આછો ગ્રે કલર */
+    margin-bottom: 2px;
+}
+
+/* --- ૪. વિડિયો ગ્રીડ લેઆઉટ (મોબાઈલમાં એક લાઈનમાં બે અથવા સરસ કાર્ડ દેખાય તે માટે) --- */
+#channelVideosContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* મોબાઈલ સ્ક્રીન પ્રમાણે ઓટો સેટ થશે */
+    gap: 15px;
+    padding: 15px;
+}
+
+.video-card {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.video-card img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
+.video-card h3 {
+    font-size: 12px; /* વિડિયો ટાઈટલના ફોન્ટ નાના કર્યા */
+    color: #ffffff;
+    padding: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* ટાઈટલ વધુમાં વધુ બે જ લાઈનનું દેખાશે */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }

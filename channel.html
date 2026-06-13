@@ -1,72 +1,59 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="gu">
 <head>
-
-<title>Channel</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link rel="stylesheet" href="channel.css">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="channel.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
 
-  <div class="back-home" onclick="goHome()">
+<div class="back-home" onclick="goHome()">
     <i class="fa-solid fa-arrow-left"></i>
 </div>
 
 <div class="channel-header">
-
-<img id="channelLogo">
-
-<h1 id="channelName"></h1>
-
-<p id="channelSubscribers"></p>
-
-<p id="channelVideos"></p>
-
+    <img id="channelLogo" alt="Logo">
+    
+    <h1 id="channelName" style="font-size: 20px !important; margin-bottom: 5px;"></h1>
+    <p id="channelSubscribers" style="font-size: 14px !important; margin: 2px 0; color: #aaa;"></p>
+    <p id="channelVideos" style="font-size: 14px !important; margin: 2px 0; color: #aaa;"></p>
 </div>
 
 <div id="channelVideosContainer"></div>
-
 <div id="loader" class="loader"></div>
-
 <div id="loadMoreTrigger"></div>
 
 <div id="videoPopup" class="video-popup">
-
-  <div class="popup-content">
-
-    <span class="channel-close-btn"
-          onclick="closeVideo()">
-      ✕
-    </span>
-
-    <iframe
-id="youtubePlayer"
-allowfullscreen
-allow="
-autoplay;
-fullscreen;
-accelerometer;
-clipboard-write;
-encrypted-media;
-gyroscope;
-picture-in-picture;
-web-share">
-</iframe>
-
-  </div>
-
+    <div class="popup-content">
+        <span class="channel-close-btn" onclick="closeVideo()">✕</span>
+        
+        <div class="video-container">
+            <iframe 
+                id="youtubePlayer" 
+                allowfullscreen 
+                allow="autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
+            </iframe>
+            
+            <div class="custom-controls">
+                <button onclick="playVideo()" class="control-btn" title="Play"><i class="fa-solid fa-play"></i></button>
+                <button onclick="pauseVideo()" class="control-btn" title="Pause"><i class="fa-solid fa-pause"></i></button>
+                <button onclick="toggleMute()" id="muteBtn" class="control-btn" title="Mute/Unmute"><i class="fa-solid fa-volume-high"></i></button>
+                <button onclick="toggleFullScreen()" class="control-btn" title="Full Screen"><i class="fa-solid fa-expand"></i></button>
+            </div>
+        </div>
+    </div>
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script type="module" src="channel.js"></script>
 
+<script>
+    function goHome() {
+        window.location.href = 'index.html';
+    }
+</script>
 </body>
-
 </html>
