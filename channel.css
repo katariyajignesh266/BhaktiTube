@@ -290,38 +290,41 @@ cursor:pointer;
     overflow: hidden !important;
 }
 
-/* ૨. આઇફ્રેમ પ્લેયર - મેજિક સ્કેલિંગ સેટિંગ */
+/* ૨. આઇફ્રેમ પ્લેયર - ૪ થી ૫ ગણું મેજિક સ્કેલિંગ સેટિંગ */
 .popup-content iframe {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
     
-   width: 100vw !important; /* આખા સ્ક્રીનની પહોળાઈ માટે */
-height: 100vh !important; /* આખા સ્ક્રીનની ઊંચાઈ માટે */
+    /* 100vw/vh રાખવાથી સ્કેલિંગ વખતે વિડિયો કપાશે નહીં અને બધું મોટું દેખાશે */
+    width: 100vw !important; 
+    height: 100vh !important;
 
-transform: translate(-50%, -50%) !important; /* સેન્ટરમાં લાવવા માટે */
-
-border: none !important;
-object-fit: cover !important;
+    /* સેન્ટર કરવા માટે અને બધું ૪.૫ ગણું (4.5x) મોટું કરવા માટે scale નો ઉપયોગ કર્યો */
+    transform: translate(-50%, -50%) scale(4.5) !important; 
+    
+    border: none !important;
+    object-fit: cover !important;
+    transform-origin: center center !important; /* બરાબર વચ્ચેથી મોટું થાય તે માટે */
 }
 
-/* ૩. વિડિયો ક્લોઝ (બંધ કરવાનું) બટન */
+/* ૩. વિડિયો ક્લોઝ (બંધ કરવાનું) બટન - ૩ ગણું મોટું કર્યું */
 .channel-close-btn {
     position: absolute !important;
-    top: 15px !important;
-    right: 20px !important;
-    font-size: 22px !important;
+    top: 30px !important;       /* મોટું બટન હોવાથી જગ્યા વધારી */
+    right: 40px !important;     /* મોટું બટન હોવાથી જગ્યા વધારી */
+    font-size: 66px !important; /* ૨૨px ના ૩ ગણા = ૬૬px કર્યા */
     color: #ffffff !important;
-    background: rgba(0, 0, 0, 0.6) !important; /* પાછળ બ્લેક શેડ જેથી વિડિયો ચાલુ હોય તો પણ ચોખ્ખું દેખાય */
-    width: 40px !important;
-    height: 40px !important;
+    background: rgba(0, 0, 0, 0.7) !important; /* થોડો ડાર્ક શેડ આપ્યો જેથી મોટા બટન પાછળ સારું લાગે */
+    width: 120px !important;    /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
+    height: 120px !important;   /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     z-index: 100000 !important; /* આઇફ્રેમની ઉપર રાખવા માટે */
-    text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
 }
 
 /* યુટ્યુબના નકામા મોટા ઓવરલે અને બટન્સને હાઇડ કરવા માટે */
