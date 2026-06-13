@@ -606,30 +606,22 @@ body {
    ૨. ફૂલ સ્ક્રીન મોડ - બટનને સાવ જમણે ખૂણામાં ફિક્સ કરવાનો ફિક્સ
    ============================================================ */
 
-/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ્સ પેનલને આખી સ્ક્રીન પર ફોર્સ કરો */
+/* ફૂલ સ્ક્રીન વખતે આખી પેનલને સાઇડમાં રાખો અથવા છુપાવો નહીં, માત્ર બટનને ટાર્ગેટ કરો */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100vw !important;  /* આખી સ્ક્રીનની પહોળાઈ */
-    height: 100vh !important; /* આખી સ્ક્રીનની ઊંચાઈ */
+    width: 100% !important;
+    height: 100% !important;
     background: transparent !important;
     border: none !important;
     backdrop-filter: none !important;
     border-radius: 0 !important;
-    
-    /* આ રૂલ્સ બટનને એકદમ જમણી બાજુ નીચે ધકેલશે */
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: flex-end !important; /* સાવ જમણે */
-    align-items: flex-end !important;    /* સાવ નીચે */
-    
-    padding: 12px !important;            /* ખૂણાથી અંતર (સ્ક્રીનની બોર્ડર પાસે રાખવા ઓછું કર્યું) */
-    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
     pointer-events: none !important;
     z-index: 2147483647 !important;
-    margin: 0 !important;
 }
 
 /* પ્લે, પોઝ, મ્યુટ બટન સાવ ગાયબ */
@@ -638,9 +630,13 @@ body {
     display: none !important;
 }
 
-/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન - સાવ ખૂણામાં નાનું અને ફિક્સ */
+/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન - હવે absolute/fixed પોઝિશનથી સાવ જમણા ખૂણે સેટ થશે */
 .video-container:fullscreen .custom-controls button:last-child,
 .video-container:-webkit-full-screen .custom-controls button:last-child {
+    position: fixed !important;   /* આખા સ્ક્રીનની સાપેક્ષમાં લોક કરવા */
+    right: 16px !important;       /* જમણી બાજુથી ૧૬ પિક્સલની જગ્યા (તમે 0 પણ કરી શકો) */
+    bottom: 16px !important;      /* નીચેથી ૧૬ પિક્સલની જગ્યા */
+    
     pointer-events: auto !important;
     font-size: 14px !important;
     background: rgba(0, 0, 0, 0.6) !important; /* વીડિયો પર સરસ દેખાય તેવું બ્લેક બેકગ્રાઉન્ડ */
@@ -653,10 +649,7 @@ body {
     justify-content: center !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.5) !important;
-    
-    /* બટનને સેન્ટરમાં આવતા રોકવા માટે ફોર્સ પ્રોપર્ટીઝ */
     margin: 0 !important;
-    position: relative !important;
 }
 
 /* બટન ટચ ઇફેક્ટ */
