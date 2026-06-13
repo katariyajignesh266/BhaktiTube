@@ -565,3 +565,14 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+
+/* જ્યારે એલિમેન્ટ ફૂલ સ્ક્રીનમાં હોય, ત્યારે આ કંટ્રોલ્સ હાઇડ થઈ જશે */
+:fullscreen .custom-controls {
+    display: none;
+}
+
+/* આ સફારી (Safari) બ્રાઉઝર માટે */
+:-webkit-full-screen .custom-controls {
+    display: none;
+}
