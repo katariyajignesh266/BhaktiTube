@@ -630,19 +630,22 @@ body {
     display: none !important;
 }
 
-/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન - હવે absolute/fixed પોઝિશનથી સાવ જમણા ખૂણે સેટ થશે */
+/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન - સાવ ખૂણામાં નાનું અને ફિક્સ */
 .video-container:fullscreen .custom-controls button:last-child,
 .video-container:-webkit-full-screen .custom-controls button:last-child {
-    position: fixed !important;   /* આખા સ્ક્રીનની સાપેક્ષમાં લોક કરવા */
-    right: 16px !important;       /* જમણી બાજુથી ૧૬ પિક્સલની જગ્યા (તમે 0 પણ કરી શકો) */
-    bottom: 16px !important;      /* નીચેથી ૧૬ પિક્સલની જગ્યા */
+    position: fixed !important;
+    right: 16px !important;    /* જમણી બોર્ડરથી અંતર */
+    bottom: 16px !important;   /* નીચેની બોર્ડરથી અંતર */
+    left: auto !important;     /* સેન્ટરમાં આવતું રોકવા માટે */
+    top: auto !important;      /* સેન્ટરમાં આવતું રોકવા માટે */
+    transform: none !important; /* કોઈપણ સેન્ટરિંગ ટ્રાન્સફોર્મને ડિસેબલ કરવા */
     
     pointer-events: auto !important;
     font-size: 14px !important;
-    background: rgba(0, 0, 0, 0.6) !important; /* વીડિયો પર સરસ દેખાય તેવું બ્લેક બેકગ્રાઉન્ડ */
+    background: rgba(0, 0, 0, 0.6) !important;
     color: #ffffff !important;
     border-radius: 6px !important;
-    width: 38px !important;               /* નાની કમ્ફર્ટેબલ સાઇઝ */
+    width: 38px !important;
     height: 38px !important;
     display: flex !important;
     align-items: center !important;

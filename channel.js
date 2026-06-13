@@ -169,9 +169,12 @@ window.toggleFullScreen = function() {
 }
 
 // જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન અને ક્લાસ સેટ કરવા
+// જ્યારે આખું કન્ટેનર ફૂલસ્ક્રીન મોડમાં જાય/આવે ત્યારે ઓરિએન્ટેશન અને ક્લાસ સેટ કરવા
 document.addEventListener("fullscreenchange", async () => {
   const playerIframe = document.getElementById("youtubePlayer");
   const container = document.querySelector('.video-container');
+  // છેલ્લું બટન (જે એક્ઝિટ ફૂલસ્ક્રીન માટેનું છે)
+  const lastBtn = document.querySelector('.custom-controls button:last-child');
   
   if (document.fullscreenElement) {
     try {
@@ -179,6 +182,16 @@ document.addEventListener("fullscreenchange", async () => {
         await screen.orientation.lock("landscape");
       }
       playerIframe.classList.add("fullscreen");
+      
+      // મોબાઈલ ડિફોલ્ટ ઓવરરાઈડ તોડવા માટે બટનને ફોર્સફુલી સાવ જમણે અને નીચે લોક કરો
+      if (lastBtn) {
+        lastBtn.style.setProperty('position', 'fixed', 'important');
+        lastBtn.style.setProperty('right', '16px', 'important');
+        lastBtn.style.setProperty('bottom', '16px', 'important');
+        lastBtn.style.setProperty('left', 'auto', 'important');
+        lastBtn.style.setProperty('top', 'auto', 'important');
+        lastBtn.style.setProperty('transform', 'none', 'important');
+      }
       
       // ફૂલ સ્ક્રીન થતાં જ ઓટો-હાઇડ લોજિક શરૂ કરો
       showControlsAndSetTimeout();
@@ -196,6 +209,16 @@ document.addEventListener("fullscreenchange", async () => {
         screen.orientation.unlock();
       }
       playerIframe.classList.remove("fullscreen");
+      
+      // નોર્મલ મોડમાં આવતા જ ફોર્સ કરેલી સ્ટાઈલ હટાવી દો જેથી તે પાછું તેની જગ્યાએ ગોઠવાઈ જાય
+      if (lastBtn) {
+        lastBtn.style.removeProperty('position');
+        lastBtn.style.removeProperty('right');
+        lastBtn.style.removeProperty('bottom');
+        lastBtn.style.removeProperty('left');
+        lastBtn.style.removeProperty('top');
+        lastBtn.style.removeProperty('transform');
+      }
       
       // નોર્મલ સ્ક્રીન થતાં ઇવેન્ટ્સ અને ટાઈમર રિમૂવ કરવા
       clearTimeout(controlsTimeout);
