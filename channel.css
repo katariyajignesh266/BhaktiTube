@@ -296,16 +296,13 @@ cursor:pointer;
     top: 50% !important;
     left: 50% !important;
     
-    /* સાઇઝને ૨ ગણી (200%) મોટી કરો - જેથી અંદરના ફોન્ટ અને આઇકન મીડિયમ-નાના (Medium-Small) થઈ જશે, જે સ્ક્રીનશોટ જેવા જ લાગશે */
-    width: 200vw !important;
-    height: 200vh !important;
-    
-    /* સેન્ટરમાં લાવીને પાછું 0.5 (અડધું) સ્કેલ ડાઉન કરો, જેથી વિડિયો પરફેક્ટ સાઇઝમાં આખી સ્ક્રીન કવર કરી લે */
-    transform: translate(-50%, -50%) scale(0.5) !important;
-    transform-origin: center center !important;
-    
-    border: none !important;
-    object-fit: cover !important;
+   width: 100vw !important; /* આખા સ્ક્રીનની પહોળાઈ માટે */
+height: 100vh !important; /* આખા સ્ક્રીનની ઊંચાઈ માટે */
+
+transform: translate(-50%, -50%) !important; /* સેન્ટરમાં લાવવા માટે */
+
+border: none !important;
+object-fit: cover !important;
 }
 
 /* ૩. વિડિયો ક્લોઝ (બંધ કરવાનું) બટન */

@@ -665,3 +665,125 @@ height:100%;
 }
 
 
+/* 400px કે તેથી નાની સ્ક્રીન (જેમ કે Samsung Galaxy S8+ - 360px) માટે */
+@media (max-width: 400px) {
+
+  /* શોર્ટ્સ કન્ટેનર અને કાર્ડ સેટઅપ */
+  .short-card {
+    height: 100vh !important;
+    width: 100vw !important;
+    position: relative;
+  }
+
+  /* યુટ્યુબ પ્લેયર ફૂલ સ્ક્રીન પ્રોપર સેટ કરવા */
+  .youtube-player {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+  }
+
+  /* ચેનલ ઓવરલે (ચેનલ નામ, લોગો અને ટાઇટલ) - લિટલ બીટ મોટું કર્યું */
+  .channel-overlay {
+    bottom: 80px !important; /* બોટમ બારથી સહેજ ઉપર */
+    left: 14px !important;
+    right: 80px !important;  /* સાઇડના બટન્સ સાથે ઓવરલેપ ન થાય તે માટે સ્પેસ */
+    z-index: 10;
+  }
+
+  /* JavaScript માંથી બનતી રો ને લિટલ બીટ મોટી અને પ્રોપર કરી */
+  .channel-profile-row {
+    max-width: calc(100vw - 95px) !important;
+    gap: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .channel-logo {
+    width: 40px !important; /* લોગો 36px થી વધારીને 40px કર્યો */
+    height: 40px !important;
+  }
+
+  .channel-profile-row h4 {
+    font-size: 15px !important; /* ચેનલ હેન્ડલ (@username) સહેજ મોટું કર્યું */
+    font-weight: 600 !important;
+  }
+
+  /* સબસ્ક્રાઇબ બટન - પ્રીમિયમ લુક */
+  .subscribe-btn {
+    padding: 6px 14px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    border-radius: 18px !important;
+  }
+
+  /* શોર્ટ્સનું મેઈન ટાઇટલ/ડિસ્ક્રિપ્શન */
+  .channel-overlay p {
+    font-size: 14px !important; /* વાંચવામાં સરળ રહે તેવું મોટું કર્યું */
+    line-height: 1.4 !important;
+    margin-top: 6px !important;
+    max-height: 2.8em;
+    overflow: hidden;
+  }
+
+  /* સાઇડ એક્શન બટન્સ (Like, Dislike, Share, Remix) - લિટલ બીટ મોટા અને પ્રોપર સ્પેસિંગ */
+  .actions {
+    position: absolute !important;
+    right: 12px !important;
+    bottom: 100px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 18px !important; /* બટન્સ વચ્ચે પ્રોપર ગેપ રાખ્યો જેથી ખોટું ક્લિક ન થાય */
+    align-items: center !important;
+    z-index: 10;
+  }
+
+  /* દરેક આઇકન આઇટમ */
+  .action-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 5px !important;
+    cursor: pointer;
+  }
+
+  /* SVG આઇકન્સની સાઇઝ લિટલ બીટ મોટી કરી */
+  .actions svg {
+    width: 28px !important;  /* 24px થી વધારીને 28px કર્યા */
+    height: 28px !important;
+    fill: #ffffff !important;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.6)); /* વીડિયો પર આઇકન ચોખ્ખા દેખાય તે માટે શેડો */
+    transition: transform 0.2s ease;
+  }
+  
+  .actions .action-item:active svg {
+    transform: scale(0.9); /* ક્લિક કરતી વખતે સરસ ટચ ફીડબેક આવશે */
+  }
+
+  /* આઇકનની નીચે લખાતા ટેક્સ્ટ (Like Count, Share, etc.) */
+  .actions span {
+    font-size: 12px !important; /* ઝીણું ન લાગે તે માટે સહેજ મોટું કર્યું */
+    font-weight: 500 !important;
+    color: #ffffff !important;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  /* મ્યુઝિક ઓડિયો ટ્રેક આઇકન (જે ગોળ ગોળ ફરે છે) */
+  .audio-track-icon {
+    width: 35px !important; /* સહેજ મોટું અને નેટિવ યુટ્યુબ જેવું */
+    height: 35px !important;
+    border-radius: 50% !important;
+    border: 2px solid #ffffff !important;
+    margin-top: 5px !important;
+  }
+
+  /* માસ્ક અને ગ્રેડિયન્ટ (જેથી નીચેનું વાઇટ ટેક્સ્ટ બ્લેક વીડિયો બેકગ્રાઉન્ડ પર પરફેક્ટ વંચાય) */
+  .gradient {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 25% !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent) !important;
+    pointer-events: none !important;
+  }
+}
+

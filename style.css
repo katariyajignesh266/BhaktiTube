@@ -2597,121 +2597,120 @@ transform:scale(1.08);
 /* 400px કે તેથી નાની સ્ક્રીન (જેમ કે Samsung Galaxy S8+ - 360px) માટે */
 @media (max-width: 400px) {
   
-  /* હેડર અને આઇકન્સ નાના કરવા માટે */
+  /* હેડર અને આઇકન્સ - લિટલ બીટ મોટા કર્યા */
   .header {
-    padding: 8px 12px !important; /* હેડરની અંદરની જગ્યા ઓછી કરવા */
+    padding: 10px 14px !important; /* અંદરની સ્પેસ થોડી વધારી */
   }
 
   .left-header {
-    gap: 10px !important;
+    gap: 12px !important;
   }
 
   .left-header .fa-bars {
-    font-size: 16px !important; /* મેનુ આઇકન નાનો કરવા */
+    font-size: 18px !important; /* મેનુ આઇકન સહેજ મોટો કર્યો */
   }
 
   .site-logo {
-    height: 24px !important; /* લોગો નાનો કરવા */
+    height: 28px !important; /* લોગોની સાઇઝ પ્રોપર કરી */
     width: auto;
   }
 
   .logo span {
-    font-size: 16px !important; /* BhaktiTube ટેક્સ્ટ નાનું કરવા */
+    font-size: 18px !important; /* BhaktiTube ટેક્સ્ટ થોડું મોટું કર્યું */
     font-weight: 600;
   }
 
   .right-header {
-    gap: 12px !important;
+    gap: 16px !important; /* આઇકન્સ વચ્ચે જગ્યા વધારી */
   }
 
   .right-header i {
-    font-size: 16px !important; /* સર્ચ અને બેલ આઇકન નાના કરવા */
+    font-size: 18px !important; /* સર્ચ અને બેલ આઇકન મોટા કર્યા */
   }
 
   /* નોટિફિકેશન કાઉન્ટ બેજ */
   #notificationCount {
-    font-size: 9px !important;
-    padding: 1px 4px !important;
-    top: -5px !important;
-    right: -5px !important;
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    top: -6px !important;
+    right: -6px !important;
   }
 
-  /* પ્રોફાઇલ પિક્ચર કદ - ગૂગલ ઇમેજ ક્રેશ ન થાય તે રીતે */
+  /* પ્રોફાઇલ પિક્ચર કદ */
   .profile {
-    width: 28px !important;
-    height: 28px !important;
+    width: 32px !important; /* 28px થી વધારીને 32px કર્યું */
+    height: 32px !important;
   }
   
   .profile img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important; /* આનાથી ગૂગલનો ફોટો પ્રોપર કટ થયા વગર સેટ થશે */
+    object-fit: cover !important;
     border-radius: 50% !important;
   }
 
   /* કેટેગરી બટન્સ (All, Bhakti, Gujarati...) */
   .category-section {
-    padding: 6px 8px !important;
-    gap: 6px !important;
+    padding: 8px 10px !important;
+    gap: 8px !important;
   }
 
   .category-section button {
-    padding: 5px 10px !important;
-    font-size: 11px !important; /* ફોન્ટ સાઇઝ નાની કરી */
+    padding: 6px 12px !important; /* બટન થોડા મોટા અને ટચ-ફ્રેન્ડલી કર્યા */
+    font-size: 13px !important; /* ફોન્ટ સાઇઝ 11px થી 13px કરી */
     border-radius: 15px !important;
   }
 
   /* ચેનલ સેક્શનનું હેડિંગ */
   .channels-section h2 {
-    font-size: 16px !important;
-    margin-left: 12px !important;
-    margin-bottom: 10px !important;
+    font-size: 18px !important; /* 'Featured Channels' હેડિંગ મોટું કર્યું */
+    margin-left: 14px !important;
+    margin-bottom: 12px !important;
   }
 
-  /* ફેવરેટ ચેનલ કાર્ડ્સ નાના કરવા (જે S20 Ultra માં દેખાય છે તેવા) */
+  /* ફેવરેટ ચેનલ કાર્ડ્સ */
   .channels-container {
-    padding: 0 12px !important;
+    padding: 0 14px !important;
   }
 
-  /* જો તમે કાર્ડ માટે કોઈ ક્લાસ વાપર્યો હોય (જેમ કે .channel-card) */
+  /* ચેનલ કાર્ડ - જે અત્યારે ખુબ સાંકડું લાગે છે તેને પ્રોપર કર્યું */
   .channels-container > div { 
-    padding: 15px !important; /* અંદરનું પેડિંગ ઓછું કર્યું */
-    max-width: 260px !important; /* કાર્ડ બહુ મોટું ન દેખાય તે માટે */
+    padding: 20px !important; /* અંદરનું સ્પેસિંગ વધાર્યું */
+    max-width: 300px !important; /* 260px થી વધારીને 300px કર્યું જેથી લુક ભરેલો લાગે */
     margin: 0 auto !important;
   }
 
   /* ચેનલ પ્રોફાઇલ ઇમેજ (કાર્ડની અંદર) */
   .channels-container img {
-    width: 70px !important;  /* ગોળ ફોટો નાનો કર્યો */
-    height: 70px !important;
+    width: 85px !important;  /* ગોળ ફોટો 70px થી વધારીને 85px કર્યો */
+    height: 85px !important;
   }
 
-  /* ચેનલનું નામ અને સબસ્ક્રાઇબર્સની વિગત */
+  /* ચેનલનું નામ અને સબસ્كرાઇબર્સની વિગત */
   .channels-container h3, 
   .channels-container .channel-name {
-    font-size: 18px !important; /* Loveneet Valecha લખાણ નાનું કર્યું */
-    margin-top: 8px !important;
+    font-size: 20px !important; /* નામ સરસ રીતે હાઇલાઇટ થાય તેવું મોટું કર્યું */
+    margin-top: 10px !important;
   }
 
   .channels-container p,
   .channels-container .channel-stats {
-    font-size: 12px !important; /* 10,200,000 અને 171 Videos વાળી લાઇન નાની કરી */
-    gap: 5px !important;
+    font-size: 13px !important; /* આંકડા વાંચવામાં સરળ રહે તેવા સહેજ મોટા કર્યા */
+    gap: 6px !important;
   }
 
   /* View Channel બટન */
   .channels-container button,
   .channels-container .view-btn {
-    padding: 6px 14px !important;
-    font-size: 12px !important;
-    margin-top: 10px !important;
+    padding: 8px 18px !important; /* બટનનો લુક બોલ્ડ અને પ્રીમિયમ કર્યો */
+    font-size: 14px !important; /* ટેક્સ્ટ 12px થી 14px કર્યું */
+    margin-top: 14px !important;
   }
   
   /* શોર્ટ્સ (Bolt) આઇકન નીચેની બારમાં */
   .bottom-shorts-bar button {
-    width: 40px !important;
-    height: 40px !important;
-    font-size: 16px !important;
+    width: 46px !important; /* નીચેનું રેડ બટન સહેજ મોટું કર્યું */
+    height: 46px !important;
+    font-size: 18px !important;
   }
 }
-

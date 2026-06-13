@@ -189,6 +189,8 @@ if(player.requestFullscreen){
 
 await player.requestFullscreen();
 
+player.classList.add("fullscreen");
+
 }
 
 }
@@ -201,6 +203,9 @@ console.log(err);
 },1000);
 
 }
+
+
+
 
 window.closeVideo = function(){
 
@@ -277,6 +282,8 @@ console.log(err);
 try{
 
 screen.orientation.unlock();
+
+player.classList.remove("fullscreen");
 
 }catch(err){
 
