@@ -170,39 +170,55 @@ loader.style.display = "none";
 
 window.openVideo = async function(videoId){
 
-const popup =
-document.getElementById("videoPopup");
+    const popup = document.getElementById("videoPopup");
+    const player = document.getElementById("youtubePlayer");
 
-const player =
-document.getElementById("youtubePlayer");
+    popup.style.display = "flex";
 
-popup.style.display = "flex";
+    // અહીં આપણે થોડા વધારાના પેરામીટર્સ (iv_load_policy, modestbranding, અને controls) ઉમેર્યા છે
+    // જેથી પ્લેયરનો લુક એકદમ પ્રીમિયમ અને મીડિયમ સાઇઝના ફોન્ટ વાળો લાગે
+    player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&playsinline=0&fs=1&modestbranding=1&iv_load_policy=3&controls=1`;
 
-player.src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&playsinline=0&fs=1`;
-
-setTimeout(async()=>{
-
-try{
-
-if(player.requestFullscreen){
-
-await player.requestFullscreen();
-
-player.classList.add("fullscreen");
-
+    setTimeout(async()=>{
+        try{
+            if(player.requestFullscreen){
+                await player.requestFullscreen();
+                player.classList.add("fullscreen");
+            } else if(player.webkitRequestFullscreen) { /* Safari / iOS માટે */
+                await player.webkitRequestFullscreen();
+                player.classList.add("fullscreen");
+            }
+        }
+        catch(err){
+            console.log("Fullscreen Error: ", err);
+        }
+    }, 400); // ૧ સેકન્ડ (1000ms) ના બદલે 400ms કર્યું જેથી યુઝરને બહુ મોટો લેગ (ઝટકો) ન દેખાય
 }
 
-}
-catch(err){
+// ફૂલસ્ક્રીન ચેન્જ લોજિક
+const youtubePlayer = document.getElementById("youtubePlayer");
 
-console.log(err);
-
-}
-
-},1000);
-
-}
+document.addEventListener("fullscreenchange", async () => {
+    if (document.fullscreenElement) {
+        try {
+            // સ્ક્રીનને લેન્ડસ્કેપ લોક કરવી
+            if (screen.orientation && screen.orientation.lock) {
+                await screen.orientation.lock("landscape");
+            }
+        } catch (err) {
+            console.log("Orientation Lock Error: ", err);
+        }
+    } else {
+        try {
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+            youtubePlayer.classList.remove("fullscreen"); 
+        } catch (err) {
+            console.log(err);
+        }
+    }
+});
 
 
 
@@ -284,3 +300,28 @@ window.location.href =
 "index.html";
 
 }
+
+
+// જ્યારે યુઝર હોમ બટન દબાવે અથવા સ્ક્રીન ઓફ કરે ત્યારે આ ઇવેન્ટ ટ્રિગર થશે
+document.addEventListener("visibilitychange", function() {
+    
+    // જો વેબસાઇટ બેકગ્રાઉન્ડમાં જતી રહે (Hidden થઈ જાય)
+    if (document.hidden) {
+        
+        console.log("વેબસાઇટ બેકગ્રાઉન્ડમાં ગઈ, વિડિયો સ્ટોપ થાય છે...");
+        
+        // રીત ૧: જો વિડિયો પોપઅપમાં પ્લે થતો હોય, તો તેને બંધ (Close) કરી દો
+        // આનાથી વિડિયો પણ બંધ થઈ જશે અને પ્લેયર પણ ક્લીન થઈ જશે
+        if (typeof window.closeVideo === "function") {
+            window.closeVideo();
+        }
+        
+        /* // રીત ૨: જો તમારે પોપઅપ બંધ ન કરવું હોય અને માત્ર વિડિયો પોઝ કરવો હોય, 
+        // તો નીચેનો કોડ વાપરી શકો (iframe નો સોર્સ ખાલી કરવા માટે):
+        const player = document.getElementById("youtubePlayer");
+        if (player) {
+            player.src = ""; 
+        }
+        */
+    }
+});
