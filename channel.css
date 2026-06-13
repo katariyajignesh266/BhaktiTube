@@ -301,7 +301,7 @@ cursor:pointer;
     height: 100vh !important;
 
     /* સેન્ટર કરવા માટે અને બધું ૪.૫ ગણું (4.5x) મોટું કરવા માટે scale નો ઉપયોગ કર્યો */
-    transform: translate(-50%, -50%) scale(4.5) !important; 
+    transform: translate(-50%, -50%) scale(1.5) !important; 
     
     border: none !important;
     object-fit: cover !important;
@@ -336,4 +336,40 @@ cursor:pointer;
     display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;
+}
+
+
+/* જ્યારે YouTube Player ફૂલસ્ક્રીન મોડમાં હોય ત્યારે */
+#youtubePlayer:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: contain !important; /* વિડિયોનો રેશિયો જળવાઈ રહેશે */
+    background-color: #000000 !important; /* પાછળ બ્લેક કલર રહેશે જેથી લુક સારો આવે */
+    margin: 0 !important;
+    padding: 0 !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important; /* આનાથી વિડિયો એકદમ પ્રોપર સેન્ટરમાં આવી જશે */
+}
+
+/* અલગ-અલગ બ્રાઉઝર્સ (Chrome, Safari, Firefox) માટે સપોર્ટ */
+#youtubePlayer:-webkit-full-screen {
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background-color: #000 !important;
+}
+
+#youtubePlayer:-ms-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
 }

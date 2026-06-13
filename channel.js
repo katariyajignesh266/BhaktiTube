@@ -258,43 +258,25 @@ document.getElementById(
 "youtubePlayer"
 );
 
-document.addEventListener(
-"fullscreenchange",
-
-async ()=>{
-
-if(document.fullscreenElement){
-
-try{
-
-await screen.orientation.lock(
-"landscape"
-);
-
-}catch(err){
-
-console.log(err);
-
-}
-
-}else{
-
-try{
-
-screen.orientation.unlock();
-
-player.classList.remove("fullscreen");
-
-}catch(err){
-
-console.log(err);
-
-}
-
-}
-
-}
-);
+document.addEventListener("fullscreenchange", async () => {
+    if (document.fullscreenElement) {
+        try {
+            await screen.orientation.lock("landscape");
+        } catch (err) {
+            console.log(err);
+        }
+    } else {
+        try {
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+            // અહિયાં 'player' ની જગ્યાએ 'youtubePlayer' લખવું કારણ કે ઉપર વેરિએબલ એ નામે છે
+            youtubePlayer.classList.remove("fullscreen"); 
+        } catch (err) {
+            console.log(err);
+        }
+    }
+});
 
 window.goHome = function(){
 
