@@ -567,12 +567,15 @@ body {
 }
 
 
-/* જ્યારે એલિમેન્ટ ફૂલ સ્ક્રીનમાં હોય, ત્યારે આ કંટ્રોલ્સ હાઇડ થઈ જશે */
+
+
+/* ફૂલ સ્ક્રીનમાં કંટ્રોલ્સ સામાન્ય રીતે હાઇડ રહેશે */
 :fullscreen .custom-controls {
-    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-/* આ સફારી (Safari) બ્રાઉઝર માટે */
-:-webkit-full-screen .custom-controls {
-    display: none;
+/* પણ જ્યારે યુઝર માઉસ હલાવશે (Hover કરશે) ત્યારે દેખાશે */
+:fullscreen #video-container:hover .custom-controls {
+    opacity: 1;
 }
