@@ -1,375 +1,91 @@
+/* --- ૧. આખા પેજનું બેઝિક રીસેટ --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
 /* CHANNEL HEADER */
-
-.channel-header{
-
-padding:25px 15px;
-
-text-align:center;
-
-background:#181818;
-
-border-bottom:1px solid #333;
+.channel-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 20px 20px 20px;
+    border-bottom: 1px solid #282828;
 }
 
-#channelLogo{
-
-width:90px;
-height:90px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-margin-bottom:12px;
+#channelLogo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ff0000;
+    margin-bottom: 10px;
 }
 
-/* Channel Name */
-
-#channelName{
-
-font-size:28px;
-
-font-weight:700;
-
-color:white;
-
-margin-bottom:10px;
+#channelName {
+    font-size: 30px !important;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ffffff;
 }
 
-/* Subscribers */
-
-#channelSubscribers{
-
-font-size:18px;
-
-color:#cfcfcf;
-
-margin-bottom:6px;
+#channelSubscribers, #channelVideos {
+    font-size: 14px; /* અક્ષરો વ્યવસ્થિત કર્યા */
+    color: #aaaaaa;
+    margin-bottom: 2px;
 }
 
-/* Total Videos */
-
-#channelVideos{
-
-font-size:18px;
-
-color:#cfcfcf;
+/* VIDEO GRID & CARDS */
+#channelVideosContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    padding: 15px;
 }
 
-/* VIDEO GRID */
-
-#channelVideosContainer{
-
-padding:15px;
-
-display:flex;
-
-flex-direction:column;
-
-gap:20px;
+.video-card {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
-/* VIDEO CARD */
-
-.video-card{
-
-background:#1c1c1c;
-
-border-radius:16px;
-
-overflow:hidden;
-
-cursor:pointer;
+.video-card img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
 }
 
-.video-card img{
-
-width:100%;
-
-display:block;
+.video-card h3 {
+    font-size: 12px;
+    color: #ffffff;
+    padding: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.video-card h3{
-
-font-size:20px;
-
-line-height:1.5;
-
-font-weight:600;
-
-color:white;
-
-padding:12px;
-
-word-break:break-word;
+.back-home {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    z-index: 100;
 }
 
-
-
-#channelName{
-font-size:50px !important;
-font-weight:700;
-color:#ffffff !important;
-margin-bottom:12px;
-
-}
-
-#channelSubscribers{
-font-size:30px !important;
-color:#aaaaaa !important;
-margin-bottom:8px;
-
-}
-
-#channelVideos{
-font-size:30px !important;
-color:#8f8f8f !important;
-margin-bottom:15px;
-
-}
-
-.video-card h3{
-font-size:43px !important;
-font-weight:600;
-color:#ffffff !important;
-line-height:1.4;
-padding:14px;
-}
-
-.back-home{
-
-position:fixed;
-
-top:15px;
-left:15px;
-
-width:70px;
-height:70px;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-background:#202020;
-
-border-radius:50%;
-
-color:white;
-
-font-size:22px;
-
-cursor:pointer;
-
-z-index:9999;
-
-box-shadow:0 4px 10px rgba(0,0,0,.4);
-}
-
-.back-home{
-
-position:fixed;
-
-top:40px;
-left:40px;
-
-color:white;
-
-font-size:70px;
-
-cursor:pointer;
-
-z-index:9999;
-
-background:none;
-
-}
-
-.back-home:hover{
-
-background:#303030;
-
-}
-
-/* MOBILE */
-
-@media (max-width:768px){
-
-.channel-header{
-padding:20px 12px;
-}
-
-#channelLogo{
-width:80px;
-height:80px;
-margin-bottom:10px;
-}
-
-#channelName{
-font-size:34px !important;
-margin-bottom:10px;
-}
-
-#channelSubscribers{
-font-size:20px !important;
-margin-bottom:6px;
-}
-
-#channelVideos{
-font-size:20px !important;
-margin-bottom:12px;
-}
-
-#channelVideosContainer{
-padding:10px;
-gap:15px;
-}
-
-.video-card{
-border-radius:12px;
-}
-
-.video-card h3{
-font-size:24px !important;
-line-height:1.5;
-padding:12px;
-}
-
-}
-
-.channel-close-btn{
-
-position:fixed;
-
-top:20px;
-left:20px;
-
-width:120px;
-height:120px;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-background:rgba(0,0,0,.6);
-
-border-radius:50%;
-
-font-size:55px;
-
-color:white;
-
-z-index:999999;
-
-cursor:pointer;
-
-}
-
-/* ૧. વિડિયો પોપઅપ કન્ટેનર (આખી સ્ક્રીન કવર કરશે અને બ્લેક બેકગ્રાઉન્ડ આપશે) */
-.video-popup {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background-color: #000000 !important;
-    z-index: 99999 !important; /* સૌથી ઉપર દેખાય તે માટે */
-    display: none; /* JS થી flex થશે */
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-}
-
-/* પોપઅપની અંદરનું મેઈન કન્ટેન્ટ બોક્સ */
-.popup-content {
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-}
-
-/* ૨. આઇફ્રેમ પ્લેયર - ૪ થી ૫ ગણું મેજિક સ્કેલિંગ સેટિંગ */
-.popup-content iframe {
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    
-    /* 100vw/vh રાખવાથી સ્કેલિંગ વખતે વિડિયો કપાશે નહીં અને બધું મોટું દેખાશે */
-    width: 100vw !important; 
-    height: 100vh !important;
-
-    /* સેન્ટર કરવા માટે અને બધું ૪.૫ ગણું (4.5x) મોટું કરવા માટે scale નો ઉપયોગ કર્યો */
-    transform: translate(-50%, -50%) scale(1) !important; 
-    
-    border: none !important;
-    object-fit: cover !important;
-    transform-origin: center center !important; /* બરાબર વચ્ચેથી મોટું થાય તે માટે */
-}
-
-/* ૩. વિડિયો ક્લોઝ (બંધ કરવાનું) બટન - ૩ ગણું મોટું કર્યું */
-.channel-close-btn {
-    position: absolute !important;
-    top: 30px !important;       /* મોટું બટન હોવાથી જગ્યા વધારી */
-    right: 30px !important;     /* મોટું બટન હોવાથી જગ્યા વધારી */
-    font-size: 30px !important; /* ૨૨px ના ૩ ગણા = ૬૬px કર્યા */
-    color: #ffffff !important;
-    background: rgba(0, 0, 0, 0.7) !important; /* થોડો ડાર્ક શેડ આપ્યો જેથી મોટા બટન પાછળ સારું લાગે */
-    width: 70px !important;    /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
-    height: 70px !important;   /* ૪૦px ના ૩ ગણા = ૧૨૦px કર્યા */
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 100000 !important; /* આઇફ્રેમની ઉપર રાખવા માટે */
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
-}
-
-/* યુટ્યુબના નકામા મોટા ઓવરલે અને બટન્સને હાઇડ કરવા માટે */
-.ytp-large-play-button, 
-.ytp-pause-overlay, 
-.ytp-youtube-button,
-.ytp-chrome-top, 
-.ytp-gradient-top {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-}
-
-
-/* આઇફ્રેમ પ્લેયર નોર્મલ અને ફૂલસ્ક્રીન બંને મોડ માટે */
-#youtubePlayer {
-    width: 100% !important;
-    height: 100% !important;
-    border: none !important;
-    display: block;
-}
-
-/* જ્યારે YouTube Player ફૂલસ્ક્રીન મોડમાં હોય (મોબાઈલ આડો થાય ત્યારે) */
-#youtubePlayer:fullscreen,
-#youtubePlayer:-webkit-full-screen,
-#youtubePlayer:-moz-full-screen,
-#youtubePlayer:-ms-fullscreen {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    
-    /* આ મેજિક લાઇન છે જે વીડિયોને આજુબાજુ જગ્યા છોડવા નહીં દે અને પ્રોપર સેન્ટરમાં રાખશે */
-    object-fit: cover !important; 
-    
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important; /* ફૂલસ્ક્રીનમાં ટ્રાન્સફોર્મની જરૂર નથી, બ્રાઉઝર પોતે સેન્ટર કરશે */
-    background-color: #000000 !important;
-}
-
-/* પોપઅપ કન્ટેનર માટે પણ પ્રોપર સેટિંગ */
+/* VIDEO POPUP */
 .video-popup {
     position: fixed !important;
     top: 0 !important;
@@ -393,8 +109,6 @@ cursor:pointer;
     justify-content: center !important;
 }
 
-
-/* ૧. આખી સ્ક્રીનમાં ફિટ કરવા માટેનું મેઈન વિડિયો કન્ટેનર */
 .video-container {
     position: relative;
     width: 100vw;
@@ -403,7 +117,6 @@ cursor:pointer;
     overflow: hidden;
 }
 
-/* ૨. આઈફ્રેમ (YouTube પ્લેયર) નું સેટિંગ */
 .video-container iframe {
     position: absolute;
     top: 0;
@@ -412,195 +125,35 @@ cursor:pointer;
     height: 100%;
     border: none;
     object-fit: cover;
-    pointer-events: auto; /* જેથી કસ્ટમ બટન સિવાયની જગ્યાએ ક્લિક કરવાથી વિડિયો પોઝ ન થાય */
 }
 
-/* ૩. કસ્ટમ કંટ્રોલ્સ પેનલ (બટનોનું મેઈન બોક્સ જે વીડિયોની ઉપર દેખાશે) */
+/* નોર્મલ મોડના કંટ્રોલ્સ બટન */
 .custom-controls {
     position: absolute;
-    bottom: 30px; /* મોબાઈલ સ્ક્રીનથી થોડું ઉપર રાખવા માટે */
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 25px; /* બટનો વચ્ચે પરફેક્ટ જગ્યા */
-    z-index: 2147483647; /* ફૂલસ્ક્રીન મોડમાં પણ કંટ્રોલ્સ ઉપર રાખવા માટે સૌથી હાઈએસ્ટ વેલ્યુ */
-    background: rgba(0, 0, 0, 0.5); /* કંટ્રોલ્સની પાછળ ટ્રાન્સપરન્ટ કાળો શેડ */
-    padding: 12px 28px;
-    border-radius: 50px; /* આખું બોક્સ કેપ્સ્યુલ જેવું રાઉન્ડ દેખાશે */
-    backdrop-filter: blur(8px); /* પ્રીમિયમ લુક માટે બેકગ્રાઉન્ડ બ્લર ઈફેક્ટ */
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-/* ૪. સ્માર્ટફોન માટે એકદમ મોટા અને ક્લિયર કસ્ટમ બટન્સ */
-.control-btn {
-    background: rgba(255, 255, 255, 0.1); /* બટનની અંદર હળવો સફેદ શેડ */
-    color: #ffffff;
-    border: 1.5px solid rgba(255, 255, 255, 0.4); /* આછો બોર્ડર કલર */
-    border-radius: 50%; /* બટનને ગોળ કરવા માટે */
-    width: 65px;  /* મોબાઈલમાં આસાનીથી ટચ થાય તેવી મોટી સાઈઝ */
-    height: 65px; /* મોબાઈલમાં આસાનીથી ટચ થાય તેવી મોટી સાઈઝ */
-    font-size: 26px; /* આઈકન (Play, Pause) ને એકદમ મોટા બતાવવા */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    outline: none;
-    -webkit-tap-highlight-color: transparent; /* મોબાઈલમાં ક્લિક કરતી વખતે આવતી વાદળી લાઈન હટાવવા */
-    transition: all 0.2s ease-in-out;
-}
-
-/* ૫. બટન પર આંગળી અડે કે ક્લિક થાય ત્યારની ઈફેક્ટ */
-.control-btn:active {
-    transform: scale(0.9); /* ક્લિક કરવાથી બટન સહેજ દબાશે */
-    background: rgba(255, 255, 255, 0.3); /* બેકગ્રાઉન્ડ થોડું ડાર્ક થશે */
-    color: #ff0000; /* આઈકનનો કલર લાલ (YouTube કલર) થઈ જશે */
-    border-color: #ff0000;
-}
-
-/* ૬. ફુલસ્ક્રીન મોડ માટે ખાસ વધારાનું સેટિંગ */
-.fullscreen {
-    width: 100vw !important;
-    height: 100vh !important;
-}
-
-
-.back-home {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    font-size: 20px; /* આનાથી તીર (Arrow) નાનું થઈ જશે */
-    color: white;
-    cursor: pointer;
+    gap: 25px;
     z-index: 100;
-}
-
-
-/* --- ૧. આખા પેજનું બેઝિક રીસેટ (ખૂબ જ જરૂરી) --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #121212; /* ડાર્ક થીમ */
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-}
-
-
-.back-home i {
-    font-size: 18px; /* એરોની સાઈઝ અહીંથી નાની કરી */
-    color: #ffffff;
-}
-
-.back-home:active {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-/* --- ૩. ચેનલ હેડર સેક્શન (લોગો અને નામ લાઈનમાં ગોઠવવા) --- */
-.channel-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 30px 20px 20px 20px; /* ઉપરથી 60px જગ્યા મૂકી જેથી બેક બટન ન નડે */
-    border-bottom: 1px solid #282828;
-}
-
-/* ચેનલ લોગો ગોળ અને યોગ્ય સાઈઝનો કરવા */
-#channelLogo {
-    width: 45px;  /* લોગોની પરફેક્ટ સાઈઝ */
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ff0000; /* લોગોની આજુબાજુ રેડ બોર્ડર */
-    margin-bottom: 10px;
-}
-
-/* ચેનલનું નામ */
-#channelName {
-    font-size: 30px !important;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #ffffff;
-}
-
-/* સબસ્ક્રાઈબર્સ અને વિડિયો કાઉન્ટની ટેક્સ્ટ */
-#channelSubscribers, #channelVideos {
-    font-size: 5px; /* અક્ષરો નાના અને ડિસેન્ટ કર્યા */
-    color: #aaaaaa; /* આછો ગ્રે કલર */
-    margin-bottom: 2px;
-}
-
-/* --- ૪. વિડિયો ગ્રીડ લેઆઉટ (મોબાઈલમાં એક લાઈનમાં બે અથવા સરસ કાર્ડ દેખાય તે માટે) --- */
-#channelVideosContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* મોબાઈલ સ્ક્રીન પ્રમાણે ઓટો સેટ થશે */
-    gap: 15px;
-    padding: 15px;
-}
-
-.video-card {
-    background: #1e1e1e;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.video-card img {
-    width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
-}
-
-.video-card h3 {
-    font-size: 12px; /* વિડિયો ટાઈટલના ફોન્ટ નાના કર્યા */
-    color: #ffffff;
-    padding: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* ટાઈટલ વધુમાં વધુ બે જ લાઈનનું દેખાશે */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-
-
-/* ============================================================
-   ૧. નોર્મલ મોડ - આ પહેલાની જેમ જ પ્રોપર રહેશે
-   ============================================================ */
-.custom-controls {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    margin-top: 20px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 40px;
-    width: max-content;
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(10px);
-    transition: opacity 0.3s ease;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 12px 28px;
+    border-radius: 50px;
+    backdrop-filter: blur(8px);
 }
 
 .control-btn {
-    background: rgba(255, 255, 255, 0.08);
-    color: #f5f5f7;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    width: 52px;
-    height: 52px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
     border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
     cursor: pointer;
-    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 /* ============================================================
