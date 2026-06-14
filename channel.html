@@ -30,23 +30,20 @@
         <span class="channel-close-btn" onclick="closeVideo()">✕</span>
         
         <div class="video-container" id="videoContainer">
-    <!-- યુટ્યુબ પ્લેયર -->
     <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
-    
-    <!-- 🌟 નવો ફિક્સ: ફૂલસ્ક્રીન માટે સ્માર્ટ ટચ લેયર્સ -->
-    <div class="fs-touch-layer top-bar"></div>
-    <div class="fs-touch-layer left-bar"></div>
-    <div class="fs-touch-layer right-bar"></div>
 
-    <!-- કસ્ટમ કંટ્રોલ્સ પેનલ -->
+    <div class="fs-split-layer left-side-iframe"></div>
+    <div class="fs-split-layer right-side-btn">
+        <button class="control-btn" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i></button>
+    </div>
+
     <div class="custom-controls">
         <button class="control-btn" onclick="playVideo()"><i class="fa-solid fa-play"></i></button>
         <button class="control-btn" onclick="pauseVideo()"><i class="fa-solid fa-pause"></i></button>
         <button class="control-btn" id="muteBtn" onclick="toggleMute()"><i class="fa-solid fa-volume-high"></i></button>
-        <!-- આ આપણું છેલ્લું બટન છે (નાની સ્ક્રીન કરવાનું) -->
-        <button class="control-btn" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i></button>
     </div>
 </div>
+
     </div>
 </div>
 

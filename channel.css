@@ -604,94 +604,88 @@ body {
 }
 
 /* ============================================================
-   ક્લીન અને સુપર પ્રોફેશનલ ફૂલ સ્ક્રીન ફિક્સ (No Extra HTML Layers)
+   ૫૦-૫૦% સ્પ્લિટ સ્ક્રીન માસ્ટર ફિક્સ - ડાબે આઇફ્રેમ, જમણે બટન
    ============================================================ */
 
-/* ============================================================
-   ૧૦૦% પરફેક્ટ ફૂલ સ્ક્રીન ફિક્સ - રાઇટ/લેફ્ટ ટચ એરિયા અને નો બ્લેક લાઇન
-   ============================================================ */
+/* નોર્મલ મોડમાં આ બે અડધા ભાગ બંધ રહેશે */
+.fs-split-layer {
+    display: none;
+}
 
-/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ પેનલ આખી સ્ક્રીનને પરફેક્ટ કવર કરશે */
-.video-container:fullscreen .custom-controls,
-.video-container:-webkit-full-screen .custom-controls {
+/* જ્યારે ફૂલસ્ક્રીન થાય ત્યારે જ બે ભાગ એક્ટિવેટ થશે */
+.video-container:fullscreen .fs-split-layer,
+.video-container:-webkit-full-screen .fs-split-layer {
+    display: block !important;
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
     height: 100vh !important;
-    
-    /* 🌟 બ્લેક લાઇન હટાવવા માટે આ ફિક્સ છે */
-    background: transparent !important; 
+    width: 50vw !important; /* બરાબર અડધી સ્ક્રીન */
+    margin: 0 !important;
+    padding: 0 !important;
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
-    backdrop-filter: none !important;
-    
-    border-radius: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    
-    /* 🌟 નવું સ્માર્ટ ડાયરેક્શન: હવે જમણી બાજુ બટન વાળો એરિયા સેટ થશે */
-    display: flex !important;
-    flex-direction: row-reverse !important; /* આનાથી બટન જમણી બાજુ જ લોક રહેશે */
-    align-items: flex-end !important;
-    
-    /* ⚡ ડાબી બાજુ આઇફ્રેમને ટચ આપવા માટે અને જમણી બાજુ આપણો કંટ્રોલ રાખવા માટે: */
-    pointer-events: none !important; 
-    z-index: 2147483647 !important; 
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 
-/* પ્લે, પોઝ, મ્યુટ બટન ફૂલસ્ક્રીનમાં હાઇડ */
-.video-container:fullscreen .custom-controls button:not(:last-child),
-.video-container:-webkit-full-screen .custom-controls button:not(:last-child) {
-    display: none !important;
+/* 👈 ડાબી બાજુનો ભાગ (સેન્ટરથી ડાબે): અદ્રશ્ય રેહશે જેથી ટચ સીધો આઇફ્રેમ પર જાય */
+.video-container:fullscreen .left-side-iframe,
+.video-container:-webkit-full-screen .left-side-iframe {
+    left: 0 !important;
+    background: transparent !important;
+    pointer-events: none !important; /* ટચ સીધો પાછળ YouTube ને આપશે */
+    z-index: 10 !important;
 }
 
-/* 🌟 માસ્ટર ફિક્સ: ફૂલ સ્ક્રીનમાં છેલ્લું બટન (Exit Fullscreen) */
-.video-container:fullscreen .custom-controls button:last-child,
-.video-container:-webkit-full-screen .custom-controls button:last-child {
-    position: fixed !important;
+/* 👉 જમણી બાજુનો ભાગ (સેન્ટરથી જમણે): આપણો કંટ્રોલ એરિયા */
+.video-container:fullscreen .right-side-btn,
+.video-container:-webkit-full-screen .right-side-btn {
+    right: 0 !important;
+    background: rgba(0, 0, 0, 0.001) !important; /* અદ્રશ્ય કલર જેથી બ્રાઉઝર ટચ પકડી શકે */
+    pointer-events: auto !important; /* આપણો ટચ પકડશે, આઇફ્રેમ સુધી નહીં જવા દે */
+    z-index: 2147483647 !important; /* સૌથી ઉપર */
+}
+
+/* 🌟 જમણી બાજુ નીચે ખૂણામાં ફિક્સ રહેતું બટન */
+.video-container:fullscreen .right-side-btn button,
+.video-container:-webkit-full-screen .right-side-btn button {
+    position: absolute !important;
+    right: 30px !important;
+    bottom: 30px !important;
     
-    /* ⚡ પ્રોપર જમણી બાજુ નીચે સેટ કરવા માટે */
-    right: 30px !important;    
-    bottom: 30px !important;   
-    left: auto !important;     
-    top: auto !important;      
-    transform: none !important; 
-    margin: 0 !important;
-    
-    /* ⚡ જમણી બાજુ પ્રોપર ટચ એરિયા કામ કરે તે માટે */
-    pointer-events: auto !important; 
+    pointer-events: auto !important;
     visibility: visible !important;
-    
-    /* બ્લેક લાઇન બટનની આસપાસ પણ ન આવે તે માટે */
     outline: none !important;
+    border: none !important;
     
     font-size: 20px !important;
-    background: rgba(20, 20, 20, 0.85) !important; 
+    background: rgba(20, 20, 20, 0.85) !important;
     color: #ffffff !important;
-    border-radius: 50% !important; 
-    width: 55px !important;   
+    border-radius: 50% !important;
+    width: 55px !important;
     height: 55px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     border: 2px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow: 0px 6px 20px rgba(0,0,0,0.8) !important;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.3s ease-in-out, transform 0.1s;
 }
 
-/* 🌟 સ્માર્ટ ઓટો-હાઇડ: જ્યારે ૨ સેકન્ડ થાય ત્યારે બટન જમણી બાજુથી અદ્રશ્ય થશે */
-.video-container.hide-controls-active .custom-controls button:last-child {
-    opacity: 0.02 !important; /* અદ્રશ્ય રહેશે પણ જમણી બાજુ ટચ પાવર ચાલુ રાખશે */
+/* 🌟 ઓટો-હાઇડ: જ્યારે ૨ સેકન્ડ થાય ત્યારે બટનની ઓપેસિટી સાવ ઓછી થઈ જશે */
+.video-container.hide-controls-active .right-side-btn button {
+    opacity: 0.02 !important; /* અદ્રશ્ય થશે પણ જમણી બાજુ ગમે ત્યાં ટચ કરવાથી તરત જાગશે */
 }
 
-/* બટન ટચ ઇફેક્ટ */
-.video-container:fullscreen .custom-controls button:last-child:active,
-.video-container:-webkit-full-screen .custom-controls button:last-child:active {
-    background: #ff0000 !important; 
+/* બટન દબાવા પર લાલ કલર થાય તે માટે */
+.video-container:fullscreen .right-side-btn button:active,
+.video-container:-webkit-full-screen .right-side-btn button:active {
+    background: #ff0000 !important;
     border-color: #ff0000 !important;
     transform: scale(0.9) !important;
+}
+
+/* ફૂલસ્ક્રીન દરમિયાન જૂની નોર્મલ કંટ્રોલ પેનલને હાઇડ કરી દેવી */
+.video-container:fullscreen .custom-controls,
+.video-container:-webkit-full-screen .custom-controls {
+    display: none !important;
 }
