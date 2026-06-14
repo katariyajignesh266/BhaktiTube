@@ -607,7 +607,11 @@ body {
    ક્લીન અને સુપર પ્રોફેશનલ ફૂલ સ્ક્રીન ફિક્સ (No Extra HTML Layers)
    ============================================================ */
 
-/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ પેનલ આખી સ્ક્રીનને કવર કરી લેશે (પારદર્શક પડદો) */
+/* ============================================================
+   ૧૦૦% પરફેક્ટ ફૂલ સ્ક્રીન ફિક્સ - રાઇટ/લેફ્ટ ટચ એરિયા અને નો બ્લેક લાઇન
+   ============================================================ */
+
+/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ પેનલ આખી સ્ક્રીનને પરફેક્ટ કવર કરશે */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     position: fixed !important;
@@ -615,20 +619,28 @@ body {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.01) !important; /* અદ્રશ્ય બેકગ્રાઉન્ડ જે ટચ ઝીલી લેશે */
+    
+    /* 🌟 બ્લેક લાઇન હટાવવા માટે આ ફિક્સ છે */
+    background: transparent !important; 
     border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
     backdrop-filter: none !important;
+    
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
     
-    /* ⚡ સૌથી મહત્વનો ફેરફાર: */
-    pointer-events: auto !important; /* આઇફ્રેમની ઉપર આપણો કન્ટ્રોલ રહેશે */
+    /* 🌟 નવું સ્માર્ટ ડાયરેક્શન: હવે જમણી બાજુ બટન વાળો એરિયા સેટ થશે */
+    display: flex !important;
+    flex-direction: row-reverse !important; /* આનાથી બટન જમણી બાજુ જ લોક રહેશે */
+    align-items: flex-end !important;
+    
+    /* ⚡ ડાબી બાજુ આઇફ્રેમને ટચ આપવા માટે અને જમણી બાજુ આપણો કંટ્રોલ રાખવા માટે: */
+    pointer-events: none !important; 
     z-index: 2147483647 !important; 
-    display: block !important; 
     opacity: 1 !important;
     visibility: visible !important;
-    transition: opacity 0.3s ease-in-out;
 }
 
 /* પ્લે, પોઝ, મ્યુટ બટન ફૂલસ્ક્રીનમાં હાઇડ */
@@ -637,24 +649,32 @@ body {
     display: none !important;
 }
 
-/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન (Exit Fullscreen) - રાઉન્ડ અને પ્રીમિયમ */
+/* 🌟 માસ્ટર ફિક્સ: ફૂલ સ્ક્રીનમાં છેલ્લું બટન (Exit Fullscreen) */
 .video-container:fullscreen .custom-controls button:last-child,
 .video-container:-webkit-full-screen .custom-controls button:last-child {
     position: fixed !important;
-    right: 25px !important;    
-    bottom: 25px !important;   
+    
+    /* ⚡ પ્રોપર જમણી બાજુ નીચે સેટ કરવા માટે */
+    right: 30px !important;    
+    bottom: 30px !important;   
     left: auto !important;     
     top: auto !important;      
     transform: none !important; 
     margin: 0 !important;
     
-    pointer-events: auto !important; /* બટન પર ક્લિક કામ કરશે જ */
-    font-size: 18px !important;
+    /* ⚡ જમણી બાજુ પ્રોપર ટચ એરિયા કામ કરે તે માટે */
+    pointer-events: auto !important; 
+    visibility: visible !important;
+    
+    /* બ્લેક લાઇન બટનની આસપાસ પણ ન આવે તે માટે */
+    outline: none !important;
+    
+    font-size: 20px !important;
     background: rgba(20, 20, 20, 0.85) !important; 
     color: #ffffff !important;
     border-radius: 50% !important; 
-    width: 52px !important;   
-    height: 52px !important;
+    width: 55px !important;   
+    height: 55px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -663,14 +683,9 @@ body {
     transition: opacity 0.3s ease-in-out;
 }
 
-/* 🌟 સ્માર્ટ ઓટો-હાઇડ: જ્યારે ૨ સેકન્ડ થાય ત્યારે પડદો અદ્રશ્ય થશે પણ તેનો ટચ પાવર ચાલુ રહેશે! */
-.video-container.hide-controls-active .custom-controls {
-    background: transparent !important;
-}
-
-/* જ્યારે કંટ્રોલ્સ હાઇડ મોડમાં જાય ત્યારે બટનની ઓપેસિટી માત્ર ૦.૦૨ થઈ જશે (જેથી અદ્રશ્ય રહીને પણ ટચ પકડે) */
+/* 🌟 સ્માર્ટ ઓટો-હાઇડ: જ્યારે ૨ સેકન્ડ થાય ત્યારે બટન જમણી બાજુથી અદ્રશ્ય થશે */
 .video-container.hide-controls-active .custom-controls button:last-child {
-    opacity: 0.02 !important; 
+    opacity: 0.02 !important; /* અદ્રશ્ય રહેશે પણ જમણી બાજુ ટચ પાવર ચાલુ રાખશે */
 }
 
 /* બટન ટચ ઇફેક્ટ */
