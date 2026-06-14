@@ -109,7 +109,7 @@ window.openVideo = async function(videoId) {
 
   if (popup) popup.style.display = "flex";
 
-  // controls=0 થી કંટ્રોલ્સ ગાયબ થશે અનેenablejsapi=1 એક્ટિવેટ થશે
+  // controls=0 થી કંટ્રોલ્સ ગાયબ થશે અને enablejsapi=1 એક્ટિવેટ થશે
   if (playerIframe) {
     playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
   }
@@ -191,7 +191,7 @@ const handleFullscreenChange = async () => {
       }
       if (playerIframe) playerIframe.classList.add("fullscreen");
       
-      // પાવરફુલ જાવાસ્ક્રિપ્ટ ફિક્સ: બટનને સેન્ટરમાંથી ખેંચીને સાવ જમણે નીચે ફિક્સ કરવા માટે
+      // બટનને સાવ જમણે નીચે ફિક્સ કરવા માટેની સ્ટાઈલ
       if (lastBtn) {
         lastBtn.style.setProperty('position', 'fixed', 'important');
         lastBtn.style.setProperty('right', '20px', 'important');
@@ -202,11 +202,14 @@ const handleFullscreenChange = async () => {
         lastBtn.style.setProperty('transform', 'none', 'important');
       }
       
+      // જ્યારે ફૂલસ્ક્રીન થાય ત્યારે પહેલી વાર બટન બતાવો
       showControlsAndSetTimeout();
       
+      // 🌟 મુખ્ય ફિક્સ: આખા કન્ટેનર પર ગમે ત્યાં ક્લિક કે ટચ કરો એટલે બટન જાગી જશે
       if (container) {
+        container.addEventListener('click', showControlsAndSetTimeout, true); // true થી ઇવેન્ટ કેપ્ચર થશે
+        container.addEventListener('touchstart', showControlsAndSetTimeout, { passive: true });
         container.addEventListener('mousemove', showControlsAndSetTimeout);
-        container.addEventListener('touchstart', showControlsAndSetTimeout);
       }
 
     } catch (err) {
@@ -232,8 +235,10 @@ const handleFullscreenChange = async () => {
       
       clearTimeout(controlsTimeout);
       if (container) {
-        container.removeEventListener('mousemove', showControlsAndSetTimeout);
+        // ઇવેન્ટ લિસનર્સ રીમૂવ કરવા જેથી નોર્મલ મોડમાં નડે નહીં
+        container.removeEventListener('click', showControlsAndSetTimeout, true);
         container.removeEventListener('touchstart', showControlsAndSetTimeout);
+        container.removeEventListener('mousemove', showControlsAndSetTimeout);
         container.classList.remove('hide-controls-active');
       }
     } catch (err) {
@@ -250,9 +255,13 @@ function showControlsAndSetTimeout() {
   const container = document.querySelector('.video-container');
   if (!container) return;
   
+  // પેનલને વિઝિબલ કરો
   container.classList.remove('hide-controls-active');
+  
+  // જૂનું ટાઈમર ક્લિયર કરો
   clearTimeout(controlsTimeout);
   
+  // નવું ૨ સેકન્ડનું ટાઈમર સેટ કરો
   controlsTimeout = setTimeout(() => {
     const isFS = document.fullscreenElement || document.webkitFullscreenElement;
     if (isFS) {

@@ -607,7 +607,7 @@ body {
    ૨. ફૂલ સ્ક્રીન મોડ - બટનને સાવ જમણે ખૂણામાં ફિક્સ કરવાનો ફિક્સ
    ============================================================ */
 
-/* ફૂલ સ્ક્રીન વખતે આખી પેનલનું બેકગ્રાઉન્ડ ગાયબ કરો અને પોઇન્ટર ઇવેન્ટ્સ હેન્ડલ કરો */
+/* ફૂલ સ્ક્રીન વખતે આખી પેનલનું સેટિંગ */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     position: absolute !important;
@@ -621,9 +621,11 @@ body {
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    pointer-events: none !important; /* બટન સિવાયની સ્ક્રીન પર ટચ કામ કરે તે માટે */
+    pointer-events: none !important; /* જેથી પાછળ વીડિયો પર પણ ટચ થઈ શકે */
     z-index: 2147483647 !important;
-    display: block !important; /* ફ્લેક્સ બોક્સ કાઢી નાખ્યું જેથી સેન્ટર ન થાય */
+    display: block !important; 
+    opacity: 1 !important; /* બાય ડિફોલ્ટ ઓપેસિટી ફૂલ રાખવી */
+    transition: opacity 0.3s ease-in-out; /* સ્મૂથલી ગાયબ થવા માટે */
 }
 
 /* પ્લે, પોઝ, મ્યુટ બટન સાવ ગાયબ */
@@ -632,40 +634,42 @@ body {
     display: none !important;
 }
 
-/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન - સાવ ખૂણામાં નાનું અને ફિક્સ */
+/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન (નાની સ્ક્રીન કરવાનું) - સાવ ખૂણામાં ફિક્સ */
 .video-container:fullscreen .custom-controls button:last-child,
 .video-container:-webkit-full-screen .custom-controls button:last-child {
     position: fixed !important;
-    right: 20px !important;    /* જમણી બાજુથી પરફેક્ટ અંતર */
-    bottom: 20px !important;   /* નીચેની બાજુથી પરફેક્ટ અંતર */
-    left: auto !important;     /* સેન્ટરમાં આવતું રોકવા */
-    top: auto !important;      /* સેન્ટરમાં આવતું રોકવા */
-    transform: none !important; /* સેન્ટરિંગ ટ્રાન્સફોર્મ્સને ડિસેબલ કરવા */
+    right: 20px !important;    
+    bottom: 20px !important;   
+    left: auto !important;     
+    top: auto !important;      
+    transform: none !important; 
     margin: 0 !important;
     
-    pointer-events: auto !important; /* બટન પર ક્લિક થાય તે માટે */
-    font-size: 14px !important;
-    background: rgba(0, 0, 0, 0.75) !important; /* વીડિયો પર સરસ દેખાય તેવું પ્રીમિયમ ડાર્ક બેકગ્રાઉન્ડ */
+    pointer-events: auto !important; /* આ બટન પર ક્લિક કામ કરવું જ જોઈએ */
+    font-size: 16px !important; /* સરસ મોટું આઇકન દેખાય */
+    background: rgba(0, 0, 0, 0.8) !important; /* ડાર્ક પ્રીમિયમ બેકગ્રાઉન્ડ */
     color: #ffffff !important;
-    border-radius: 6px !important;
-    width: 42px !important;   /* ટચ કરવા માટે કમ્ફર્ટેબલ સાઇઝ */
-    height: 42px !important;
+    border-radius: 8px !important;
+    width: 46px !important;   /* ટચ કરવા માટે કમ્ફર્ટેબલ અને પરફેક્ટ સાઇઝ */
+    height: 46px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.6) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.7) !important;
 }
 
-/* ઓટો-હાઇડ એક્ટિવેટ થાય ત્યારે બટનને સ્મૂથલી છુપાવવા માટે */
+/* 🌟 મુખ્ય ફિક્સ: ઓટો-હાઇડ એક્ટિવેટ થાય ત્યારે આખી પેનલ સ્મૂથલી ગાયબ થશે */
 .video-container.hide-controls-active .custom-controls {
     opacity: 0 !important;
-    pointer-events: none !important;
+    visibility: hidden !important;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s;
 }
 
 /* બટન ટચ ઇફેક્ટ */
 .video-container:fullscreen .custom-controls button:last-child:active,
 .video-container:-webkit-full-screen .custom-controls button:last-child:active {
-    background: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 0, 0, 0.8) !important; /* ટચ કરો એટલે યુટ્યુબ જેવું રેડ થાય */
+    border-color: #ff0000 !important;
     transform: scale(0.9) !important;
 }
