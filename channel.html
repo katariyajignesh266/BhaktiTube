@@ -29,20 +29,24 @@
     <div class="popup-content">
         <span class="channel-close-btn" onclick="closeVideo()">✕</span>
         
-        <div class="video-container">
-            <iframe 
-                id="youtubePlayer" 
-                allowfullscreen 
-                allow="autoplay; fullscreen; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
-            </iframe>
-            
-            <div class="custom-controls">
-                <button onclick="playVideo()" class="control-btn" title="Play"><i class="fa-solid fa-play"></i></button>
-                <button onclick="pauseVideo()" class="control-btn" title="Pause"><i class="fa-solid fa-pause"></i></button>
-                <button onclick="toggleMute()" id="muteBtn" class="control-btn" title="Mute/Unmute"><i class="fa-solid fa-volume-high"></i></button>
-                <button onclick="toggleFullScreen()" class="control-btn" title="Full Screen"><i class="fa-solid fa-expand"></i></button>
-            </div>
-        </div>
+        <div class="video-container" id="videoContainer">
+    <!-- યુટ્યુબ પ્લેયર -->
+    <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
+    
+    <!-- 🌟 નવો ફિક્સ: ફૂલસ્ક્રીન માટે સ્માર્ટ ટચ લેયર્સ -->
+    <div class="fs-touch-layer top-bar"></div>
+    <div class="fs-touch-layer left-bar"></div>
+    <div class="fs-touch-layer right-bar"></div>
+
+    <!-- કસ્ટમ કંટ્રોલ્સ પેનલ -->
+    <div class="custom-controls">
+        <button class="control-btn" onclick="playVideo()"><i class="fa-solid fa-play"></i></button>
+        <button class="control-btn" onclick="pauseVideo()"><i class="fa-solid fa-pause"></i></button>
+        <button class="control-btn" id="muteBtn" onclick="toggleMute()"><i class="fa-solid fa-volume-high"></i></button>
+        <!-- આ આપણું છેલ્લું બટન છે (નાની સ્ક્રીન કરવાનું) -->
+        <button class="control-btn" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i></button>
+    </div>
+</div>
     </div>
 </div>
 
