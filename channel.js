@@ -116,26 +116,24 @@ window.toggleFullScreen = function() {
   }
 }
 
-// બટન શો-હાઇડ કરવા માટેનું સ્મૂથ ફંક્શન
+// બટન શો-હાઇડ કરવાનું સ્માર્ટ ટાઈમર
 function showControlsAndSetTimeout() {
   const container = document.querySelector('.video-container');
   if (!container) return;
   
-  container.classList.remove('hide-controls-active'); 
+  container.classList.remove('hide-controls-active'); // બટન વિઝિબલ કરો
   clearTimeout(controlsTimeout);
   
   controlsTimeout = setTimeout(() => {
     const isFS = document.fullscreenElement || document.webkitFullscreenElement;
     if (isFS) {
-      container.classList.add('hide-controls-active'); 
+      container.classList.add('hide-controls-active'); // ૨ સેકન્ડ પછી અનવિઝિબલ કરો
     }
   }, 2000); 
 }
 
 const handleFullscreenChange = async () => {
   const playerIframe = document.getElementById("youtubePlayer");
-  const container = document.querySelector('.video-container');
-  const lastBtn = document.querySelector('.custom-controls button:last-child');
   const isFS = document.fullscreenElement || document.webkitFullscreenElement;
   
   if (isFS) {
@@ -145,27 +143,18 @@ const handleFullscreenChange = async () => {
       }
       if (playerIframe) playerIframe.classList.add("fullscreen");
       
-      if (lastBtn) {
-        lastBtn.style.setProperty('position', 'fixed', 'important');
-        lastBtn.style.setProperty('right', '25px', 'important');
-        lastBtn.style.setProperty('bottom', '25px', 'important');
-        lastBtn.style.setProperty('left', 'auto', 'important');
-        lastBtn.style.setProperty('top', 'auto', 'important');
-        lastBtn.style.setProperty('margin', '0', 'important');
-        lastBtn.style.setProperty('transform', 'none', 'important');
-      }
-      
       showControlsAndSetTimeout();
       
-      // 🌟 નવો માસ્ટર ફિક્સ: આખા કંટ્રોલ બોક્સ (પડદા) પર જ ટચ ઇવેન્ટ એક્ટિવેટ કરી દીધી
-      const controlsPanel = document.querySelector('.custom-controls');
-      if (controlsPanel) {
-        controlsPanel.addEventListener('touchstart', (e) => {
-          // જો યુઝરે છેલ્લું બટન દબાવ્યું હોય તો પ્રોસેસ અટકાવવી નહીં
-          if (e.target === lastBtn || lastBtn.contains(e.target)) return;
-          
+      // 🌟 મુખ્ય લોજિક: જ્યારે પણ જમણી બાજુના અડધા ભાગ (Right Side) પર ટચ થાય ત્યારે જ બટન શો/હાઇડ થાય
+      const rightZone = document.querySelector('.right-side-btn');
+      if (rightZone) {
+        rightZone.addEventListener('touchstart', (e) => {
           showControlsAndSetTimeout();
         }, { passive: true });
+        
+        rightZone.addEventListener('click', () => {
+          showControlsAndSetTimeout();
+        });
       }
 
     } catch (err) {
@@ -175,13 +164,8 @@ const handleFullscreenChange = async () => {
     try {
       if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
       if (playerIframe) playerIframe.classList.remove("fullscreen");
-      if (lastBtn) {
-        lastBtn.style.removeProperty('position'); lastBtn.style.removeProperty('right');
-        lastBtn.style.removeProperty('bottom'); lastBtn.style.removeProperty('left');
-        lastBtn.style.removeProperty('top'); lastBtn.style.removeProperty('margin');
-        lastBtn.style.removeProperty('transform');
-      }
       clearTimeout(controlsTimeout);
+      const container = document.querySelector('.video-container');
       if (container) container.classList.remove('hide-controls-active');
     } catch (err) {
       console.log(err);
