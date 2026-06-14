@@ -604,87 +604,63 @@ body {
 }
 
 /* ============================================================
-   ૫૦-૫૦% સ્પ્લિટ સ્ક્રીન માસ્ટર ફિક્સ - ડાબે આઇફ્રેમ, જમણે બટન
+   🌟 ફૂલસ્ક્રીન માસ્ટર ઓવરલે અને ઓટો-હાઇડ સેટિંગ્સ
    ============================================================ */
 
-/* નોર્મલ મોડમાં આ બે અડધા ભાગ બંધ રહેશે */
-.fs-split-layer {
+/* નોર્મલ મોડમાં ફૂલસ્ક્રીન લેયર બંધ રહેશે */
+.fs-overlay {
     display: none;
 }
 
-/* જ્યારે ફૂલસ્ક્રીન થાય ત્યારે જ બે ભાગ એક્ટિવેટ થશે */
-.video-container:fullscreen .fs-split-layer,
-.video-container:-webkit-full-screen .fs-split-layer {
+/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું સેટિંગ */
+.video-container:fullscreen .fs-overlay,
+.video-container:-webkit-full-screen .fs-overlay {
     display: block !important;
-    position: fixed !important;
-    top: 0 !important;
-    height: 100vh !important;
-    width: 50vw !important; /* બરાબર અડધી સ્ક્રીન */
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* 👈 ડાબી બાજુનો ભાગ (સેન્ટરથી ડાબે): અદ્રશ્ય રેહશે જેથી ટચ સીધો આઇફ્રેમ પર જાય */
-.video-container:fullscreen .left-side-iframe,
-.video-container:-webkit-full-screen .left-side-iframe {
-    left: 0 !important;
-    background: transparent !important;
-    pointer-events: none !important; /* ટચ સીધો પાછળ YouTube ને આપશે */
-    z-index: 10 !important;
-}
-
-/* 👉 જમણી બાજુનો ભાગ (સેન્ટરથી જમણે): આપણો કંટ્રોલ એરિયા */
-.video-container:fullscreen .right-side-btn,
-.video-container:-webkit-full-screen .right-side-btn {
-    right: 0 !important;
-    background: rgba(0, 0, 0, 0.001) !important; /* અદ્રશ્ય કલર જેથી બ્રાઉઝર ટચ પકડી શકે */
-    pointer-events: auto !important; /* આપણો ટચ પકડશે, આઇફ્રેમ સુધી નહીં જવા દે */
-    z-index: 2147483647 !important; /* સૌથી ઉપર */
-}
-
-/* 🌟 જમણી બાજુ નીચે ખૂણામાં ફિક્સ રહેતું બટન */
-.video-container:fullscreen .right-side-btn button,
-.video-container:-webkit-full-screen .right-side-btn button {
     position: absolute !important;
-    right: 30px !important;
-    bottom: 30px !important;
-    
-    pointer-events: auto !important;
-    visibility: visible !important;
-    outline: none !important;
-    border: none !important;
-    
-    font-size: 20px !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.001); /* અદ્રશ્ય લેયર જે આઈફ્રેમના ટચ બ્લોક કરશે */
+    z-index: 2147483647 !important; /* હાઇએસ્ટ વેલ્યુ જેથી YouTube ની ઉપર રહે */
+    cursor: pointer;
+}
+
+/* ફૂલસ્ક્રીન મોડમાં નાની સ્ક્રીન કરવાનું ખાસ મોટું બટન (સ્ક્રીનની વચ્ચે-જમણી બાજુ) */
+.fs-exit-btn {
+    position: absolute !important;
+    top: 50% !important;
+    right: 40px !important;
+    transform: translateY(-50%) !important;
     background: rgba(20, 20, 20, 0.85) !important;
     color: #ffffff !important;
     border-radius: 50% !important;
-    width: 55px !important;
-    height: 55px !important;
+    width: 75px !important; /* મોબાઈલમાં આસાનીથી દબાય તે માટે મોટી સાઇઝ */
+    height: 75px !important;
+    font-size: 32px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2px solid rgba(255, 255, 255, 0.5) !important;
-    box-shadow: 0px 6px 20px rgba(0,0,0,0.8) !important;
+    border: 2.5px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0px 6px 25px rgba(0,0,0,0.9) !important;
     transition: opacity 0.3s ease-in-out, transform 0.1s;
+    pointer-events: auto !important;
 }
 
-/* 🌟 ઓટો-હાઇડ: જ્યારે ૨ સેકન્ડ થાય ત્યારે બટનની ઓપેસિટી સાવ ઓછી થઈ જશે */
-.video-container.hide-controls-active .right-side-btn button {
-    opacity: 0.02 !important; /* અદ્રશ્ય થશે પણ જમણી બાજુ ગમે ત્યાં ટચ કરવાથી તરત જાગશે */
+/* 🌟 ૨ સેકન્ડ પછી ઓટોમેટિક બટન હાઇડ કરવાની ક્લાસ */
+.fs-overlay.hide-fs-btn .fs-exit-btn {
+    opacity: 0 !important;
+    pointer-events: none !important; /* હાઇડ હોય ત્યારે ક્લિક ન થાય */
 }
 
-/* બટન દબાવા પર લાલ કલર થાય તે માટે */
-.video-container:fullscreen .right-side-btn button:active,
-.video-container:-webkit-full-screen .right-side-btn button:active {
+/* બટન એક્ટિવ (ક્લિક) થાય ત્યારે લાલ કલર ઇફેક્ટ */
+.fs-exit-btn:active {
     background: #ff0000 !important;
     border-color: #ff0000 !important;
-    transform: scale(0.9) !important;
+    transform: translateY(-50%) scale(0.9) !important;
 }
 
-/* ફૂલસ્ક્રીન દરમિયાન જૂની નોર્મલ કંટ્રોલ પેનલને હાઇડ કરી દેવી */
+/* ફૂલસ્ક્રીન દરમિયાન જુના નોર્મલ કંટ્રોલ્સને હાઇડ કરી દેવા */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     display: none !important;

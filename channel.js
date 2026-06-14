@@ -85,7 +85,8 @@ window.openVideo = async function(videoId) {
           if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
         }
       }
-    });
+    }
+    );
   }
 }
 
@@ -105,7 +106,7 @@ window.toggleMute = function() {
 }
 
 window.toggleFullScreen = function() {
-  const container = document.querySelector('.video-container');
+  const container = document.getElementById('videoContainer');
   if (!container) return;
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     if (container.requestFullscreen) { container.requestFullscreen().catch(e => console.log(e)); }
@@ -116,24 +117,36 @@ window.toggleFullScreen = function() {
   }
 }
 
-// બટન શો-હાઇડ કરવાનું સ્માર્ટ ટાઈમર
-function showControlsAndSetTimeout() {
-  const container = document.querySelector('.video-container');
-  if (!container) return;
-  
-  container.classList.remove('hide-controls-active'); // બટન વિઝિબલ કરો
+// 🌟 ફૂલસ્ક્રીન દરમિયાન આખી સ્ક્રીન પર ગમે ત્યાં ટચ કરવાથી બટન શો/હાઈડ કરવાનું લોજિક
+window.handleOverlayTouch = function() {
+  const overlay = document.getElementById('fullscreenOverlay');
+  if (!overlay) return;
+
+  // જો બટન ઓલરેડી હાઇડ હોય, તો શો કરો અને ટાઈમર સેટ કરો
+  if (overlay.classList.contains('hide-fs-btn')) {
+    overlay.classList.remove('hide-fs-btn');
+    startControlsTimer();
+  } else {
+    // જો દેખાતું હોય, તો ટચ કરવાથી તરત હાઇડ કરી દો
+    overlay.classList.add('hide-fs-btn');
+    clearTimeout(controlsTimeout);
+  }
+}
+
+function startControlsTimer() {
   clearTimeout(controlsTimeout);
-  
   controlsTimeout = setTimeout(() => {
+    const overlay = document.getElementById('fullscreenOverlay');
     const isFS = document.fullscreenElement || document.webkitFullscreenElement;
-    if (isFS) {
-      container.classList.add('hide-controls-active'); // ૨ સેકન્ડ પછી અનવિઝિબલ કરો
+    if (isFS && overlay) {
+      overlay.classList.add('hide-fs-btn'); // ૨ સેકન્ડ પછી આપોઆપ હાઇડ થશે
     }
-  }, 2000); 
+  }, 2000);
 }
 
 const handleFullscreenChange = async () => {
   const playerIframe = document.getElementById("youtubePlayer");
+  const overlay = document.getElementById("fullscreenOverlay");
   const isFS = document.fullscreenElement || document.webkitFullscreenElement;
   
   if (isFS) {
@@ -143,19 +156,9 @@ const handleFullscreenChange = async () => {
       }
       if (playerIframe) playerIframe.classList.add("fullscreen");
       
-      showControlsAndSetTimeout();
-      
-      // 🌟 મુખ્ય લોજિક: જ્યારે પણ જમણી બાજુના અડધા ભાગ (Right Side) પર ટચ થાય ત્યારે જ બટન શો/હાઇડ થાય
-      const rightZone = document.querySelector('.right-side-btn');
-      if (rightZone) {
-        rightZone.addEventListener('touchstart', (e) => {
-          showControlsAndSetTimeout();
-        }, { passive: true });
-        
-        rightZone.addEventListener('click', () => {
-          showControlsAndSetTimeout();
-        });
-      }
+      // ફૂલસ્ક્રીન થતાં જ ઓવરલે બટન બતાવો અને ટાઈમર શરૂ કરો
+      if (overlay) overlay.classList.remove('hide-fs-btn');
+      startControlsTimer();
 
     } catch (err) {
       console.log("FS Entry Error: ", err);
@@ -165,8 +168,7 @@ const handleFullscreenChange = async () => {
       if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
       if (playerIframe) playerIframe.classList.remove("fullscreen");
       clearTimeout(controlsTimeout);
-      const container = document.querySelector('.video-container');
-      if (container) container.classList.remove('hide-controls-active');
+      if (overlay) overlay.classList.remove('hide-fs-btn');
     } catch (err) {
       console.log(err);
     }
