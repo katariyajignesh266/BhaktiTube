@@ -604,57 +604,40 @@ body {
 }
 
 /* ============================================================
-   ફૂલ સ્ક્રીન માસ્ટર ફિક્સ - સ્માર્ટ કંટ્રોલ્સ અને ઇન્વિઝિબલ શીલ્ડ
+   ક્લીન અને સુપર પ્રોફેશનલ ફૂલ સ્ક્રીન ફિક્સ (No Extra HTML Layers)
    ============================================================ */
 
-/* અદ્રશ્ય ટચ લેયર્સ - જે આઇફ્રેમની ઉપર રહીને ટચ કેપ્ચર કરશે */
-.fs-touch-layer {
-    display: none; /* નોર્મલ મોડમાં બંધ */
-    position: fixed !important;
-    background: rgba(0, 0, 0, 0.01) !important; /* ૧% કલર જેથી બ્રાઉઝર ટચ પકડી શકે */
-    z-index: 2147483646 !important; /* બટનની બરાબર નીચે પણ આઇફ્રેમની ઉપર */
-}
-
-/* જ્યારે ફૂલસ્ક્રીન હોય ત્યારે જ આ લેયર્સ ચાલુ થાય */
-.video-container:fullscreen .fs-touch-layer,
-.video-container:-webkit-full-screen .fs-touch-layer {
-    display: block;
-}
-
-/* ઉપર, ડાબે અને જમણે સ્માર્ટ ટચ બાર (અહીં ટચ કરવાથી બટન જાગી જશે) */
-.top-bar { top: 0; left: 0; width: 100vw; height: 15vh; }
-.left-bar { top: 15vh; left: 0; width: 15vw; height: 85vh; }
-.right-bar { top: 15vh; right: 0; width: 15vw; height: 65vh; } /* નીચે ખૂણો ખાલી રાખ્યો જ્યાં બટન છે */
-
-
-/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ પેનલનું મેઈન બોક્સ */
+/* ફૂલ સ્ક્રીન વખતે કંટ્રોલ પેનલ આખી સ્ક્રીનને કવર કરી લેશે (પારદર્શક પડદો) */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
-    position: absolute !important;
+    position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: transparent !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.01) !important; /* અદ્રશ્ય બેકગ્રાઉન્ડ જે ટચ ઝીલી લેશે */
     border: none !important;
     backdrop-filter: none !important;
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
-    pointer-events: none !important; /* આઇફ્રેમ પર ટચ કરવા દેશે */
-    z-index: 2147483647 !important; /* સૌથી ઉપર */
+    
+    /* ⚡ સૌથી મહત્વનો ફેરફાર: */
+    pointer-events: auto !important; /* આઇફ્રેમની ઉપર આપણો કન્ટ્રોલ રહેશે */
+    z-index: 2147483647 !important; 
     display: block !important; 
     opacity: 1 !important;
-    transition: opacity 0.3s ease;
+    visibility: visible !important;
+    transition: opacity 0.3s ease-in-out;
 }
 
-/* પ્લે, પોઝ બટન ફૂલસ્ક્રીનમાં હાઇડ */
+/* પ્લે, પોઝ, મ્યુટ બટન ફૂલસ્ક્રીનમાં હાઇડ */
 .video-container:fullscreen .custom-controls button:not(:last-child),
 .video-container:-webkit-full-screen .custom-controls button:not(:last-child) {
     display: none !important;
 }
 
-/* 🌟 માસ્ટર ફિક્સ: ફૂલ સ્ક્રીનમાં છેલ્લું બટન (Exit Fullscreen) */
+/* ફૂલ સ્ક્રીનમાં છેલ્લું બટન (Exit Fullscreen) - રાઉન્ડ અને પ્રીમિયમ */
 .video-container:fullscreen .custom-controls button:last-child,
 .video-container:-webkit-full-screen .custom-controls button:last-child {
     position: fixed !important;
@@ -665,37 +648,35 @@ body {
     transform: none !important; 
     margin: 0 !important;
     
-    /* ⚡ આ બે લાઇન સૌથી ઈમ્પોર્ટન્ટ છે: */
-    pointer-events: auto !important; /* આઇફ્રેમને હરાવીને અહીં ટચ કામ કરશે જ! */
-    visibility: visible !important;  /* ગમે તે થાય આ બટનનું એક્ઝિસ્ટન્સ રહેશે */
-    
+    pointer-events: auto !important; /* બટન પર ક્લિક કામ કરશે જ */
     font-size: 18px !important;
-    background: rgba(18, 18, 18, 0.85) !important; /* પ્રીમિયમ ડાર્ક લુક */
+    background: rgba(20, 20, 20, 0.85) !important; 
     color: #ffffff !important;
-    border-radius: 50% !important; /* એકદમ ગોળ સરસ બટન */
-    width: 50px !important;   
-    height: 50px !important;
+    border-radius: 50% !important; 
+    width: 52px !important;   
+    height: 52px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow: 0px 6px 20px rgba(0,0,0,0.8) !important;
-    transition: opacity 0.3s ease-in-out, transform 0.1s;
+    transition: opacity 0.3s ease-in-out;
 }
 
-/* 🌟 ઓટો-હાઇડ એક્ટિવેટ થાય ત્યારે ફક્ત બટનની ઓપેસિટી ૦ થશે, પણ તેની શિલ્ડ (ટચ પાવર) ત્યાં જ રહેશે! */
+/* 🌟 સ્માર્ટ ઓટો-હાઇડ: જ્યારે ૨ સેકન્ડ થાય ત્યારે પડદો અદ્રશ્ય થશે પણ તેનો ટચ પાવર ચાલુ રહેશે! */
+.video-container.hide-controls-active .custom-controls {
+    background: transparent !important;
+}
+
+/* જ્યારે કંટ્રોલ્સ હાઇડ મોડમાં જાય ત્યારે બટનની ઓપેસિટી માત્ર ૦.૦૨ થઈ જશે (જેથી અદ્રશ્ય રહીને પણ ટચ પકડે) */
 .video-container.hide-controls-active .custom-controls button:last-child {
-    opacity: 0.05 !important; /* સાવ 0 કરવાને બદલે 0.05 રાખ્યું જેથી અદ્રશ્ય રહીને પણ ટચ કેપ્ચર કરે! */
+    opacity: 0.02 !important; 
 }
 
-/* બટન પર આંગળી અડતા જ કલર બદલાશે */
+/* બટન ટચ ઇફેક્ટ */
 .video-container:fullscreen .custom-controls button:last-child:active,
 .video-container:-webkit-full-screen .custom-controls button:last-child:active {
-    background: #ff0000 !important; /* લાલ કલર */
+    background: #ff0000 !important; 
     border-color: #ff0000 !important;
     transform: scale(0.9) !important;
 }
-
-
-
-

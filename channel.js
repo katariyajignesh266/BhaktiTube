@@ -116,18 +116,18 @@ window.toggleFullScreen = function() {
   }
 }
 
-// 🌟 કંટ્રોલ્સ બતાવવા અને ૨ સેકન્ડ પછી હાઇડ કરવાનું સ્માર્ટ ફંક્શન
+// બટન શો-હાઇડ કરવા માટેનું સ્મૂથ ફંક્શન
 function showControlsAndSetTimeout() {
   const container = document.querySelector('.video-container');
   if (!container) return;
   
-  container.classList.remove('hide-controls-active'); // બટન બતાવો
+  container.classList.remove('hide-controls-active'); 
   clearTimeout(controlsTimeout);
   
   controlsTimeout = setTimeout(() => {
     const isFS = document.fullscreenElement || document.webkitFullscreenElement;
     if (isFS) {
-      container.classList.add('hide-controls-active'); // ૨ સેકન્ડ પછી છુપાવો
+      container.classList.add('hide-controls-active'); 
     }
   }, 2000); 
 }
@@ -157,12 +157,16 @@ const handleFullscreenChange = async () => {
       
       showControlsAndSetTimeout();
       
-      // 🌟 ઇન્વિઝિબલ લેયર્સ પર ટચ કરવાથી બટન જાગી જશે
-      const layers = document.querySelectorAll('.fs-touch-layer');
-      layers.forEach(layer => {
-        layer.addEventListener('touchstart', showControlsAndSetTimeout, { passive: true });
-        layer.addEventListener('click', showControlsAndSetTimeout);
-      });
+      // 🌟 નવો માસ્ટર ફિક્સ: આખા કંટ્રોલ બોક્સ (પડદા) પર જ ટચ ઇવેન્ટ એક્ટિવેટ કરી દીધી
+      const controlsPanel = document.querySelector('.custom-controls');
+      if (controlsPanel) {
+        controlsPanel.addEventListener('touchstart', (e) => {
+          // જો યુઝરે છેલ્લું બટન દબાવ્યું હોય તો પ્રોસેસ અટકાવવી નહીં
+          if (e.target === lastBtn || lastBtn.contains(e.target)) return;
+          
+          showControlsAndSetTimeout();
+        }, { passive: true });
+      }
 
     } catch (err) {
       console.log("FS Entry Error: ", err);
