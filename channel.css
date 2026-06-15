@@ -477,10 +477,13 @@ cursor:pointer;
 
 
 /* --- ૧. આખા પેજનું બેઝિક રીસેટ (ખૂબ જ જરૂરી) --- */
+/* --- ૧. આખા પેજનું બેઝિક રીસેટ (ખૂબ જ જરૂરી) --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* 🌟 આ લાઇન ઉમેરવાથી મોબાઈલમાં બ્લૂ કલરનું બ્લિંકિંગ સંપૂર્ણ બંધ થઈ જશે */
+    -webkit-tap-highlight-color: transparent !important; 
 }
 
 body {
