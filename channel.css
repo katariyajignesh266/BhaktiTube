@@ -626,33 +626,41 @@ body {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.4); /* ઓવરલે ખુલે ત્યારે જ બ્લેક શેડ દેખાશે */
-    z-index: 2147483647 !important; /* હાઇએસ્ટ વેલ્યુ જેથી આપણું લેયર ઉપર જ લોક રહે */
+    background: rgba(0, 0, 0, 0.5); /* ઓવરલે ખુલે ત્યારે બ્લેક શેડ દેખાશે */
+    z-index: 2147483647 !important; /* આ લેયર હંમેશા ઉપર રહેશે */
     cursor: pointer;
     box-sizing: border-box;
     padding: 40px;
-    transition: opacity 0.3s ease-in-out, background 0.3s ease-in-out;
+    transition: background 0.25s ease-in-out;
     pointer-events: auto !important;
 }
 
-/* 🌟 ૨ સેકન્ડ પછી જ્યારે બટનો હાઇડ થાય ત્યારે ઓવરલે અદ્રશ્ય થશે પણ ટચ આપણો જ પકડાશે */
+/* 🌟 ૨ સેકન્ડ પછી અથવા બીજા ટચ પર જ્યારે બટનો હાઇડ થાય ત્યારે */
 .fs-overlay.hide-fs-btn {
-    background: rgba(0, 0, 0, 0) !important; /* બેકગ્રાઉન્ડ કાળો શેડ જતો રહેશે */
-    pointer-events: auto !important; /* 🌟 મોસ્ટ ઈમ્પોર્ટન્ટ: હાઇડ હોય તો પણ ટચ આપણો જ લેવાનો, યુટ્યુબનો નહિ! */
+    background: rgba(0, 0, 0, 0) !important; /* કાળો પડછાયો જતો રહેશે */
+    pointer-events: auto !important; /* 🌟 મોસ્ટ ઈમ્પોર્ટન્ટ: આ લેયર ચાલુ જ રહેશે જેથી ફરી ટચ કરતા જ બટન આવે */
 }
 
-/* 🌟 હાઇડ ક્લાસ લાગે ત્યારે માત્ર અંદરના બટનો છુપાવવા, આખું લેયર નહિ */
+/* 🌟 હાઇડ ક્લાસ લાગે ત્યારે અંદરના બધા બટનો સ્મૂથલી ગાયબ થશે */
 .fs-overlay.hide-fs-btn .fs-btn,
 .fs-overlay.hide-fs-btn .fs-center-controls,
 .fs-overlay.hide-fs-btn .fs-bottom-controls {
     opacity: 0 !important;
-    pointer-events: none !important; /* હાઇડ હોય ત્યારે બટન ક્લિક ન થાય */
+    pointer-events: none !important; /* હાઇડ હોય ત્યારે બેકગ્રાઉન્ડમાં બટન ક્લિક ન થાય */
 }
 
-/* 🌟 યુટ્યુબ આઇફ્રેમ ફૂલસ્ક્રીનમાં ક્યારેય પણ ટચ ઈવેન્ટ ના પકડી શકે તે માટે લોક */
+/* 🌟 ઓવરલે ઓપન હોય ત્યારે બટનો સ્મૂથલી દેખાડવા માટે */
+.fs-overlay:not(.hide-fs-btn) .fs-btn,
+.fs-overlay:not(.hide-fs-btn) .fs-center-controls,
+.fs-overlay:not(.hide-fs-btn) .fs-bottom-controls {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* યુટ્યુબ આઇફ્રેમ ક્યારેય ટચ ન પકડી શકે તે માટે બેકગ્રાઉન્ડ લોક */
 .video-container:fullscreen #youtubePlayer,
 .video-container:-webkit-full-screen #youtubePlayer {
-    pointer-events: none !important; /* યુટ્યુબના ઓરિજિનલ કંટ્રોલ્સ આખી જિંદગી બહાર નહિ આવે */
+    pointer-events: none !important;
     z-index: 1 !important;
 }
 
@@ -666,7 +674,7 @@ body {
     align-items: center !important;
     justify-content: center !important;
     box-shadow: 0px 4px 15px rgba(0,0,0,0.7) !important;
-    transition: opacity 0.3s ease-in-out, transform 0.1s, background 0.2s;
+    transition: opacity 0.2s ease-in-out, transform 0.1s, background 0.2s;
     pointer-events: auto !important;
     cursor: pointer;
 }
@@ -687,7 +695,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
     pointer-events: auto !important;
 }
 
@@ -722,7 +730,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
     pointer-events: none;
 }
 
