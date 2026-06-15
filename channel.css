@@ -623,33 +623,37 @@ body {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.5); /* બેકગ્રાઉન્ડ થોડું ડાર્ક જેથી બટન ચોખ્ખા દેખાય */
-    z-index: 2147483647 !important; /* હાઇએસ્ટ જેથી યુટ્યુબ આઇફ્રેમની ઉપર જ રહે */
+    background: rgba(0, 0, 0, 0.4); /* ઓવરલે ખુલે ત્યારે જ બ્લેક શેડ દેખાશે */
+    z-index: 2147483647 !important; /* હાઇએસ્ટ વેલ્યુ જેથી આપણું લેયર ઉપર જ લોક રહે */
     cursor: pointer;
     box-sizing: border-box;
     padding: 40px;
-    transition: opacity 0.3s ease-in-out;
-    pointer-events: auto !important; /* 🌟 આનાથી ટચ સીધો આપણી ફ્રેમ પર જ આવશે, યુટ્યુબ પર નહીં */
+    transition: opacity 0.3s ease-in-out, background 0.3s ease-in-out;
+    pointer-events: auto !important;
 }
 
-/* 🌟 ૨ સેકન્ડ પછી જ્યારે બટનો હાઇડ થાય ત્યારે યુટ્યુબ પ્લેયર પર ટચ જવા દેવો */
+/* 🌟 ૨ સેકન્ડ પછી જ્યારે બટનો હાઇડ થાય ત્યારે ઓવરલે અદ્રશ્ય થશે પણ ટચ આપણો જ પકડાશે */
 .fs-overlay.hide-fs-btn {
-    opacity: 0 !important;
-    pointer-events: none !important; /* હાઇડ હોય ત્યારે યુટ્યુબને ટચ મળી શકે (જો ક્યારેય જરૂર પડે) */
+    background: rgba(0, 0, 0, 0) !important; /* બેકગ્રાઉન્ડ કાળો શેડ જતો રહેશે */
+    pointer-events: auto !important; /* 🌟 મોસ્ટ ઈમ્પોર્ટન્ટ: હાઇડ હોય તો પણ ટચ આપણો જ લેવાનો, યુટ્યુબનો નહિ! */
 }
 
-/* 🌟 ફૂલસ્ક્રીન દરમિયાન જો બટનો હાઇડ હોય તો યુટ્યુબ આઇફ્રેમના પોતાના ટચ પણ બ્લોક કરવા */
+/* 🌟 હાઇડ ક્લાસ લાગે ત્યારે માત્ર અંદરના બટનો છુપાવવા, આખું લેયર નહિ */
+.fs-overlay.hide-fs-btn .fs-btn,
+.fs-overlay.hide-fs-btn .fs-center-controls,
+.fs-overlay.hide-fs-btn .fs-bottom-controls {
+    opacity: 0 !important;
+    pointer-events: none !important; /* હાઇડ હોય ત્યારે બટન ક્લિક ન થાય */
+}
+
+/* 🌟 યુટ્યુબ આઇફ્રેમ ફૂલસ્ક્રીનમાં ક્યારેય પણ ટચ ઈવેન્ટ ના પકડી શકે તે માટે લોક */
 .video-container:fullscreen #youtubePlayer,
 .video-container:-webkit-full-screen #youtubePlayer {
-    pointer-events: none !important; /* યુટ્યુબના પોતાના કંટ્રોલ્સ બિલકુલ નહીં ખુલે */
+    pointer-events: none !important; /* યુટ્યુબના ઓરિજિનલ કંટ્રોલ્સ આખી જિંદગી બહાર નહિ આવે */
+    z-index: 1 !important;
 }
 
-/* જો બટનો સ્ક્રીન પર દેખાતા હોય (ઓવરલે ઓપન હોય), તો આઇફ્રેમના ટચ બંધ જ રાખવા */
-.video-container:fullscreen .fs-overlay:not(.hide-fs-btn) ~ #youtubePlayer {
-    pointer-events: none !important;
-}
-
-/* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ */
+/* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ્સ */
 .fs-btn {
     background: rgba(28, 28, 28, 0.9) !important;
     color: #ffffff !important;
@@ -659,8 +663,8 @@ body {
     align-items: center !important;
     justify-content: center !important;
     box-shadow: 0px 4px 15px rgba(0,0,0,0.7) !important;
-    transition: transform 0.1s, background 0.2s;
-    pointer-events: auto !important; /* બટનો પર ક્લિક ચાલુ રાખવી */
+    transition: opacity 0.3s ease-in-out, transform 0.1s, background 0.2s;
+    pointer-events: auto !important;
     cursor: pointer;
 }
 
@@ -670,7 +674,7 @@ body {
     border-color: #ff0000 !important;
 }
 
-/* ૧. સેન્ટર કંટ્રોલ્સ લેઆઉટ (સ્ક્રીનની બરોબર વચ્ચે) */
+/* ૧. સેન્ટર કંટ્રોલ્સ લેઆઉટ */
 .fs-center-controls {
     display: flex;
     justify-content: center;
@@ -680,6 +684,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease-in-out;
     pointer-events: auto !important;
 }
 
@@ -714,14 +719,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: opacity 0.3s ease-in-out;
     pointer-events: none;
 }
 
-/* વોલ્યુમ અને એક્ઝિટ ફૂલસ્ક્રીન સાઇડ બટન્સ */
 .fs-side-btn {
     width: 50px !important;
     height: 50px !important;
     font-size: 20px !important;
+    pointer-events: auto !important;
 }
 
 /* નોર્મલ કંટ્રોલ્સ ફૂલસ્ક્રીનમાં છુપાવવા */

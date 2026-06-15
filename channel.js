@@ -72,9 +72,12 @@ window.openVideo = async function(videoId) {
   const popup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
   if (popup) popup.style.display = "flex";
+  
   if (playerIframe) {
-    playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
+    // 🌟 અહીં controls=0 ની સાથે disablekb=1 (કિબોર્ડ બ્લોક) અને fs=0 (યુટ્યુબનું પોતાનું ફૂલસ્ક્રીન બટન બંધ) ઉમેર્યું છે
+    playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
   }
+  
   if (!ytPlayer) {
     ytPlayer = new YT.Player('youtubePlayer', {
       events: {
@@ -125,6 +128,7 @@ window.togglePlayPause = function() {
 window.skipTime = function(seconds) {
   if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
     const currentTime = ytPlayer.getCurrentTime();
+    // 🌟 સાચું સીક ઈન્સ્ટ્રક્શન ફાયર કરવું અને આપણું ટાઈમર ચાલુ રાખવું
     ytPlayer.seekTo(currentTime + seconds, true);
     startControlsTimer();
   }
@@ -168,7 +172,6 @@ window.toggleFullScreen = function() {
   }
 }
 
-// 🌟 ફૂલસ્ક્રીન દરમિયાન સ્ક્રીન પર ક્યાંય પણ ટચ કરો ત્યારે આ ફંક્શન ફાયર થશે
 window.handleOverlayTouch = function() {
   const overlay = document.getElementById('fullscreenOverlay');
   if (!overlay) return;
@@ -228,7 +231,6 @@ const handleFullscreenChange = async () => {
 document.addEventListener("fullscreenchange", handleFullscreenChange);
 document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
-// 🌟 જો બટનો હાઇડ હોય અને કોઈ કન્ટેનર પર ટચ કરે, તો પણ આપણું જ ઓવરલે શો થવું જોઈએ
 document.getElementById('videoContainer').addEventListener('click', function(e) {
   const isFS = document.fullscreenElement || document.webkitFullscreenElement;
   if (isFS) {
