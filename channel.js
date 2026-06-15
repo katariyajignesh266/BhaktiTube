@@ -81,27 +81,82 @@ window.openVideo = async function(videoId) {
         'onReady': (event) => {
           event.target.playVideo();
           isMuted = false;
-          const muteBtn = document.getElementById('muteBtn');
-          if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+          updateMuteButtons();
+          updatePlayPauseButtons(true);
+        },
+        'onStateChange': (event) => {
+          if (event.data === YT.PlayerState.PLAYING) {
+            updatePlayPauseButtons(true);
+          } else if (event.data === YT.PlayerState.PAUSED) {
+            updatePlayPauseButtons(false);
+          }
         }
       }
-    }
-    );
+    });
+  } else {
+    // જો પ્લેયર ઓલરેડી બનેલો હોય, તો નવો વિડિયો લોડ કરો
+    setTimeout(() => {
+      if(ytPlayer && typeof ytPlayer.cueVideoById === "function") {
+        ytPlayer.cueVideoById(videoId);
+        ytPlayer.playVideo();
+      }
+    }, 500);
   }
 }
 
-window.playVideo = function() { if (ytPlayer && typeof ytPlayer.playVideo === "function") ytPlayer.playVideo(); }
-window.pauseVideo = function() { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); }
+window.playVideo = function() { 
+  if (ytPlayer && typeof ytPlayer.playVideo === "function") ytPlayer.playVideo(); 
+}
+
+window.pauseVideo = function() { 
+  if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); 
+}
+
+// 🌟 ફૂલસ્ક્રીન મોડ માટે Play/Pause ટોગલ ફંક્શન
+window.togglePlayPause = function() {
+  if (ytPlayer && typeof ytPlayer.getPlayerState === "function") {
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+      ytPlayer.pauseVideo();
+    } else {
+      ytPlayer.playVideo();
+    }
+  }
+}
+
+// 🌟 ૧૦ સેકન્ડ આગળ કે પાછળ સ્કીપ કરવાનું નવું લોજિક
+window.skipTime = function(seconds) {
+  if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
+    const currentTime = ytPlayer.getCurrentTime();
+    ytPlayer.seekTo(currentTime + seconds, true);
+    // સ્કીપ કરો ત્યારે ટાઈમર રીસેટ કરો જેથી બટન્સ તરત ગાયબ ન થાય
+    startControlsTimer();
+  }
+}
+
 window.toggleMute = function() {
-  const muteBtn = document.getElementById('muteBtn');
   if (ytPlayer && typeof ytPlayer.mute === "function") {
     if (isMuted) {
       ytPlayer.unMute(); isMuted = false;
-      if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
     } else {
       ytPlayer.mute(); isMuted = true;
-      if(muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
     }
+    updateMuteButtons();
+  }
+}
+
+function updateMuteButtons() {
+  const muteBtn = document.getElementById('muteBtn');
+  const fsMuteBtn = document.getElementById('fsMuteBtn');
+  const icon = isMuted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
+  if(muteBtn) muteBtn.innerHTML = icon;
+  if(fsMuteBtn) fsMuteBtn.innerHTML = icon;
+}
+
+function updatePlayPauseButtons(isPlaying) {
+  const fsPlayBtn = document.getElementById('fsPlayBtn');
+  if (fsPlayBtn) {
+    fsPlayBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
   }
 }
 
@@ -117,17 +172,14 @@ window.toggleFullScreen = function() {
   }
 }
 
-// 🌟 ફૂલસ્ક્રીન દરમિયાન આખી સ્ક્રીન પર ગમે ત્યાં ટચ કરવાથી બટન શો/હાઈડ કરવાનું લોજિક
 window.handleOverlayTouch = function() {
   const overlay = document.getElementById('fullscreenOverlay');
   if (!overlay) return;
 
-  // જો બટન ઓલરેડી હાઇડ હોય, તો શો કરો અને ટાઈમર સેટ કરો
   if (overlay.classList.contains('hide-fs-btn')) {
     overlay.classList.remove('hide-fs-btn');
     startControlsTimer();
   } else {
-    // જો દેખાતું હોય, તો ટચ કરવાથી તરત હાઇડ કરી દો
     overlay.classList.add('hide-fs-btn');
     clearTimeout(controlsTimeout);
   }
@@ -139,7 +191,7 @@ function startControlsTimer() {
     const overlay = document.getElementById('fullscreenOverlay');
     const isFS = document.fullscreenElement || document.webkitFullscreenElement;
     if (isFS && overlay) {
-      overlay.classList.add('hide-fs-btn'); // ૨ સેકન્ડ પછી આપોઆપ હાઇડ થશે
+      overlay.classList.add('hide-fs-btn');
     }
   }, 2000);
 }
@@ -155,11 +207,12 @@ const handleFullscreenChange = async () => {
         await screen.orientation.lock("landscape").catch(e => console.log(e));
       }
       if (playerIframe) playerIframe.classList.add("fullscreen");
-      
-      // ફૂલસ્ક્રીન થતાં જ ઓવરલે બટન બતાવો અને ટાઈમર શરૂ કરો
       if (overlay) overlay.classList.remove('hide-fs-btn');
+      if (ytPlayer && typeof ytPlayer.getPlayerState === "function") {
+        updatePlayPauseButtons(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
+      }
+      updateMuteButtons();
       startControlsTimer();
-
     } catch (err) {
       console.log("FS Entry Error: ", err);
     }

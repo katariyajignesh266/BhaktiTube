@@ -33,9 +33,31 @@
             <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
             
             <div id="fullscreenOverlay" class="fs-overlay" onclick="handleOverlayTouch()">
-                <button class="fs-exit-btn" onclick="event.stopPropagation(); toggleFullScreen();">
-                    <i class="fa-solid fa-compress"></i>
-                </button>
+                
+                <div class="fs-center-controls">
+                    <button class="fs-btn fs-mid-btn" onclick="event.stopPropagation(); skipTime(-10);">
+                        <i class="fa-solid fa-backward-step"></i><span class="skip-txt">10s</span>
+                    </button>
+                    
+                    <button class="fs-btn fs-main-play-btn" id="fsPlayBtn" onclick="event.stopPropagation(); togglePlayPause();">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                    
+                    <button class="fs-btn fs-mid-btn" onclick="event.stopPropagation(); skipTime(10);">
+                        <span class="skip-txt">10s</span><i class="fa-solid fa-forward-step"></i>
+                    </button>
+                </div>
+
+                <div class="fs-bottom-controls">
+                    <button class="fs-btn fs-side-btn" id="fsMuteBtn" onclick="event.stopPropagation(); toggleMute();">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    
+                    <button class="fs-btn fs-side-btn" onclick="event.stopPropagation(); toggleFullScreen();">
+                        <i class="fa-solid fa-compress"></i>
+                    </button>
+                </div>
+                
             </div>
 
             <div class="custom-controls">

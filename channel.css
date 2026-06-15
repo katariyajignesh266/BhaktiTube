@@ -604,7 +604,7 @@ body {
 }
 
 /* ============================================================
-   🌟 ફૂલસ્ક્રીન માસ્ટર ઓવરલે અને ઓટો-હાઇડ સેટિંગ્સ
+   🌟 ફૂલસ્ક્રીન માસ્ટર ઓવરલે અને પ્રોપર બટન સેટિંગ્સ
    ============================================================ */
 
 /* નોર્મલ મોડમાં ફૂલસ્ક્રીન લેયર બંધ રહેશે */
@@ -612,55 +612,108 @@ body {
     display: none;
 }
 
-/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું સેટિંગ */
+/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું માસ્ટર લેયર સેટિંગ */
 .video-container:fullscreen .fs-overlay,
 .video-container:-webkit-full-screen .fs-overlay {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.001); /* અદ્રશ્ય લેયર જે આઈફ્રેમના ટચ બ્લોક કરશે */
-    z-index: 2147483647 !important; /* હાઇએસ્ટ વેલ્યુ જેથી YouTube ની ઉપર રહે */
+    background: rgba(0, 0, 0, 0.4); /* સ્ક્રીન બહુ ડાર્ક ન થાય અને બટનો ચોખ્ખા દેખાય તેવો બેકગ્રાઉન્ડ */
+    z-index: 2147483647 !important;
     cursor: pointer;
+    box-sizing: border-box;
+    padding: 40px; /* બટનો ધારથી થોડા અંદર રહે તે માટે */
+    transition: opacity 0.3s ease-in-out;
 }
 
-/* ફૂલસ્ક્રીન મોડમાં નાની સ્ક્રીન કરવાનું ખાસ મોટું બટન (સ્ક્રીનની વચ્ચે-જમણી બાજુ) */
-.fs-exit-btn {
-    position: absolute !important;
-    top: 50% !important;
-    right: 40px !important;
-    transform: translateY(-50%) !important;
-    background: rgba(20, 20, 20, 0.85) !important;
+/* 🌟 ૨ સેકન્ડ પછી આખું લેયર અને બધા બટનો સ્મૂથલી હાઇડ થશે */
+.fs-overlay.hide-fs-btn {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ */
+.fs-btn {
+    background: rgba(28, 28, 28, 0.85) !important;
     color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
     border-radius: 50% !important;
-    width: 75px !important; /* મોબાઈલમાં આસાનીથી દબાય તે માટે મોટી સાઇઝ */
-    height: 75px !important;
-    font-size: 32px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border: 2.5px solid rgba(255, 255, 255, 0.7) !important;
-    box-shadow: 0px 6px 25px rgba(0,0,0,0.9) !important;
-    transition: opacity 0.3s ease-in-out, transform 0.1s;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.6) !important;
+    transition: transform 0.1s, background 0.2s;
     pointer-events: auto !important;
+    cursor: pointer;
 }
 
-/* 🌟 ૨ સેકન્ડ પછી ઓટોમેટિક બટન હાઇડ કરવાની ક્લાસ */
-.fs-overlay.hide-fs-btn .fs-exit-btn {
-    opacity: 0 !important;
-    pointer-events: none !important; /* હાઇડ હોય ત્યારે ક્લિક ન થાય */
-}
-
-/* બટન એક્ટિવ (ક્લિક) થાય ત્યારે લાલ કલર ઇફેક્ટ */
-.fs-exit-btn:active {
-    background: #ff0000 !important;
+.fs-btn:active {
+    transform: scale(0.9) !important;
+    background: #ff0000 !important; /* ક્લિક થાય ત્યારે લાલ કલર ફીડબેક */
     border-color: #ff0000 !important;
-    transform: translateY(-50%) scale(0.9) !important;
 }
 
-/* ફૂલસ્ક્રીન દરમિયાન જુના નોર્મલ કંટ્રોલ્સને હાઇડ કરી દેવા */
+/* ૧. સેન્ટર કંટ્રોલ્સ લેઆઉટ (સ્ક્રીનની બરોબર વચ્ચે) */
+.fs-center-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px; /* બટનો વચ્ચે યોગ્ય અંતર */
+    margin-auto: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* વચ્ચેનું મુખ્ય Play/Pause બટન (મીડિયમ અને પ્રોપર સાઇઝ) */
+.fs-main-play-btn {
+    width: 65px !important;
+    height: 65px !important;
+    font-size: 26px !important;
+}
+
+/* આગળ-પાછળ કરવાના ૧૦ સેકન્ડના બટન્સ */
+.fs-mid-btn {
+    width: 55px !important;
+    height: 55px !important;
+    font-size: 18px !important;
+    flex-direction: column;
+}
+
+/* 10s લખાણની નાની સાઈઝ */
+.skip-txt {
+    font-size: 10px !important;
+    font-weight: bold;
+    margin-top: -2px;
+    color: #ccc;
+}
+
+/* ૨. બોટમ કંટ્રોલ્સ લેઆઉટ (ખૂણાઓમાં સેટ કરવા) */
+.fs-bottom-controls {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    right: 25px;
+    display: flex;
+    justify-content: space-between; /* ડાબી અને જમણી બાજુ સરખું વહેંચવા */
+    align-items: center;
+    pointer-events: none; /* આ લેયર પોતે ક્લિક બ્લોક ન કરે */
+}
+
+/* વોલ્યુમ અને એક્ઝિટ ફૂલસ્ક્રીન સાઇડ બટન્સ */
+.fs-side-btn {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+}
+
+/* ફૂલસ્ક્રીન દરમિયાન જુના નોર્મલ કંટ્રોલ્સને હાઇડ રાખવા */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     display: none !important;
