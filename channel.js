@@ -94,7 +94,6 @@ window.openVideo = async function(videoId) {
       }
     });
   } else {
-    // જો પ્લેયર ઓલરેડી બનેલો હોય, તો નવો વિડિયો લોડ કરો
     setTimeout(() => {
       if(ytPlayer && typeof ytPlayer.cueVideoById === "function") {
         ytPlayer.cueVideoById(videoId);
@@ -112,7 +111,6 @@ window.pauseVideo = function() {
   if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); 
 }
 
-// 🌟 ફૂલસ્ક્રીન મોડ માટે Play/Pause ટોગલ ફંક્શન
 window.togglePlayPause = function() {
   if (ytPlayer && typeof ytPlayer.getPlayerState === "function") {
     const state = ytPlayer.getPlayerState();
@@ -124,12 +122,10 @@ window.togglePlayPause = function() {
   }
 }
 
-// 🌟 ૧૦ સેકન્ડ આગળ કે પાછળ સ્કીપ કરવાનું નવું લોજિક
 window.skipTime = function(seconds) {
   if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
     const currentTime = ytPlayer.getCurrentTime();
     ytPlayer.seekTo(currentTime + seconds, true);
-    // સ્કીપ કરો ત્યારે ટાઈમર રીસેટ કરો જેથી બટન્સ તરત ગાયબ ન થાય
     startControlsTimer();
   }
 }
@@ -172,6 +168,7 @@ window.toggleFullScreen = function() {
   }
 }
 
+// 🌟 ફૂલસ્ક્રીન દરમિયાન સ્ક્રીન પર ક્યાંય પણ ટચ કરો ત્યારે આ ફંક્શન ફાયર થશે
 window.handleOverlayTouch = function() {
   const overlay = document.getElementById('fullscreenOverlay');
   if (!overlay) return;
@@ -230,6 +227,19 @@ const handleFullscreenChange = async () => {
 
 document.addEventListener("fullscreenchange", handleFullscreenChange);
 document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+
+// 🌟 જો બટનો હાઇડ હોય અને કોઈ કન્ટેનર પર ટચ કરે, તો પણ આપણું જ ઓવરલે શો થવું જોઈએ
+document.getElementById('videoContainer').addEventListener('click', function(e) {
+  const isFS = document.fullscreenElement || document.webkitFullscreenElement;
+  if (isFS) {
+    const overlay = document.getElementById('fullscreenOverlay');
+    if (overlay && overlay.classList.contains('hide-fs-btn')) {
+      overlay.classList.remove('hide-fs-btn');
+      startControlsTimer();
+      e.stopPropagation();
+    }
+  }
+});
 
 window.closeVideo = function() {
   const popup = document.getElementById("videoPopup");

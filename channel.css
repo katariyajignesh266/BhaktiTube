@@ -623,38 +623,50 @@ body {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.4); /* સ્ક્રીન બહુ ડાર્ક ન થાય અને બટનો ચોખ્ખા દેખાય તેવો બેકગ્રાઉન્ડ */
-    z-index: 2147483647 !important;
+    background: rgba(0, 0, 0, 0.5); /* બેકગ્રાઉન્ડ થોડું ડાર્ક જેથી બટન ચોખ્ખા દેખાય */
+    z-index: 2147483647 !important; /* હાઇએસ્ટ જેથી યુટ્યુબ આઇફ્રેમની ઉપર જ રહે */
     cursor: pointer;
     box-sizing: border-box;
-    padding: 40px; /* બટનો ધારથી થોડા અંદર રહે તે માટે */
+    padding: 40px;
     transition: opacity 0.3s ease-in-out;
+    pointer-events: auto !important; /* 🌟 આનાથી ટચ સીધો આપણી ફ્રેમ પર જ આવશે, યુટ્યુબ પર નહીં */
 }
 
-/* 🌟 ૨ સેકન્ડ પછી આખું લેયર અને બધા બટનો સ્મૂથલી હાઇડ થશે */
+/* 🌟 ૨ સેકન્ડ પછી જ્યારે બટનો હાઇડ થાય ત્યારે યુટ્યુબ પ્લેયર પર ટચ જવા દેવો */
 .fs-overlay.hide-fs-btn {
     opacity: 0 !important;
+    pointer-events: none !important; /* હાઇડ હોય ત્યારે યુટ્યુબને ટચ મળી શકે (જો ક્યારેય જરૂર પડે) */
+}
+
+/* 🌟 ફૂલસ્ક્રીન દરમિયાન જો બટનો હાઇડ હોય તો યુટ્યુબ આઇફ્રેમના પોતાના ટચ પણ બ્લોક કરવા */
+.video-container:fullscreen #youtubePlayer,
+.video-container:-webkit-full-screen #youtubePlayer {
+    pointer-events: none !important; /* યુટ્યુબના પોતાના કંટ્રોલ્સ બિલકુલ નહીં ખુલે */
+}
+
+/* જો બટનો સ્ક્રીન પર દેખાતા હોય (ઓવરલે ઓપન હોય), તો આઇફ્રેમના ટચ બંધ જ રાખવા */
+.video-container:fullscreen .fs-overlay:not(.hide-fs-btn) ~ #youtubePlayer {
     pointer-events: none !important;
 }
 
 /* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ */
 .fs-btn {
-    background: rgba(28, 28, 28, 0.85) !important;
+    background: rgba(28, 28, 28, 0.9) !important;
     color: #ffffff !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.6) !important;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.7) !important;
     transition: transform 0.1s, background 0.2s;
-    pointer-events: auto !important;
+    pointer-events: auto !important; /* બટનો પર ક્લિક ચાલુ રાખવી */
     cursor: pointer;
 }
 
 .fs-btn:active {
     transform: scale(0.9) !important;
-    background: #ff0000 !important; /* ક્લિક થાય ત્યારે લાલ કલર ફીડબેક */
+    background: #ff0000 !important;
     border-color: #ff0000 !important;
 }
 
@@ -663,19 +675,19 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px; /* બટનો વચ્ચે યોગ્ય અંતર */
-    margin-auto: auto;
+    gap: 45px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    pointer-events: auto !important;
 }
 
-/* વચ્ચેનું મુખ્ય Play/Pause બટન (મીડિયમ અને પ્રોપર સાઇઝ) */
+/* વચ્ચેનું મુખ્ય Play/Pause બટન */
 .fs-main-play-btn {
-    width: 65px !important;
-    height: 65px !important;
-    font-size: 26px !important;
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 28px !important;
 }
 
 /* આગળ-પાછળ કરવાના ૧૦ સેકન્ડના બટન્સ */
@@ -686,7 +698,6 @@ body {
     flex-direction: column;
 }
 
-/* 10s લખાણની નાની સાઈઝ */
 .skip-txt {
     font-size: 10px !important;
     font-weight: bold;
@@ -694,16 +705,16 @@ body {
     color: #ccc;
 }
 
-/* ૨. બોટમ કંટ્રોલ્સ લેઆઉટ (ખૂણાઓમાં સેટ કરવા) */
+/* ૨. બોટમ કંટ્રોલ્સ લેઆઉટ */
 .fs-bottom-controls {
     position: absolute;
-    bottom: 25px;
-    left: 25px;
-    right: 25px;
+    bottom: 30px;
+    left: 40px;
+    right: 40px;
     display: flex;
-    justify-content: space-between; /* ડાબી અને જમણી બાજુ સરખું વહેંચવા */
+    justify-content: space-between;
     align-items: center;
-    pointer-events: none; /* આ લેયર પોતે ક્લિક બ્લોક ન કરે */
+    pointer-events: none;
 }
 
 /* વોલ્યુમ અને એક્ઝિટ ફૂલસ્ક્રીન સાઇડ બટન્સ */
@@ -713,7 +724,7 @@ body {
     font-size: 20px !important;
 }
 
-/* ફૂલસ્ક્રીન દરમિયાન જુના નોર્મલ કંટ્રોલ્સને હાઇડ રાખવા */
+/* નોર્મલ કંટ્રોલ્સ ફૂલસ્ક્રીનમાં છુપાવવા */
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     display: none !important;
