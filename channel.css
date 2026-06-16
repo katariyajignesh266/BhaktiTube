@@ -680,7 +680,7 @@ body {
     left: -15% !important;
     
     /* આઇફ્રેમની બધી વસ્તુઓને ઝીણી કરવા માટે તેને સ્કેલ (ઝૂમ આઉટ/ઇન બેલેન્સ) કરો */
-    transform: scale(1) !important; 
+    transform: scale(0.5) !important; 
 }
 
 /* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ્સ */
