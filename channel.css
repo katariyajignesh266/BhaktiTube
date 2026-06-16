@@ -615,7 +615,7 @@ body {
     display: none;
 }
 
-/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું માસ્ટર લેયર સેટિંગ */
+/* 🌟 તમારા ઓવરલે લેયરનો ઝેડ-ઇન્ડેક્સ (z-index) બરાબર કામ કરે તે માટે સુધારો */
 .video-container:fullscreen .fs-overlay,
 .video-container:-webkit-full-screen .fs-overlay {
     display: flex !important;
@@ -626,8 +626,8 @@ body {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.5); /* ઓવરલે ખુલે ત્યારે બ્લેક શેડ દેખાશે */
-    z-index: 2147483647 !important; /* આ લેયર હંમેશા ઉપર રહેશે */
+    background: rgba(0, 0, 0, 0.6); /* થોડો વધારે કાળો શેડ જેથી તમારો કંટ્રોલ સારો દેખાય */
+    z-index: 9999999999 !important; /* આ લેયર યુટ્યુબની ઉપર જ રેહશે */
     cursor: pointer;
     box-sizing: border-box;
     padding: 40px;
@@ -657,11 +657,16 @@ body {
     pointer-events: auto !important;
 }
 
-/* યુટ્યુબ આઇફ્રેમ ક્યારેય ટચ ન પકડી શકે તે માટે બેકગ્રાઉન્ડ લોક */
+/* યુટ્યુબ આઇફ્રેમ ફૂલસ્ક્રીનમાં ક્યારેય ટચ કે કોઈ કંટ્રોલ્સ ન બતાવે તે માટે પ્રોપર લોક */
 .video-container:fullscreen #youtubePlayer,
 .video-container:-webkit-full-screen #youtubePlayer {
     pointer-events: none !important;
     z-index: 1 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 /* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ્સ */

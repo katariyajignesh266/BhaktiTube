@@ -127,7 +127,12 @@ window.togglePlayPause = function() {
 window.skipTime = function(seconds) {
   if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
     const currentTime = ytPlayer.getCurrentTime();
+    // વિડિયો સ્કીપ કરો
     ytPlayer.seekTo(currentTime + seconds, true);
+    
+    // 🌟 આઈફ્રેમ પરથી ફોકસ હટાવવા માટે આ લાઈન ઉમેરો
+    document.activeElement ? document.activeElement.blur() : null;
+    
     // સ્કીપ કર્યા પછી બટન્સને ખુલ્લા રાખવા માટે ટાઈમર રીસ્ટાર્ટ કરો
     startControlsTimer();
   }
