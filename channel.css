@@ -607,7 +607,7 @@ body {
 }
 
 /* ============================================================
-   🌟 ફૂલસ્ક્રીન માસ્ટર ઓવરલે અને પ્રોપર બટન સેટિંગ્સ
+   🌟 ફૂલસ્ક્રીન માસ્ટર ઓવરલે અને વિડિયો ઝૂમ-હાઇડ લોજિક
    ============================================================ */
 
 /* નોર્મલ મોડમાં ફૂલસ્ક્રીન લેયર બંધ રહેશે */
@@ -615,7 +615,16 @@ body {
     display: none;
 }
 
-/* 🌟 તમારા ઓવરલે લેયરનો ઝેડ-ઇન્ડેક્સ (z-index) બરાબર કામ કરે તે માટે સુધારો */
+/* વિડિયો કન્ટેનર પ્રોપર સેટિંગ્સ - બહાર જતો ભાગ છુપાવવા માટે overflow: hidden */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important; /* આ લાઈન આઇફ્રેમના બહાર જતા કંટ્રોલ્સને કાપી નાખશે */
+    background: #000;
+}
+
+/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું માસ્ટર લેયર સેટિંગ */
 .video-container:fullscreen .fs-overlay,
 .video-container:-webkit-full-screen .fs-overlay {
     display: flex !important;
@@ -626,8 +635,8 @@ body {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: rgba(0, 0, 0, 0.6); /* થોડો વધારે કાળો શેડ જેથી તમારો કંટ્રોલ સારો દેખાય */
-    z-index: 9999999999 !important; /* આ લેયર યુટ્યુબની ઉપર જ રેહશે */
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 2147483647 !important; /* તમારા બનાવેલા કંટ્રોલ્સ હંમેશા યુટ્યુબની ઉપર જ રેહશે */
     cursor: pointer;
     box-sizing: border-box;
     padding: 40px;
@@ -635,21 +644,21 @@ body {
     pointer-events: auto !important;
 }
 
-/* 🌟 ૨ સેકન્ડ પછી અથવા બીજા ટચ પર જ્યારે બટનો હાઇડ થાય ત્યારે */
+/* ૨ સેકન્ડ પછી જ્યારે બટનો હાઇડ થાય ત્યારે */
 .fs-overlay.hide-fs-btn {
-    background: rgba(0, 0, 0, 0) !important; /* કાળો પડછાયો જતો રહેશે */
-    pointer-events: auto !important; /* 🌟 મોસ્ટ ઈમ્પોર્ટન્ટ: આ લેયર ચાલુ જ રહેશે જેથી ફરી ટચ કરતા જ બટન આવે */
+    background: rgba(0, 0, 0, 0) !important; 
+    pointer-events: auto !important; 
 }
 
-/* 🌟 હાઇડ ક્લાસ લાગે ત્યારે અંદરના બધા બટનો સ્મૂથલી ગાયબ થશે */
+/* હાઇડ ક્લાસ લાગે ત્યારે બટનો સ્મૂથલી ગાયબ થશે */
 .fs-overlay.hide-fs-btn .fs-btn,
 .fs-overlay.hide-fs-btn .fs-center-controls,
 .fs-overlay.hide-fs-btn .fs-bottom-controls {
     opacity: 0 !important;
-    pointer-events: none !important; /* હાઇડ હોય ત્યારે બેકગ્રાઉન્ડમાં બટન ક્લિક ન થાય */
+    pointer-events: none !important; 
 }
 
-/* 🌟 ઓવરલે ઓપન હોય ત્યારે બટનો સ્મૂથલી દેખાડવા માટે */
+/* ઓવરલે ઓપન હોય ત્યારે બટનો દેખાડવા માટે */
 .fs-overlay:not(.hide-fs-btn) .fs-btn,
 .fs-overlay:not(.hide-fs-btn) .fs-center-controls,
 .fs-overlay:not(.hide-fs-btn) .fs-bottom-controls {
@@ -657,16 +666,21 @@ body {
     pointer-events: auto !important;
 }
 
-/* યુટ્યુબ આઇફ્રેમ ફૂલસ્ક્રીનમાં ક્યારેય ટચ કે કોઈ કંટ્રોલ્સ ન બતાવે તે માટે પ્રોપર લોક */
+/* 🌟 ફૂલસ્ક્રીનમાં યુટ્યુબ આઇફ્રેમ પર જાદુઈ સ્કેલિંગ (ઝૂમ) ટ્રીક 🌟 */
 .video-container:fullscreen #youtubePlayer,
 .video-container:-webkit-full-screen #youtubePlayer {
-    pointer-events: none !important;
+    pointer-events: none !important; /* યુઝર યુટ્યુબ પ્લેયરને ટચ ન કરી શકે */
     z-index: 1 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    position: absolute;
-    top: 0;
-    left: 0;
+    
+    /* આઇફ્રેમને કન્ટેનર કરતા મોટી કરો જેથી યુટ્યુબના બટન્સ/લોગો ક્રોપ થઈને નાબૂદ થઈ જાય */
+    width: 130% !important;
+    height: 130% !important;
+    position: absolute !important;
+    top: -15% !important;
+    left: -15% !important;
+    
+    /* આઇફ્રેમની બધી વસ્તુઓને ઝીણી કરવા માટે તેને સ્કેલ (ઝૂમ આઉટ/ઇન બેલેન્સ) કરો */
+    transform: scale(1) !important; 
 }
 
 /* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ્સ */
@@ -690,7 +704,7 @@ body {
     border-color: #ff0000 !important;
 }
 
-/* ૧. સેન્ટર કંટ્રોલ્સ લેઆઉટ */
+/* સેન્ટર કંટ્રોલ્સ લેઆઉટ */
 .fs-center-controls {
     display: flex;
     justify-content: center;
@@ -704,14 +718,12 @@ body {
     pointer-events: auto !important;
 }
 
-/* વચ્ચેનું મુખ્ય Play/Pause બટન */
 .fs-main-play-btn {
     width: 70px !important;
     height: 70px !important;
     font-size: 28px !important;
 }
 
-/* આગળ-પાછળ કરવાના ૧૦ સેકન્ડના બટન્સ */
 .fs-mid-btn {
     width: 55px !important;
     height: 55px !important;
@@ -726,7 +738,7 @@ body {
     color: #ccc;
 }
 
-/* ૨. બોટમ કંટ્રોલ્સ લેઆઉટ */
+/* બોટમ કંટ્રોલ્સ લેઆઉટ */
 .fs-bottom-controls {
     position: absolute;
     bottom: 30px;

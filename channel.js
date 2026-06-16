@@ -127,13 +127,13 @@ window.togglePlayPause = function() {
 window.skipTime = function(seconds) {
   if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
     const currentTime = ytPlayer.getCurrentTime();
-    // વિડિયો સ્કીપ કરો
     ytPlayer.seekTo(currentTime + seconds, true);
     
-    // 🌟 આઈફ્રેમ પરથી ફોકસ હટાવવા માટે આ લાઈન ઉમેરો
-    document.activeElement ? document.activeElement.blur() : null;
+    // 🌟 આઇફ્રેમ પરથી ફોકસ હટાવવું જેથી ડિફોલ્ટ બટનો જલ્દી ગાયબ થાય
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
     
-    // સ્કીપ કર્યા પછી બટન્સને ખુલ્લા રાખવા માટે ટાઈમર રીસ્ટાર્ટ કરો
     startControlsTimer();
   }
 }
@@ -176,19 +176,16 @@ window.toggleFullScreen = function() {
   }
 }
 
-// 🌟 ફૂલસ્ક્રીન દરમિયાન ઓન/ઓફ (શો/હાઇડ) કરવાનું પર્ફેક્ટ લોજિક
 window.handleOverlayTouch = function() {
   const overlay = document.getElementById('fullscreenOverlay');
   if (!overlay) return;
 
-  // જો બટન્સ અત્યારે હાઇડ (છુપાયેલા) હોય, તો શો કરો અને ૨ સેકન્ડનું ટાઈમર શરૂ કરો
   if (overlay.classList.contains('hide-fs-btn')) {
     overlay.classList.remove('hide-fs-btn');
     startControlsTimer();
   } else {
-    // 🌟 જો બટન્સ ઓલરેડી સ્ક્રીન પર દેખાતા હોય, તો ટચ કરતાની સાથે જ તરત હાઇડ કરી દો
     overlay.classList.add('hide-fs-btn');
-    clearTimeout(controlsTimeout); // જુનું ઓટો-હાઇડ ટાઈમર બંધ કરો
+    clearTimeout(controlsTimeout);
   }
 }
 
@@ -200,7 +197,7 @@ function startControlsTimer() {
     if (isFS && overlay) {
       overlay.classList.add('hide-fs-btn');
     }
-  }, 2000); // ૨ સેકન્ડ પછી આપોઆપ હાઇડ થશે
+  }, 2000);
 }
 
 const handleFullscreenChange = async () => {
