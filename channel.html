@@ -27,46 +27,70 @@
 
 <div id="videoPopup" class="video-popup">
     <div class="popup-content">
-        <span class="channel-close-btn" onclick="closeVideo()">✕</span>
-        
-        <div class="video-container" id="videoContainer">
-            
+        <div class="video-container" id="videoContainer" onclick="handleOverlayTouch()">
             <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
             
-            <div id="fullscreenOverlay" class="fs-overlay" onclick="handleOverlayTouch()">
+            <div id="customOverlay" class="custom-overlay">
                 
-                <div class="fs-center-controls">
-                    <button class="fs-btn fs-mid-btn" onclick="event.stopPropagation(); skipTime(-10);">
-                        <i class="fa-solid fa-backward-step"></i><span class="skip-txt">10s</span>
+                <div class="player-top-bar">
+                    <button class="player-btn-round top-back-btn" onclick="event.stopPropagation(); closeVideo();">
+                        <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    
-                    <button class="fs-btn fs-main-play-btn" id="fsPlayBtn" onclick="event.stopPropagation(); togglePlayPause();">
-                        <i class="fa-solid fa-play"></i>
+                    <span class="video-title-mini">Playing Video...</span>
+                </div>
+
+                <div class="middle-skip-controls">
+                    <button class="skip-btn-center backward-btn" onclick="event.stopPropagation(); skipTime(-10)">
+                        <i class="fa-solid fa-undo"></i>
+                        <span class="btn-text">10s</span>
                     </button>
-                    
-                    <button class="fs-btn fs-mid-btn" onclick="event.stopPropagation(); skipTime(10);">
-                        <span class="skip-txt">10s</span><i class="fa-solid fa-forward-step"></i>
+                    <button class="skip-btn-center forward-btn" onclick="event.stopPropagation(); skipTime(10)">
+                        <i class="fa-solid fa-redo"></i>
+                        <span class="btn-text">10s</span>
                     </button>
                 </div>
 
-                <div class="fs-bottom-controls">
-                    <button class="fs-btn fs-side-btn" id="fsMuteBtn" onclick="event.stopPropagation(); toggleMute();">
-                        <i class="fa-solid fa-volume-high"></i>
-                    </button>
+                <div class="player-bottom-controls" onclick="event.stopPropagation();">
                     
-                    <button class="fs-btn fs-side-btn" onclick="event.stopPropagation(); toggleFullScreen();">
-                        <i class="fa-solid fa-compress"></i>
-                    </button>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+
+                    <div class="controls-row">
+                        <div class="controls-left">
+                            <button class="player-btn-round" id="muteBtn" onclick="toggleMute()">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+
+                        <div class="controls-center">
+                            <span id="currentTime">00:00</span>
+                            <span class="time-separator">/</span>
+                            <span id="totalTime">00:00</span>
+                        </div>
+
+                        <div class="controls-right">
+                            <div class="speed-control">
+                                <button class="player-btn-rect" onclick="toggleSpeedMenu()">
+                                    <i class="fa-solid fa-gauge-high"></i> <span id="speedTxt">1x</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
+                                </button>
+                                <div id="speedMenu" class="speed-menu">
+                                    <div onclick="changeSpeed(0.5)">0.5x</div>
+                                    <div onclick="changeSpeed(1)">Normal</div>
+                                    <div onclick="changeSpeed(1.5)">1.5x</div>
+                                    <div onclick="changeSpeed(2)">2x</div>
+                                </div>
+                            </div>
+
+                            <button class="player-btn-round fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
-                
             </div>
 
-            <div class="custom-controls">
-                <button class="control-btn" onclick="playVideo()"><i class="fa-solid fa-play"></i></button>
-                <button class="control-btn" onclick="pauseVideo()"><i class="fa-solid fa-pause"></i></button>
-                <button class="control-btn" id="muteBtn" onclick="toggleMute()"><i class="fa-solid fa-volume-high"></i></button>
-                <button class="control-btn" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i></button>
-            </div>
         </div>
     </div>
 </div>

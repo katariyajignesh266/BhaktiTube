@@ -680,7 +680,7 @@ body {
     left: -15% !important;
     
     /* આઇફ્રેમની બધી વસ્તુઓને ઝીણી કરવા માટે તેને સ્કેલ (ઝૂમ આઉટ/ઇન બેલેન્સ) કરો */
-    transform: scale(0.5) !important; 
+    transform: scale(1) !important; 
 }
 
 /* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ્સ */
@@ -762,4 +762,409 @@ body {
 .video-container:fullscreen .custom-controls,
 .video-container:-webkit-full-screen .custom-controls {
     display: none !important;
+}
+
+
+/* ============================================================
+   👑 અલ્ટ્રા-પ્રીમિયમ મોર્ડન વિડિયો પ્લેયર CSS (Big Icons)
+   ============================================================ */
+
+/* વિડિયો પોપઅપનું મેઇન બેકગ્રાઉન્ડ લેયર */
+.video-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 10, 12, 0.98); 
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    box-sizing: border-box;
+}
+
+/* પોપઅપ કન્ટેન્ટ - મોબાઈલ સેન્ટર વ્યુ */
+.popup-content {
+    position: relative;
+    width: 100%; 
+    max-width: 420px; 
+    height: 100%;
+    max-height: 840px;
+    margin: auto; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #000;
+    box-shadow: 0px 30px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* માસ્ટર ઓવરલે કંટ્રોલ્સ - સ્મૂધ પ્રીમિયમ સિનેમેટિક શેડો */
+.custom-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2147483647 !important;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 15%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.7) 100%); 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 24px; 
+    transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 1;
+    pointer-events: auto !important;
+}
+
+.custom-overlay.hide-controls {
+    opacity: 0 !important;
+}
+.custom-overlay.hide-controls * {
+    pointer-events: none !important; 
+}
+
+/* ------------------------------------------------------------
+   ⬆️ ટોપ બાર: મોટો બેક એરો (Big Back Arrow)
+   ------------------------------------------------------------ */
+.player-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    padding-top: 4px;
+}
+
+/* કોઈપણ વધારાના બેકગ્રાઉન્ડ વગરનો માત્ર ક્લીન મોટો એરો */
+.player-top-bar .back-btn, 
+.player-top-bar .back-btn i,
+.player-top-bar i[class*="back"] {
+    font-size: 28px !important; 
+    color: #ffffff !important;
+    cursor: pointer;
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.6);
+    transition: transform 0.2s ease, color 0.2s;
+}
+
+.player-top-bar .back-btn:active {
+    transform: scale(0.85);
+    color: #00bfa5 !important; /* ક્લિક કરતા પ્રીમિયમ ગ્રીન ગ્લો */
+}
+
+.video-title-mini {
+    font-size: 18px; 
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ------------------------------------------------------------
+   🎯 સેન્ટર ૧૦ સેકન્ડ સ્કીપ બટન્સ (ગ્લાસ સર્કલ લૂક)
+   ------------------------------------------------------------ */
+.middle-skip-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 45px; 
+    box-sizing: border-box;
+    pointer-events: none; 
+}
+
+.skip-btn-center {
+    pointer-events: auto; 
+    background: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    width: 64px;  
+    height: 64px; 
+    border-radius: 50% !important; 
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.2s cubic-bezier(0.1, 1, 0.1, 1), background 0.3s;
+}
+
+.skip-btn-center:active {
+    transform: scale(0.9) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.skip-btn-center i {
+    font-size: 22px !important; 
+}
+
+.skip-btn-center .btn-text {
+    font-size: 10px !important;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   👇 બોટમ પેનલ અને પ્રોગ્રેસ બાર
+   ------------------------------------------------------------ */
+.player-bottom-controls {
+    width: 100%;
+    padding-bottom: 6px; 
+    box-sizing: border-box;
+}
+
+.progress-container {
+    width: 100%;
+    height: 4px; 
+    background: rgba(255, 255, 255, 0.24);
+    border-radius: 10px;
+    margin-bottom: 24px; 
+    position: relative;
+    cursor: pointer;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #00bfa5; 
+    border-radius: 10px;
+}
+
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 4px; 
+}
+
+.controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 24px; /* બે બટનો વચ્ચે પૂરતી પ્રીમિયમ સ્પેસ */
+}
+
+/* સેન્ટર ટાઇમ ડિસ્પ્લે */
+.controls-center {
+    color: #ffffff;
+    font-size: 14px; 
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    padding: 6px 14px;
+    border-radius: 30px;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ------------------------------------------------------------
+   ⚙️ બોટમ આઇકન્સ: વોલ્યુમ, સ્પીડ, ફુલસ્ક્રીન (ચોરસ બોક્સ રીમૂવલ)
+   ------------------------------------------------------------ */
+/* આ કોડ ડિફોલ્ટ ચોરસ બોક્સ અને ઇમેજ બેકગ્રાઉન્ડને જડમૂળથી હટાવી દેશે */
+.player-btn, 
+.player-btn *, 
+.fullscreen-btn,
+.controls-left button,
+.controls-right button {
+    background: transparent !important; 
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important; 
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important; /* ડિફોલ્ટ પ્લેયર બોક્સ હટાવવા */
+    appearance: none !important;
+    color: #ffffff !important;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.2s ease, color 0.2s;
+}
+
+/* ડાબી બાજુનું વોલ્યુમ અને જમણી બાજુનું ફુલસ્ક્રીન આઇકન એકદમ મોટા કરવા */
+.player-btn i, 
+.player-btn svg,
+.fullscreen-btn i,
+.fullscreen-btn svg,
+.controls-left i,
+.controls-right i {
+    font-size: 28px !important; /* સાઇઝ વધારીને એકદમ મોટી કરી */
+    transform: scale(1.25); /* વધારાનો મોટો લૂક આપવા */
+    color: #ffffff !important;
+    background: transparent !important;
+}
+
+/* બટન દબાવવા પર પ્રીમિયમ ગ્રીન રિસ્પોન્સ */
+.player-btn:active, .fullscreen-btn:active {
+    transform: scale(0.9) !important;
+}
+.player-btn:active i, .fullscreen-btn:active i, .player-btn:active svg, .fullscreen-btn:active svg {
+    color: #00bfa5 !important; /* સુંદર ગ્રીન ગ્લો */
+}
+
+/* ------------------------------------------------------------
+   ⏱️ ULTRA-PREMIUM AESTHETIC SPEED CONTROL (1x)
+   ------------------------------------------------------------ */
+
+/* Base style for the speed control button/select container */
+.player-btn span, 
+.speed-control span, 
+.speed-control select,
+.player-btn select {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    /* Glassmorphism background */
+    background: rgba(255, 255, 255, 0.06) !important; 
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    /* Subtle premium border */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+    padding: 6px 14px !important;
+    border-radius: 20px !important; /* Elegant capsule shape */
+    letter-spacing: 0.5px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* Ultra smooth transitions */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Hover State - Glow and slightly raise */
+.player-btn:hover span, 
+.speed-control:hover span, 
+.speed-control:hover select,
+.player-btn:hover select {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Native dropdown options styling (For browsers that support it) */
+.speed-control select option {
+    background: #111113;
+    color: #ffffff;
+    font-family: inherit;
+    padding: 10px;
+}
+
+/* Active/Click State - Premium Accent Feedback */
+.speed-control:active span, 
+.speed-control:active select {
+    border-color: #00f5d4 !important;
+    color: #00f5d4 !important;
+    transform: scale(0.96); /* Micro-compression effect */
+}
+
+/* ------------------------------------------------------------
+   💎 CUSTOM SPEED MENU DROPDOWN (Highly Aesthetic)
+   ------------------------------------------------------------ */
+.speed-menu {
+    position: absolute;
+    bottom: 65px;
+    right: 0;
+    /* Dark, sleek cinematic glass background */
+    background: rgba(18, 18, 22, 0.82) !important;
+    backdrop-filter: blur(30px) -webkit-backdrop-filter(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    display: none;
+    flex-direction: column;
+    z-index: 2147483647 !important;
+    overflow: hidden;
+    /* Soft multi-layered studio shadow */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 6px;
+    transform-origin: bottom right;
+    animation: menuFadeIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.speed-menu.show {
+    display: flex;
+}
+
+/* Individual Dropdown Menu Items */
+.speed-menu div {
+    color: #e4e4e7;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 10px; /* Rounded items inside menu */
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+/* Hover State for Menu Items - Vibrant Teal Gradient */
+.speed-menu div:hover {
+    background: linear-gradient(135deg, #00bfa5, #00f5d4);
+    color: #000000; /* Dark text on bright background for high contrast/premium look */
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 245, 212, 0.3);
+}
+
+/* Active selection state indicator (Optional helper class) */
+.speed-menu div.active {
+    color: #00f5d4;
+    font-weight: 600;
+}
+
+/* Smooth entry animation for the custom menu */
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ------------------------------------------------------------
+   📱 રિસ્પોન્સિવ ઓપ્ટિમાઇઝેશન (મોબાઈલ ફોન માટે)
+   ------------------------------------------------------------ */
+@media (max-width: 480px) {
+    .custom-overlay {
+        padding: 24px 20px; 
+    }
+    .player-top-bar .back-btn {
+        font-size: 26px !important; 
+    }
+    .player-btn i, .fullscreen-btn i, .controls-left i, .controls-right i {
+        font-size: 26px !important; /* મોબાઈલ પર પણ એકદમ સ્પષ્ટ અને આકર્ષક મોટા આઇકન્સ */
+        transform: scale(1.2);
+    }
+    .controls-left, .controls-right {
+        gap: 22px; 
+    }
+    .skip-btn-center {
+        width: 58px;
+        height: 58px;
+    }
 }
