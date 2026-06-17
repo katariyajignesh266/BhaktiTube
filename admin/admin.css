@@ -646,11 +646,15 @@ body {
     background-color: var(--bg-surface-hover);
 }
 
-/* 11. PREMIUM DYNAMIC RENDERING GRID SYSTEMS */
-.dynamic-list-side {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* બંને બોક્સ વચ્ચે પ્રોફેશનલ ગેપ રાખવા માટે */
+.dynamic-list-side > div, 
+.premium-panel {
+    margin-bottom: 20px; /* આનાથી બંને બોક્સ વચ્ચે ૨૦ પિક્સેલની જગ્યા થઈ જશે */
+}
+
+/* છેલ્લી આઇટમની નીચે વધારાની જગ્યા ન છૂટે તે માટે */
+.dynamic-list-side > div:last-child {
+    margin-bottom: 0;
 }
 
 .list-controls-bar {
@@ -888,7 +892,7 @@ body {
 }
 
 /* ==========================================================================
-   📱 16. RESPONSIVE LAYOUT ENGINE (MEDIA QUERIES)
+   📱 16. RESPONSIVE LAYOUT ENGINE (REFACTORED MOBILE FIX)
    ========================================================================== */
 
 @media (max-width: 1200px) {
@@ -907,12 +911,78 @@ body {
 }
 
 @media (max-width: 480px) {
-    html { font-size: 14px; }
-    .page-container { padding: 16px; }
-    .stats-grid { grid-template-columns: 1fr; gap: 14px; }
-    .premium-grid-layout { grid-template-columns: 1fr; }
-    .premium-form .form-row { grid-template-columns: 1fr; gap: 16px; }
-    .list-controls-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .list-controls-bar input { width: 100%; }
-    .page-heading h1 { font-size: 1.5rem; }
+    html { 
+        font-size: 14px; 
+    }
+    
+    /* આખા પેજનું પેડિંગ ફિક્સ જેથી ડાબી-જમણી સરખી જગ્યા રહે */
+    .page-container { 
+        padding: 16px; 
+    }
+    
+    /* મોનિટર ગ્રીડ અને પ્રીમિયમ ગ્રીડને સિંગલ કૉલમ કરવું */
+    .stats-grid,
+    .premium-grid-layout { 
+        grid-template-columns: 1fr !important; 
+        gap: 14px; 
+    }
+    
+    /* ફોર્મની અંદરની રો (જેમ કે બે ઈનપુટ બાજુ-બાજુમાં હોય) તેને સિંગલ કૉલમ કરવું */
+    .premium-form .form-row { 
+        grid-template-columns: 1fr !important; 
+        gap: 16px; 
+    }
+    
+    /* 🚨 મહત્વનો ફિક્સ: Video Content અને Channel Sync માં "Fetch/Sync" બટન વાળું બોક્સ */
+    .youtube-fetch-box {
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+
+    .youtube-fetch-box input {
+        width: 100% !important;
+    }
+
+    /* Fetch Details / Sync Channel બટન આખી વિડ્થ લેશે જેથી સેન્ટરમાં પ્રોપર ગોઠવાય */
+    .youtube-fetch-box button,
+    .youtube-fetch-box .btn-secondary,
+    .youtube-fetch-box .action-btn-p {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    /* લિસ્ટ કંટ્રોલ બાર ફિક્સ */
+    .list-controls-bar { 
+        flex-direction: column !important;
+        align-items: flex-start !important; 
+        gap: 12px; 
+    }
+    
+    .list-controls-bar input { 
+        width: 100% !important; 
+    }
+    
+    /* હેડિંગ સાઈઝ મોબાઈલ માટે */
+    .page-heading h1 { 
+        font-size: 1.5rem; 
+    }
+
+    /* ત્રીજા ફોટા માટે: મેન્યુઅલ ઓવરરાઈડ ઈનપુટ્સ આખી વિડ્થ લે અને કન્ટેનરની બહાર ન જાય */
+    .premium-panel {
+        padding: 20px !important; /* અંદરનું પેડિંગ થોડું ઓછું કર્યું જેથી સ્ક્રીન સ્પેસ મળે */
+        box-sizing: border-box !important;
+    }
+
+    /* તમારા બાકીના મોબાઈલ કોડની સાથે આ ઉમેરો */
+    .premium-panel {
+        margin-bottom: 20px !important; /* મોબાઈલમાં બંને સેક્શન વચ્ચે પ્રોફેશનલ સ્પેસ આપશે */
+    }
+
+    .premium-form input, 
+    .premium-form select, 
+    .premium-form textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
 }
