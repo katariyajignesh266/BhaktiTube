@@ -1,112 +1,499 @@
-/* --- ૧. આખા પેજનું બેઝિક રીસેટ (ખૂબ જ જરૂરી) --- */
+/* ==========================================================================
+   ⚡ BHAKTITUBE ARCHITECTURE PRODUCTION LOGIN LAYOUT ENGINE
+   ========================================================================== */
+
+:root {
+    /* --- DARK THEME COLOR TOKENS --- */
+    --bg-master-stream: #09090b;
+    --bg-panel-surface: rgba(20, 20, 23, 0.65);
+    --border-luxury-tint: rgba(255, 255, 255, 0.08);
+    --border-active-focus: #ff1a1a;
+    
+    --text-master-solid: #f4f4f5;
+    --text-muted-attribution: #a1a1aa;
+    --text-label-caps: #e4e4e7;
+    
+    --brand-primary-core: #ff0000;
+    --brand-gradient-glow: linear-gradient(135deg, #ff0000 0%, #b30000 100%);
+    --accent-glass-reflection: rgba(255, 255, 255, 0.03);
+    --shadow-premium-depth: 0 20px 40px rgba(0, 0, 0, 0.7);
+    --input-fill-backdrop: rgba(10, 10, 12, 0.5);
+}
+
+[data-theme="light"] {
+    /* --- LIGHT THEME COLOR TOKENS --- */
+    --bg-master-stream: #f8f9fa;
+    --bg-panel-surface: rgba(255, 255, 255, 0.8);
+    --border-luxury-tint: rgba(0, 0, 0, 0.08);
+    --border-active-focus: #ff0000;
+    
+    --text-master-solid: #0f172a;
+    --text-muted-attribution: #64748b;
+    --text-label-caps: #334155;
+    
+    --brand-primary-core: #ff0000;
+    --brand-gradient-glow: linear-gradient(135deg, #ff3333 0%, #cc0000 100%);
+    --accent-glass-reflection: rgba(0, 0, 0, 0.01);
+    --shadow-premium-depth: 0 20px 40px rgba(15, 23, 42, 0.08);
+    --input-fill-backdrop: #ffffff;
+}
+
+/* 1. RESET AND CORE HYDRATION LAYOUT ARCHITECTURE */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:'Segoe UI',sans-serif;
-    /* 🌟 આ લાઇન ઉમેરવાથી મોબાઈલમાં બ્લૂ કલરનું બ્લિંકિંગ સંપૂર્ણ બંધ થઈ જશે */
-    -webkit-tap-highlight-color: transparent !important; 
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent !important;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
 }
 
-body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    background:linear-gradient(
-        135deg,
-        #000000,
-        #111111,
-        #ff0000
-    );
+body {
+    background-color: var(--bg-master-stream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-master-solid);
 }
 
-.login-container{
-    width:90%;
-    max-width:400px;
-
-    background:rgba(255,255,255,0.08);
-
-    backdrop-filter:blur(15px);
-
-    border:1px solid rgba(255,255,255,0.15);
-
-    border-radius:20px;
-
-    padding:40px 30px;
-
-    box-shadow:
-    0 0 30px rgba(255,0,0,0.3);
+/* 2. AMBIENT GLOW BACKGROUND ORBS SYSTEMS */
+.bg-glow-orb {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: 0;
+    opacity: 0.28;
+    pointer-events: none;
+    animation: pulseFloatingOrb 9s infinite alternate ease-in-out;
+}
+.orb-1 {
+    background: #ff0000;
+    top: -10%;
+    left: -5%;
+}
+.orb-2 {
+    background: #7a0000;
+    bottom: -10%;
+    right: -5%;
+    animation-delay: 2.5s;
 }
 
-.logo{
-    text-align:center;
-    color:white;
-    font-size:40px;
-    margin-bottom:10px;
+@keyframes pulseFloatingOrb {
+    0% { transform: scale(1) translate(0px, 0px); }
+    100% { transform: scale(1.15) translate(30px, 40px); }
 }
 
-.title{
-    text-align:center;
-    color:white;
-    margin-bottom:30px;
-    font-size:28px;
-    font-weight:700;
+/* 3. AUTH SPLIT VIEWMASTER LAYER GRID CONTROL */
+.auth-master-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
 }
 
-input{
-    width:100%;
-    padding:15px;
-
-    margin-bottom:15px;
-
-    border:none;
-    border-radius:12px;
-
-    background:#ffffff;
-
-    font-size:16px;
+/* 4. LEFT BRANDING SIDEBAR DESIGN LAYOUT */
+.branding-side-panel {
+    display: none;
+    position: relative;
+    background: radial-gradient(circle at 20% 30%, rgba(255, 0, 0, 0.15) 0%, transparent 70%), rgba(5, 5, 5, 0.4);
+    border-right: 1px solid var(--border-luxury-tint);
+    padding: 60px;
+    flex-direction: column;
+    justify-content: center;
+}
+.branding-interact-layer {
+    max-width: 520px;
+    margin: auto 0;
+}
+.brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 0, 0, 0.12);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff3333;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+.brand-hero-title {
+    font-size: 2.85rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    color: var(--text-master-solid);
+}
+.gradient-text {
+    background: linear-gradient(135deg, #ff1a1a 0%, #ff8080 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.brand-description {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-muted-attribution);
+    margin-bottom: 40px;
+}
+.system-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    border-top: 1px solid var(--border-luxury-tint);
+    padding-top: 30px;
+}
+.status-metric-item {
+    display: flex;
+    flex-direction: column;
+}
+.metric-value {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--text-master-solid);
+}
+.metric-label {
+    font-size: 0.82rem;
+    color: var(--text-muted-attribution);
+    margin-top: 4px;
 }
 
-input:focus{
-    outline:none;
-
-    box-shadow:
-    0 0 10px red;
+/* 5. RIGHT CARD ADAPTER LAYOUT ENGINE */
+.form-side-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    position: relative;
+}
+.top-action-bar {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 50;
+}
+.theme-utility-btn {
+    background: var(--bg-panel-surface);
+    border: 1px solid var(--border-luxury-tint);
+    color: var(--text-master-solid);
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: var(--shadow-premium-depth);
+    backdrop-filter: blur(10px);
+}
+.theme-utility-btn:hover {
+    border-color: var(--border-active-focus);
 }
 
-button{
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:#ff0000;
-
-    color:white;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    transition:.3s;
+.login-card-anchor {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-panel-surface);
+    border: 1px solid var(--border-luxury-tint);
+    backdrop-filter: blur(24px) saturate(120%);
+    -webkit-backdrop-filter: blur(24px) saturate(120%);
+    padding: 40px 32px;
+    border-radius: 24px;
+    box-shadow: var(--shadow-premium-depth);
 }
 
-button:hover{
-    transform:translateY(-2px);
-
-    background:#cc0000;
+/* 6. CARD FORM INTERNAL SUB-COMPONENTS UI ELEMENTS */
+.login-header-group {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.secure-icon-hex {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    color: var(--brand-primary-core);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin: 0 auto 16px auto;
+}
+.login-primary-heading {
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: var(--text-master-solid);
+}
+.login-sub-description {
+    font-size: 0.88rem;
+    color: var(--text-muted-attribution);
+    line-height: 1.45;
 }
 
-.footer{
-    text-align:center;
-    color:#ddd;
-    margin-top:15px;
-    font-size:14px;
+.input-component-field {
+    margin-bottom: 20px;
+}
+.label-row-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.field-custom-label {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text-label-caps);
+}
+.forgot-link-node {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--brand-primary-core);
+    text-decoration: none;
+}
+.forgot-link-node:hover {
+    text-decoration: underline;
+}
+
+.input-icon-group-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-leading-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted-attribution);
+    pointer-events: none;
+    font-size: 1rem;
+}
+.core-input-node {
+    width: 100%;
+    padding: 14px 16px 14px 46px;
+    background-color: var(--input-fill-backdrop);
+    border: 1px solid var(--border-luxury-tint);
+    border-radius: 12px;
+    color: var(--text-master-solid);
+    font-size: 0.95rem;
+    outline: none;
+}
+.core-input-node:focus {
+    border-color: var(--border-active-focus);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.15);
+}
+.input-trailing-action-btn {
+    position: absolute;
+    right: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted-attribution);
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    border-radius: 8px;
+}
+.input-trailing-action-btn:hover {
+    color: var(--text-master-solid);
+}
+
+/* Caps Lock Live Indicator Widget styling */
+.caps-lock-warning-alert {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid rgba(255, 165, 0, 0.25);
+    color: #ffaa00;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    animation: fadeInSlideUp 0.2s ease-out;
+}
+
+/* 7. REMEMBER CHECKBOX SYSTEM CONTROLLER */
+.options-flex-layout-row {
+    margin-bottom: 24px;
+}
+.custom-checkbox-container-node {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    font-size: 0.86rem;
+    user-select: none;
+    color: var(--text-muted-attribution);
+}
+.custom-checkbox-container-node input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.checkmark-box-tile {
+    height: 18px;
+    width: 18px;
+    background-color: var(--input-fill-backdrop);
+    border: 1px solid var(--border-luxury-tint);
+    border-radius: 5px;
+    margin-right: 10px;
+    position: relative;
+    display: inline-block;
+}
+.custom-checkbox-container-node:hover input ~ .checkmark-box-tile {
+    border-color: var(--border-active-focus);
+}
+.custom-checkbox-container-node input:checked ~ .checkmark-box-tile {
+    background-color: var(--brand-primary-core);
+    border-color: var(--brand-primary-core);
+}
+.checkmark-box-tile::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.custom-checkbox-container-node input:checked ~ .checkmark-box-tile::after {
+    display: block;
+}
+
+/* 8. MASTER ACTION SUBMIT BUTTON MATRIX COMPONENTS */
+.core-premium-submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--brand-gradient-glow);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.25);
+}
+.core-premium-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+}
+.core-premium-submit-btn:active {
+    transform: translateY(1px);
+}
+.core-premium-submit-btn .btn-loading-spinner-layer {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.core-premium-submit-btn.is-loading .btn-static-text-label {
+    display: none;
+}
+.core-premium-submit-btn.is-loading .btn-loading-spinner-layer {
+    display: flex;
+}
+.core-premium-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.login-footer-legal-stamp {
+    text-align: center;
+    font-size: 0.76rem;
+    color: var(--text-muted-attribution);
+    margin-top: 24px;
+}
+
+/* 9. REAL-TIME INTERACTION OVERLAY TOAST BANNER CHIPS */
+.toast-stack-master-holder {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+}
+.toast-item {
+    background: var(--bg-panel-surface);
+    border: 1px solid var(--border-luxury-tint);
+    backdrop-filter: blur(16px);
+    padding: 14px 18px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-premium-depth);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-master-solid);
+    font-size: 0.88rem;
+    font-weight: 500;
+    animation: fadeInSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.toast-success i { color: #00c853; }
+.toast-error i { color: #ff1a1a; }
+
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   ⚡ BREAKPOINTS RESPONSIVE DESIGN MATRIX SCHEMA (MOBILE FIRST OMNI CHANNEL)
+   ========================================================================== */
+
+@media (min-width: 768px) {
+    .login-card-anchor {
+        padding: 48px 40px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .auth-master-wrapper {
+        grid-template-columns: 1.1fr 0.9fr;
+    }
+    .branding-side-panel {
+        display: flex;
+    }
+    .form-side-panel {
+        padding: 40px;
+    }
+}
+
+@media (min-width: 1440px) {
+    .auth-master-wrapper {
+        grid-template-columns: 1.25fr 0.75fr;
+    }
+    .branding-interact-layer {
+        max-width: 580px;
+    }
 }

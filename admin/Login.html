@@ -1,42 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>BhaktiTube Login</title>
-
+    <title>BhaktiTube Control Hub - Premium Gateway</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="Login.css">
 </head>
 <body>
 
-    <div class="login-container">
+    <div class="bg-glow-orb orb-1"></div>
+    <div class="bg-glow-orb orb-2"></div>
 
-        <div class="logo">🔐</div>
+    <div class="auth-master-wrapper">
+        
+        <div class="branding-side-panel">
+            <div class="branding-interact-layer">
+                <div class="brand-badge"><i class="fa-solid fa-shield-halved"></i> Production Environment</div>
+                <h1 class="brand-hero-title">BhaktiTube <span class="gradient-text">Admin Engine</span></h1>
+                <p class="brand-description">
+                    Welcome to the next-generation content management architecture. Orchestrate real-time stream links, secure synchronization matrix, data telemetry analytics, and monetization dynamic systems with enterprise-grade security layers.
+                </p>
+                
+                <div class="system-status-grid">
+                    <div class="status-metric-item">
+                        <span class="metric-value">99.9%</span>
+                        <span class="metric-label">Uptime SLA</span>
+                    </div>
+                    <div class="status-metric-item">
+                        <span class="metric-value">TLS 1.3</span>
+                        <span class="metric-label">Encryption</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <h1 class="title">
-            BhaktiTube Admin
-        </h1>
+        <div class="form-side-panel">
+            
+            <div class="top-action-bar">
+                <button type="button" id="themeToggleBtn" class="theme-utility-btn" aria-label="Toggle Layout Theme">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+            </div>
 
-        <input
-        type="email"
-        id="email"
-        placeholder="Enter Email">
+            <div class="login-card-anchor">
+                <div class="login-header-group">
+                    <div class="secure-icon-hex">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="login-primary-heading">Sign in to Console</h2>
+                    <p class="login-sub-description">Enter valid administrative credentials to provision session flags.</p>
+                </div>
 
-        <input
-        type="password"
-        id="password"
-        placeholder="Enter Password">
+                <form id="authCoreForm" onsubmit="return false;" novalidate>
+                    
+                    <div class="input-component-field">
+                        <label for="email" class="field-custom-label">Administrative Email</label>
+                        <div class="input-icon-group-wrapper">
+                            <i class="fa-regular fa-envelope input-leading-icon"></i>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="core-input-node"
+                                placeholder="name@bhaktitube.com" 
+                                autocomplete="username"
+                                required>
+                        </div>
+                    </div>
 
-        <button id="loginBtn"> Login </button>
+                    <div class="input-component-field">
+                        <div class="label-row-flex">
+                            <label for="password" class="field-custom-label">Access Password</label>
+                            <a href="#" class="forgot-link-node" onclick="alert('Contact the master administrator infrastructure team to reset root key hashes.')">Forgot password?</a>
+                        </div>
+                        <div class="input-icon-group-wrapper">
+                            <i class="fa-solid fa-key input-leading-icon"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                class="core-input-node"
+                                placeholder="••••••••••••" 
+                                autocomplete="current-password"
+                                required>
+                            <button type="button" id="passwordVisibilityToggle" class="input-trailing-action-btn" aria-label="Toggle password visibility">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
 
-        <p class="footer">
-            Secure Admin Access
-        </p>
+                    <div id="capsLockAlert" class="caps-lock-warning-alert">
+                        <i class="fa-solid fa-arrow-up-capslock"></i> Attention: Caps Lock is currently activated!
+                    </div>
 
+                    <div class="options-flex-layout-row">
+                        <label class="custom-checkbox-container-node">
+                            <input type="checkbox" id="rememberMeState" checked>
+                            <span class="checkmark-box-tile"></span>
+                            <span class="checkbox-label-text">Remember device node</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="loginBtn" class="core-premium-submit-btn">
+                        <span class="btn-static-text-label">Establish Connection <i class="fa-solid fa-arrow-right btn-arrow"></i></span>
+                        <span class="btn-loading-spinner-layer"><i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...</span>
+                    </button>
+
+                </form>
+
+                <p class="login-footer-legal-stamp">
+                    <i class="fa-solid fa-vault text-brand-accent"></i> Cryptographic Session Expiration Barrier Active (10m).
+                </p>
+            </div>
+        </div>
     </div>
 
-    <script type="module" src="Login.js"></script>
+    <div id="toastContainer" class="toast-stack-master-holder"></div>
 
+    <script type="module" src="Login.js"></script>
 </body>
 </html>
