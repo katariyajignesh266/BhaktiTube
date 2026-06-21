@@ -1,10 +1,29 @@
-import { db } from "./firebase-config.js";
+import {
+db,
+auth
+}
+from "./firebase-config.js";
 import {
   collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  getDocs,
+  doc,
+  setDoc
+}
+from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
+
+const watchedVideos =
+new Set(
+JSON.parse(
+localStorage.getItem(
+"watchedChannelVideos"
+) || "[]"
+)
+);
+
+let currentVideoId = null;
+let watchedSaved = false;
 
 let nextPageToken = "";
 let loading = false;
@@ -22,6 +41,32 @@ const channelId = params.get("id");
 loadChannel();
 
 async function loadChannel() {
+  const user =
+auth.currentUser;
+
+if(user){
+
+const watchedSnapshot =
+await getDocs(
+
+collection(
+db,
+"users",
+user.uid,
+"watchedChannelVideos"
+)
+
+);
+
+watchedSnapshot.forEach(doc=>{
+
+watchedVideos.add(
+doc.id
+);
+
+});
+
+}
   const snapshot = await getDocs(collection(db, "channels"));
   snapshot.forEach((doc) => {
     const channel = doc.data();
@@ -52,18 +97,103 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
     const container = document.getElementById("channelVideosContainer");
     if (pageToken === "" && container) container.innerHTML = "";
 
-    data.items.forEach(video => {
-      if (video.snippet && video.snippet.resourceId && container) {
-        container.innerHTML += `
-          <div class="video-card" onclick="openVideo('${video.snippet.resourceId.videoId}')" style="margin-bottom: 20px; background: #1f1f1f; border-radius: 8px; overflow: hidden; padding-bottom: 10px; cursor: pointer;">
-            <img src="${video.snippet.thumbnails.high.url}" style="width: 100%; display: block;">
-            <h3 style="font-size: 14px !important; font-weight: 500; line-height: 1.5 !important; margin: 10px; color: #ffffff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; height: 50px;">
-              ${video.snippet.title}
-            </h3>
-          </div>
-        `;
-      }
-    });
+    const videoIds =
+data.items
+.map(item =>
+item.snippet.resourceId.videoId
+)
+.join(",");
+
+const detailsResponse =
+await fetch(
+`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`
+);
+
+const detailsData =
+await detailsResponse.json();
+
+for(
+let i = 0;
+i < data.items.length;
+i++
+){
+
+const item =
+data.items[i];
+
+const details =
+detailsData.items[i];
+
+if(
+!details ||
+!details.contentDetails
+){
+continue;
+}
+
+const duration =
+details.contentDetails.duration;
+
+const seconds =
+convertDurationToSeconds(
+duration
+);
+
+if(seconds < 300){
+continue;
+}
+
+if(
+watchedVideos.has(
+item.snippet.resourceId.videoId
+)
+){
+continue;
+}
+
+container.innerHTML += `
+<div
+class="video-card"
+onclick="openVideo('${item.snippet.resourceId.videoId}')"
+style="
+margin-bottom:20px;
+background:#1f1f1f;
+border-radius:8px;
+overflow:hidden;
+padding-bottom:10px;
+cursor:pointer;
+">
+
+<img
+src="${item.snippet.thumbnails.high.url}"
+style="
+width:100%;
+display:block;
+">
+
+<h3
+style="
+font-size:14px !important;
+font-weight:500;
+line-height:1.5 !important;
+margin:10px;
+color:#ffffff;
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
+overflow:hidden;
+text-overflow:ellipsis;
+height:50px;
+">
+
+${item.snippet.title}
+
+</h3>
+
+</div>
+`;
+
+}
   } catch (error) {
     console.error(error);
   } finally {
@@ -73,6 +203,11 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
 
 // ૩. કસ્ટમ વીડિયો પ્લેયર પોપઅપ ઓપન કરવું
 window.openVideo = async function(videoId) {
+
+  currentVideoId = videoId;
+watchedSaved = false;
+
+
   const popup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
   if (popup) popup.style.display = "flex";
@@ -121,6 +256,20 @@ function startTimeTracking() {
     if (ytPlayer && typeof ytPlayer.getCurrentTime === "function") {
       const current = ytPlayer.getCurrentTime();
       const total = ytPlayer.getDuration();
+
+      if(
+total > 0 &&
+!watchedSaved &&
+(current / total) >= 0.95
+){
+
+    watchedSaved = true;
+
+    saveWatchedVideo(
+        currentVideoId
+    );
+
+}
       
       if (total > 0) {
         // ગ્રીન પ્રોગ્રેસ બારની વિડ્થ (લાંબી લાઈન) સેટ કરવી
@@ -292,3 +441,85 @@ document.addEventListener("visibilitychange", function() {
     window.closeVideo();
   }
 });
+
+
+function convertDurationToSeconds(duration){
+
+  const match =
+  duration.match(
+  /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/
+  );
+
+  if(!match){
+    return 0;
+  }
+
+  const hours =
+  parseInt(match[1] || 0);
+
+  const minutes =
+  parseInt(match[2] || 0);
+
+  const seconds =
+  parseInt(match[3] || 0);
+
+  return (
+    hours * 3600 +
+    minutes * 60 +
+    seconds
+  );
+
+}
+
+
+async function saveWatchedVideo(videoId){
+
+    if(!videoId) return;
+
+    watchedVideos.add(videoId);
+
+    localStorage.setItem(
+        "watchedChannelVideos",
+        JSON.stringify(
+            [...watchedVideos]
+        )
+    );
+
+    const user =
+    auth.currentUser;
+
+    if(!user) return;
+
+    try{
+
+        await setDoc(
+
+            doc(
+                db,
+                "users",
+                user.uid,
+                "watchedChannelVideos",
+                videoId
+            ),
+
+            {
+                videoId,
+                watchedAt:
+                Date.now()
+            }
+
+        );
+
+        console.log(
+            "WATCHED SAVED:",
+            videoId
+        );
+
+    }
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}

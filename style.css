@@ -8,7 +8,7 @@
 }
 
 body{
-    background:#0f0f0f;
+    background: rgba(0, 0, 0, .7);
     color:white;
     font-family:Arial, sans-serif;
 }
@@ -187,23 +187,19 @@ body{
 
 /* CHANNEL LOGO */
 
-.channel-logo{
-    width:40px;
-    height:40px;
+.channel-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3f443b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    flex-shrink: 0;
 
-    border-radius:50%;
-
-    background:#ff6600;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    font-weight:bold;
-
-    flex-shrink:0;
+    margin-top: 5px; /* જરૂર મુજબ વધઘટ કરો */
 }
-
 
 
 /* VIDEO DETAILS */
@@ -685,14 +681,13 @@ body{
 .videos-container{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-    gap:20px;
+    gap:1px;
 }
 
 @media (max-width:480px){
 
     .videos-container{
         grid-template-columns:1fr;
-        padding:10px;
     }
 
 }
@@ -1343,19 +1338,12 @@ margin:auto;
 
 }
 
-.video-card{
-
-width:100%;
-
-background:#181818;
-
-border-radius:18px;
-
-overflow:hidden;
-
-box-shadow:
-0 4px 15px rgba(0,0,0,.35);
-
+.video-card {
+    width: 100%;
+    background: #181818;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 11px 15px rgba(0, 0, 0, .35);
 }
 
 .video-card img{
@@ -1386,20 +1374,13 @@ color:#ffffff;
 
 }
 
-@media(max-width:768px){
-
-.video-card h3{
-
-font-size:19px;
-
-line-height:1.5;
-
-font-weight:700;
-
-padding:12px 15px;
-
-}
-
+@media (max-width: 768px) {
+    .video-card h3 {
+        font-size: 15px;
+        line-height: 1.2;
+        font-weight: 300;
+        padding: 1px 1px;
+    }
 }
 
 .video-popup{
@@ -1587,7 +1568,7 @@ linear-gradient(
 #111111
 ) !important;
 
-border:1px solid
+border:3px solid
 rgba(255,255,255,0.08) !important;
 
 border-radius:28px !important;
@@ -1648,7 +1629,7 @@ border-radius:50% !important;
 
 object-fit:cover !important;
 
-margin-bottom:18px !important;
+margin-bottom:1px !important;
 
 border:4px solid
 rgba(255,255,255,.08);
@@ -1765,7 +1746,7 @@ left:-280px;
 width:280px;
 height:100vh;
 
-background:#111;
+background:#cf0404;
 
 z-index:999999;
 
@@ -1780,7 +1761,7 @@ padding:25px;
 transition:.3s;
 
 box-shadow:
-5px 0 25px rgba(0,0,0,.5);
+5px 0 25px rgba(230, 228, 228, 0.5);
 
 }
 
@@ -2277,8 +2258,8 @@ transform:rotate(360deg);
 #sidebar{
     background: linear-gradient(
         180deg,
-        #050505 0%,
-        #0b0b0b 100%
+        #5f4e8a 0%,
+        #0a0a0a 100%
     );
 
     backdrop-filter: blur(20px);
@@ -2295,7 +2276,7 @@ transform:rotate(360deg);
     align-items:center;
     gap:18px;
 
-    padding:20px 24px;
+    padding:10px 40px;
     margin:14px 18px;
 
     border-radius:22px;
@@ -2444,7 +2425,7 @@ transform:rotate(360deg);
     flex-direction:column;
     gap:18px;
 
-    margin-bottom:25px;
+    margin-bottom:45px;
 }
 
 #sidebar{
@@ -2504,8 +2485,8 @@ bottom:0;
 
 background: linear-gradient(
 180deg,
-#2c2c2d 0%,
-#080808 100%
+#080808 0%,
+#2c2c2d 100%
 );
 
 backdrop-filter: blur(20px);
@@ -2514,10 +2495,9 @@ box-shadow:
 0 -10px 30px rgba(42, 42, 43, 0.25);
 
 
-height:65px;
+height:50px;
 
-border-radius:
-80px 80px 0 0;
+
 
 /* border-radius:100px 100px 0 0; */
 
@@ -2562,7 +2542,7 @@ top:-12px;
 
 border:none;
 
-background:#ff0000;
+background:#0d7a35;
 
 border-radius:50%;
 
@@ -2717,3 +2697,6 @@ transform:scale(1.08);
     font-size: 18px !important;
   }
 }
+
+
+
