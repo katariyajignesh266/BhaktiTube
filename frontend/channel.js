@@ -157,11 +157,14 @@ class="video-card"
 onclick="openVideo('${item.snippet.resourceId.videoId}')"
 style="
 margin-bottom:20px;
-background:#1f1f1f;
-border-radius:8px;
+background:#111;
+border-radius:1px;
 overflow:hidden;
 padding-bottom:10px;
 cursor:pointer;
+padding-top: 0px;
+padding-left: 0px;
+padding-right: 0px;
 ">
 
 <img

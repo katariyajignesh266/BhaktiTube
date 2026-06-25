@@ -540,9 +540,9 @@ body {
 /* --- ૪. વિડિયો ગ્રીડ લેઆઉટ (મોબાઈલમાં એક લાઈનમાં બે અથવા સરસ કાર્ડ દેખાય તે માટે) --- */
 #channelVideosContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* મોબાઈલ સ્ક્રીન પ્રમાણે ઓટો સેટ થશે */
-    gap: 15px;
-    padding: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 2fr));
+    gap: 10px;
+    padding: 1px;
 }
 
 .video-card {
@@ -551,6 +551,12 @@ body {
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.2s;
+    margin-bottom: 20px;
+    background: #1f1f1f;
+    border-radius: 1px;
+    overflow: hidden;
+    padding-bottom: 10px;
+    cursor: pointer;
 }
 
 .video-card img {
