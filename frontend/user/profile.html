@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+minimum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
+
+<title>Profile</title>
+
+<link rel="stylesheet" href="profile.css">
+
+</head>
+<body>
+
+<div class="profile-container">
+
+    <a href="../index.html" class="back-btn">
+        ← Home
+    </a>
+
+    <img
+    id="profileImage"
+    class="profile-image"
+    src=""
+    alt="Profile">
+
+
+    <h2 id="userName">
+        User Name
+    </h2>
+
+    <p id="userEmail">
+        user@email.com
+    </p>
+
+    <div class="profile-info">
+
+        <div class="info-box">
+            <span>Account Type</span>
+            <p id="accountType">
+                Google
+            </p>
+        </div>
+
+        <div class="info-box">
+            <span>Joined</span>
+            <p id="joinedDate">
+                Loading...
+            </p>
+        </div>
+
+    </div>
+
+    <button id="editProfileBtn">
+✏️ Edit Profile
+</button>
+
+<button id="logoutBtn">
+Logout
+</button>
+
+</div>
+
+<script type="module"
+src="profile.js"></script>
+
+<div id="editProfileModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>✏️ Edit Profile</h2>
+
+        <input
+type="text"
+id="editNameInput"
+placeholder="Enter Name">
+
+        <button id="saveProfileBtn">
+Save Changes
+</button>
+
+        <button id="closeModalBtn">
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+</html>

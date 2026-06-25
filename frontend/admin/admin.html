@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+minimum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
+    <title>⚡ BhaktiTube Premium Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div class="dashboard-wrapper">
+        
+        <header class="mobile-top-bar">
+            <button id="mobileMenuBtn" class="mobile-menu-toggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+            <div class="mobile-logo">
+                <i class="fa-solid fa-gopuram text-brand"></i> BhaktiTube
+            </div>
+            <button id="themeToggleMobile" class="theme-toggle-btn">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </header>
+
+        <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+        <aside id="sidebarPanel" class="sidebar-panel">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-gopuram"></i>
+                </div>
+                <div class="brand-details">
+                    <h3>BhaktiTube</h3>
+                    <span>Creator Studio PRO</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-group-title">Overview</div>
+                <a href="#dashboard" class="nav-link active" data-target="dashboardPage">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+
+                <div class="nav-group-title">Content Management</div>
+                <a href="#videos" class="nav-link" data-target="videosPage">
+                    <i class="fa-solid fa-clapperboard"></i> Manage Videos
+                </a>
+                <a href="#advertisements" class="nav-link" data-target="adsPage">
+                    <i class="fa-solid fa-rectangle-ad"></i> Advertisements
+                </a>
+                <a href="#channels" class="nav-link" data-target="channelsPage">
+                    <i class="fa-solid fa-tv"></i> YouTube Channels
+                </a>
+
+                <div class="nav-group-title">System & Settings</div>
+                <a href="#settings" class="nav-link" data-target="settingsPage">
+                    <i class="fa-solid fa-sliders"></i> General Settings
+                </a>
+                <a href="#system" class="nav-link" data-target="systemPage">
+                    <i class="fa-solid fa-database"></i> System Logs & Status
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="themeToggleDesktop" class="sidebar-theme-btn">
+                    <i class="fa-solid fa-moon"></i> <span>Toggle Theme</span>
+                </button>
+                <div class="user-profile-widget">
+                    <div class="avatar">A</div>
+                    <div class="user-info">
+                        <p class="user-name">Admin User</p>
+                        <p class="user-role">Super Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="content-header">
+                <div class="header-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Quick search across dashboard...">
+                </div>
+                <div class="header-actions">
+                    <div class="status-indicator">
+                        <span class="pulse-dot"></span>
+                        <span class="status-text">Firebase Connected</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-container">
+
+                <section id="dashboardPage" class="dashboard-page active">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Dashboard Overview</h1>
+                            <p class="text-muted">Real-time statistics and analytics for BhaktiTube</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="card-icon icon-blue"><i class="fa-solid fa-tv"></i></div>
+                            <div class="card-data">
+                                <p class="card-label">Total Channels</p>
+                                <h3 id="statTotalChannels">--</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-red"><i class="fa-solid fa-clapperboard"></i></div>
+                            <div class="card-data">
+                                <p class="card-label">Total Videos</p>
+                                <h3 id="statTotalVideos">--</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-orange"><i class="fa-solid fa-rectangle-ad"></i></div>
+                            <div class="card-data">
+                                <p class="card-label">Active Ads</p>
+                                <h3 id="statTotalAds">--</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-green"><i class="fa-solid fa-eye"></i></div>
+                            <div class="card-data">
+                                <p class="card-label">Total Video Views</p>
+                                <h3 id="statTotalViews">--</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-grid">
+                        <div class="premium-panel flex-1">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-bolt text-brand"></i> Quick Actions Center</h2>
+                            </div>
+                            <div class="quick-actions-box">
+                                <button onclick="document.querySelector('[data-target=videosPage]').click();" class="action-btn-p"><i class="fa-solid fa-plus"></i> Add New Video</button>
+                                <button onclick="document.querySelector('[data-target=channelsPage]').click();" class="action-btn-p"><i class="fa-solid fa-circle-plus"></i> Sync New Channel</button>
+                                <button onclick="document.querySelector('[data-target=adsPage]').click();" class="action-btn-p"><i class="fa-solid fa-megaphone"></i> Create Advertisement</button>
+                            </div>
+                        </div>
+                        <div class="premium-panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-clock-rotate-left"></i> Session Status</h2>
+                            </div>
+                            <div class="session-widget">
+                                <p>Security Token auto-expires in <strong>10 Minutes</strong> of inactivity for security reasons.</p>
+                                <div class="session-bar-container"><div class="session-progress-bar" id="sessionTimerBar"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section id="videosPage" class="dashboard-page">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Video Content Engine</h1>
+                            <p class="text-muted">Import directly via YouTube API and manage active database entries</p>
+                        </div>
+                    </div>
+
+                    <div class="split-layout">
+                        <div class="premium-panel form-side">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-cloud-arrow-down"></i> Import YouTube Video</h2>
+                            </div>
+                            <div class="youtube-fetch-box">
+                                <input type="text" id="youtubeUrl" placeholder="Paste YouTube Video URL here...">
+                                <button type="button" id="fetchBtn" class="btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Fetch Details</button>
+                            </div>
+
+                            <div class="divider-text"><span>Database Preview Fields</span></div>
+
+                            <form id="videoForm" class="premium-form">
+                                <div class="form-group">
+                                    <label>YouTube Video ID</label>
+                                    <input type="text" id="videoId" placeholder="Auto-filled Video ID" required readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Video Title</label>
+                                    <input type="text" id="title" placeholder="Enter or edit video title" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Channel Name</label>
+                                        <input type="text" id="channel" placeholder="Channel attribution" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Logo Letter</label>
+                                        <input type="text" id="logo" placeholder="L" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Views Count</label>
+                                        <input type="text" id="views" placeholder="0 views" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Formatted Date String</label>
+                                        <input type="text" id="date" placeholder="e.g. 2 days ago" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-circle-check"></i> Commit Video to FireStore</button>
+                            </form>
+                        </div>
+
+                        <div class="dynamic-list-side">
+                            <div class="list-controls-bar">
+                                <h3 class="toggle-title" id="toggleVideos"><i class="fa-solid fa-list-video"></i> Indexed Video Repository</h3>
+                                <div class="filter-actions">
+                                    <input type="text" id="videoLocalSearch" class="small-search" placeholder="Filter current list...">
+                                </div>
+                            </div>
+                            <div id="videosList" class="premium-grid-layout">
+                                </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section id="adsPage" class="dashboard-page">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Monetization & Ads Manager</h1>
+                            <p class="text-muted">Configure interactive pre-roll and mid-roll skippable advertisement layers</p>
+                        </div>
+                    </div>
+
+                    <div class="split-layout">
+                        <div class="premium-panel form-side">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-rectangle-ad"></i> Create Advertisement</h2>
+                            </div>
+                            <form id="adForm" class="premium-form">
+                                <div class="form-group">
+                                    <label>Campaign/Ad Title</label>
+                                    <input type="text" id="adTitle" placeholder="Internal campaign identification name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Video Resource URL (.mp4 / Direct Stream)</label>
+                                    <input type="text" id="adVideoUrl" placeholder="https://domain.com/ad-stream.mp4" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Destination Redirect Link</label>
+                                    <input type="text" id="adRedirectLink" placeholder="Website landing page or PlayStore deep link" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>In-Stream Skip Button Delay (Seconds)</label>
+                                    <input type="number" id="adSkipAfter" placeholder="Skip After Seconds" value="5" min="0" required>
+                                </div>
+                                <button type="submit" class="btn-primary"><i class="fa-solid fa-bullseye"></i> Launch Ad Campaign</button>
+                            </form>
+                        </div>
+
+                        <div class="dynamic-list-side">
+                            <div class="list-controls-bar">
+                                <h3 class="toggle-title" id="toggleAds"><i class="fa-solid fa-chart-line-up"></i> Active Ads Stream</h3>
+                            </div>
+                            <div id="adsList" class="premium-grid-layout"></div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section id="channelsPage" class="dashboard-page">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Channel Synchronizer</h1>
+                            <p class="text-muted">Automated sync engine via YouTube Metadata and manual channel overrides</p>
+                        </div>
+                    </div>
+
+                    <div class="split-layout">
+                        <div class="premium-panel form-side">
+                            <div class="panel-header">
+                                <h2><i class="fa-brands fa-youtube text-brand"></i> Automatic API Sync</h2>
+                            </div>
+                            
+                            <div class="youtube-fetch-box">
+                                <input type="text" id="channelUrl" placeholder="Paste YouTube Channel URL (@handle)...">
+                                <button type="button" id="fetchChannelBtn" class="btn-secondary"><i class="fa-solid fa-magnifying-glass"></i> Sync Channel</button>
+                            </div>
+
+                            <div id="channelPreview" class="premium-api-preview-card" style="display:none;">
+                                <div class="preview-backdrop"></div>
+                                <img id="previewLogo" src="" alt="Channel Avatar Profile">
+                                <h3 id="previewName"></h3>
+                                <div class="preview-badge-row">
+                                    <span id="previewSubscribers" class="badge badge-sub"><i class="fa-solid fa-users"></i> --</span>
+                                    <span id="previewVideos" class="badge badge-vid"><i class="fa-solid fa-video"></i> --</span>
+                                </div>
+                                <form id="channelForm" style="margin-top:15px; width:100%;">
+                                    <button type="submit" class="btn-success w-100"><i class="fa-solid fa-square-plus"></i> Approve & Save Channel</button>
+                                </form>
+                            </div>
+
+                            <div class="divider-text" style="margin: 35px 0 20px 0;"><span>Manual Channel Core Input Override</span></div>
+
+                            <div class="manual-form-wrapper">
+                                <div class="form-group-grid">
+                                    <div class="form-group">
+                                        <label>Channel Unique ID (UC...)</label>
+                                        <input type="text" id="manualChannelId" placeholder="UCxxxxxxxxxxxxxx">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Uploads Playlist ID (UU...)</label>
+                                        <input type="text" id="manualUploadsPlaylistId" placeholder="UUxxxxxxxxxxxxxx">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Custom Channel Name</label>
+                                        <input type="text" id="manualChannelName" placeholder="Name Title">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Avatar/Logo Image URL</label>
+                                        <input type="text" id="manualChannelLogo" placeholder="https://image-path.jpg">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Subscribers Counter String</label>
+                                        <input type="text" id="manualSubscribers" placeholder="e.g. 1.2M">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Total Videos Counter</label>
+                                        <input type="text" id="manualTotalVideos" placeholder="e.g. 450">
+                                    </div>
+                                </div>
+                                <button type="button" id="manualAddChannelBtn" class="btn-dark-premium" style="margin-top:15px;"><i class="fa-solid fa-keyboard"></i> Register Channel Manually</button>
+                            </div>
+                        </div>
+
+                        <div class="dynamic-list-side">
+                            <div class="list-controls-bar">
+                                <h3 class="toggle-title" id="toggleChannels"><i class="fa-solid fa-network-wired"></i> Managed Channels Grid</h3>
+                            </div>
+                            <div id="channelsList" class="premium-grid-layout"></div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section id="settingsPage" class="dashboard-page">
+                    <div class="page-heading">
+                        <div>
+                            <h1>System Preferences</h1>
+                            <p class="text-muted">Configure default constants, localization, and presentation rules</p>
+                        </div>
+                    </div>
+                    <div class="premium-panel max-w-2xl">
+                        <div class="panel-header"><h2><i class="fa-solid fa-sliders-up"></i> Global Interface Configurations</h2></div>
+                        <div class="dummy-settings-body premium-form">
+                            <div class="form-group">
+                                <label>Default Database Pagination Limit</label>
+                                <input type="number" value="20" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Auto Sync Interval (Minutes)</label>
+                                <input type="number" value="30" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Caching Strategy</label>
+                                <input type="text" value="Local Memory + IndexedDB Buffer Override" disabled>
+                            </div>
+                            <p class="text-muted info-note-text"><i class="fa-solid fa-circle-info"></i> These configurations are hardware bound for your current system instance.</p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section id="systemPage" class="dashboard-page">
+                    <div class="page-heading">
+                        <div>
+                            <h1>System Architecture & Telemetry</h1>
+                            <p class="text-muted">Realtime status logs, cloud infrastructure latency and backend integrity indices</p>
+                        </div>
+                    </div>
+                    <div class="system-telemetry-grid">
+                        <div class="premium-panel">
+                            <div class="panel-header"><h2><i class="fa-solid fa-signal-stream text-brand"></i> API Gateway Latency</h2></div>
+                            <div class="telemetry-stat-row">
+                                <div class="tel-item"><span>Google YouTube API v3</span> <strong class="text-success">9ms (Excellent)</strong></div>
+                                <div class="tel-item"><span>Firebase FireStore Engine</span> <strong class="text-success">14ms (Optimal)</strong></div>
+                                <div class="tel-item"><span>Local Browser DOM Draw Rate</span> <strong class="text-brand">60fps (Stable)</strong></div>
+                            </div>
+                        </div>
+                        <div class="premium-panel">
+                            <div class="panel-header"><h2><i class="fa-solid fa-terminal"></i> Console Log Real-time Stream Buffer</h2></div>
+                            <div class="terminal-buffer-box">
+                                <p class="term-line">[info] 12:14:32 - DOM Structure Initialization complete.</p>
+                                <p class="term-line">[info] 12:14:33 - Admin Module JS Core Hook attached successfully.</p>
+                                <p class="term-line text-brand">[success] 12:14:34 - Premium Theme Matrix Layer active.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

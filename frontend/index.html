@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+minimum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <title>BhaktiTube</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- ICONS -->
+  <link
+    rel="icon"
+    href="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+</head>
+
+<body>
+
+  
+
+
+
+
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <div class="left-header">
+
+      <i class="fa-solid fa-bars"></i>
+
+      <div href="index.html" class="logo">
+
+  <img
+    src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+    alt="BhaktiTube Logo"
+    class="site-logo"
+  >
+</div>
+
+<div href="index.html" class="logo">
+  <span>BhaktiTube</span>
+</div>
+
+    </div>
+
+
+
+    <div class="right-header">
+
+      <div class="search-overlay" id="searchOverlay">
+
+    <div class="search-wrapper">
+
+    <input
+    type="text"
+    id="searchInput"
+    placeholder="Search videos...">
+
+    <button id="closeSearch">
+        ✕
+    </button>
+
+    <button id="voiceBtn">
+        <i class="fa-solid fa-microphone"></i>
+    </button>
+
+</div>
+
+</div>
+
+      <i class="fa-solid fa-magnifying-glass" id="searchBtn"> </i>
+
+      <div class="notification-wrapper">
+
+    <i class="fa-solid fa-bell"></i>
+
+    <span id="notificationCount">
+        0
+    </span>
+
+</div>
+
+      <div id="notificationPopup">
+
+    <div class="notification-header">
+
+        🔔 New Videos
+
+    </div>
+
+    <div id="notificationList">
+
+    </div>
+
+</div>
+
+      <div class="profile" id="profileBtn">
+
+    <img
+    id="profilePhoto"
+
+    src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780734336/bdb9892b-22d0-404d-ac50-075eb8fc006c_ollmi3.jpg"
+
+    alt="Profile">
+
+    </div>
+
+    </div>
+
+
+
+    <!-- SIDEBAR -->
+
+<div id="sidebarOverlay"></div>
+
+<div id="sidebar">
+
+    <div class="sidebar-top">
+
+        <div class="sidebar-brand"
+     onclick="window.location.href='index.html'">
+
+    <img
+      src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+      class="sidebar-brand-logo"
+      alt="BhaktiTube">
+
+    <span>
+      BhaktiTube
+    </span>
+
+</div>
+
+        <a href="#" id="dashboardBtn">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+        </a>
+
+        <a href="#" id="videosBtn">
+            <i class="fa-solid fa-play"></i>
+            Videos
+        </a>
+
+        <a href="#" id="channelsBtn">
+            <i class="fa-solid fa-users"></i>
+            Channels
+        </a>
+
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <a href="#" id="settingsBtn">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+        </a>
+
+        <a href="#" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+    
+
+
+
+    
+
+  </header>
+
+
+
+
+
+
+
+  <!-- CATEGORY -->
+
+<section class="category-section" id="categorySection">
+    <button class="active">All</button>
+    <button>Bhakti</button>
+    <button>Gujarati</button>
+    <button>Motivation</button>
+    <button>Katha</button>
+    <button>Comedy</button>
+
+  </section>
+
+
+
+<!-- CHANNELS SECTION -->
+
+<section class="channels-section" id="channelsSection">
+
+  <h2>Featured Channels</h2>
+
+  <div id="channelsLoader" class="section-loader">
+  <div class="spinner"></div>
+</div>
+
+  <div id="channelsContainer"
+       class="channels-container">
+
+  </div>
+
+</section>
+
+
+
+
+
+  <!-- VIDEOS -->
+
+  <div id="videosLoader" class="section-loader">
+  <div class="spinner"></div>
+</div>
+
+
+  <div
+    class="videos-container"
+    id="videosContainer">
+  </div>
+
+
+
+
+    
+
+
+
+<!-- ADVERTISEMENT POPUP -->
+
+<div id="adPopup" class="ad-popup">
+
+  <div class="ad-content">
+
+    <video
+      id="adVideo"
+      playsinline
+      controls
+      autoplay>
+    </video>
+
+    <div class="ad-buttons">
+
+      <button id="visitAdBtn">
+        Visit Website
+      </button>
+
+      <button id="skipAdBtn" disabled>
+        Skip Ad (5)
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+  <!-- VIDEO POPUP -->
+
+  <div class="video-popup" id="videoPopup">
+
+    <div class="popup-content">
+
+      <div class="close-btn" onclick="closeVideo()">
+
+        <i class="fa-solid fa-xmark"></i>
+
+      </div>
+
+
+
+
+
+      <div class="popup-video">
+
+        <iframe
+id="youtubePlayer"
+src=""
+frameborder="0"
+
+allow="
+accelerometer;
+autoplay;
+clipboard-write;
+encrypted-media;
+gyroscope;
+picture-in-picture;
+web-share"
+
+allowfullscreen>
+</iframe>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+  <!-- JS -->
+
+  <script type="module" src="script.js"></script>
+
+  <div id="voicePopup" class="voice-popup">
+
+    <div class="voice-box">
+
+        <div class="wave"></div>
+
+        <p>Listening...</p>
+
+    </div>
+
+</div>
+
+
+<!-- SETTINGS POPUP -->
+
+<div id="settingsModal" class="settings-modal">
+
+  <div class="settings-box">
+
+    <h2>Settings</h2>
+
+    <button id="darkModeBtn">
+      🌙 Dark Mode
+    </button>
+
+    <button id="lightModeBtn">
+      ☀️ Light Mode
+    </button>
+
+    <button id="closeSettings">
+      Close
+    </button>
+
+  </div>
+
+</div>
+
+<div class="bottom-shorts-bar">
+
+    <button id="openShortsBtn">
+        <i class="fa-solid fa-bolt"></i>
+    </button>
+
+</div>
+
+</body>
+</html>
