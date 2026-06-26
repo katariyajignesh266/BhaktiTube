@@ -10,6 +10,10 @@ import {
   setDoc
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import {
+watchProgressEngine
+}
+from "./analytics-engine.js";
 
 const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
@@ -24,6 +28,7 @@ localStorage.getItem(
 
 let currentVideoId = null;
 let watchedSaved = false;
+let channelVideoMeta = new Map();
 
 let nextPageToken = "";
 let loading = false;
@@ -33,9 +38,14 @@ let ytPlayer = null;
 let isMuted = false;
 let controlsTimeout = null;
 let timeUpdateInterval = null;
+let playbackSessionStarted = false;
 
 const params = new URLSearchParams(window.location.search);
 const channelId = params.get("id");
+
+watchProgressEngine.init({
+source:"channel"
+});
 
 // ૧. પેજ લોડ થતા જ ફાયરબેઝમાંથી ચેનલ ડેટા મેળવવો
 loadChannel();
@@ -139,13 +149,29 @@ convertDurationToSeconds(
 duration
 );
 
+const videoId =
+item.snippet.resourceId.videoId;
+
+channelVideoMeta.set(
+videoId,
+{
+videoId,
+videoTitle:item.snippet.title,
+title:item.snippet.title,
+channelId:item.snippet.channelId || channelId,
+channelName:item.snippet.videoOwnerChannelTitle || document.getElementById("channelName").textContent || "BhaktiTube",
+thumbnailUrl:item.snippet.thumbnails?.high?.url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+duration:seconds
+}
+);
+
 if(seconds < 300){
 continue;
 }
 
 if(
 watchedVideos.has(
-item.snippet.resourceId.videoId
+videoId
 )
 ){
 continue;
@@ -154,7 +180,7 @@ continue;
 container.innerHTML += `
 <div
 class="video-card"
-onclick="openVideo('${item.snippet.resourceId.videoId}')"
+onclick="openVideo('${videoId}')"
 style="
 margin-bottom:20px;
 background:#111;
@@ -209,21 +235,56 @@ window.openVideo = async function(videoId) {
 
   currentVideoId = videoId;
 watchedSaved = false;
+playbackSessionStarted = false;
 
 
   const popup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
   if (popup) popup.style.display = "flex";
+
+  let resumePosition = 0;
+
+  try{
+
+    const session =
+    await watchProgressEngine.startSession(
+      getChannelVideoMeta(videoId),
+      {
+        source:"channel"
+      }
+    );
+
+    resumePosition =
+    session.resumePosition || 0;
+
+    playbackSessionStarted = true;
+
+  }
+  catch(error){
+
+    resumePosition = 0;
+
+  }
   
   if (playerIframe) {
     // આઇફ્રેમમાં યુટ્યુબના ડિફોલ્ટ બટનો અને કીબોર્ડ બંધ કરવા માટેના પેરામીટર્સ સેટ કર્યા છે
-    playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}`;
+    playerIframe.src = buildChannelEmbedUrl(
+      videoId,
+      resumePosition
+    );
   }
   
   if (!ytPlayer) {
     ytPlayer = new YT.Player('youtubePlayer', {
       events: {
         'onReady': (event) => {
+          if(resumePosition > 0){
+            event.target.seekTo(
+              resumePosition,
+              true
+            );
+          }
+
           event.target.playVideo();
           isMuted = false;
           updateMuteButtons();
@@ -233,8 +294,39 @@ watchedSaved = false;
         'onStateChange': (event) => {
           // જો યુઝર બેકગ્રાઉન્ડમાં વીડિયો પ્લે કરે તો પણ ટ્રેકિંગ ચાલુ રાખવું
           if (event.data === YT.PlayerState.PLAYING) {
+            watchProgressEngine.setPlaybackState(
+              "playing",
+              {
+                currentPosition:getPlayerCurrentTime(),
+                duration:getPlayerDuration()
+              }
+            );
             startTimeTracking();
           } else {
+            if(event.data === YT.PlayerState.PAUSED){
+              watchProgressEngine.setPlaybackState(
+                "paused",
+                {
+                  currentPosition:getPlayerCurrentTime(),
+                  duration:getPlayerDuration()
+                }
+              );
+            }
+
+            if(event.data === YT.PlayerState.BUFFERING){
+              watchProgressEngine.setPlaybackState(
+                "buffering",
+                {
+                  currentPosition:getPlayerCurrentTime(),
+                  duration:getPlayerDuration()
+                }
+              );
+            }
+
+            if(event.data === YT.PlayerState.ENDED){
+              handleChannelVideoCompleted();
+            }
+
             clearInterval(timeUpdateInterval);
           }
         }
@@ -242,8 +334,11 @@ watchedSaved = false;
     });
   } else {
     setTimeout(() => {
-      if(ytPlayer && typeof ytPlayer.cueVideoById === "function") {
-        ytPlayer.cueVideoById(videoId);
+      if(ytPlayer && typeof ytPlayer.loadVideoById === "function") {
+        ytPlayer.loadVideoById({
+          videoId,
+          startSeconds:resumePosition
+        });
         ytPlayer.playVideo();
         startTimeTracking();
         startControlsTimer();
@@ -257,8 +352,15 @@ function startTimeTracking() {
   clearInterval(timeUpdateInterval);
   timeUpdateInterval = setInterval(() => {
     if (ytPlayer && typeof ytPlayer.getCurrentTime === "function") {
-      const current = ytPlayer.getCurrentTime();
-      const total = ytPlayer.getDuration();
+      const current = getPlayerCurrentTime();
+      const total = getPlayerDuration();
+
+      if(total > 0){
+        watchProgressEngine.touchPlayback(
+          current,
+          total
+        );
+      }
 
       if(
 total > 0 &&
@@ -300,6 +402,7 @@ function formatTime(seconds) {
 window.skipTime = function(seconds) {
   if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
     const currentTime = ytPlayer.getCurrentTime();
+    watchProgressEngine.recordSeek(seconds);
     ytPlayer.seekTo(currentTime + seconds, true);
     
     // આઇફ્રેમ પરથી ફોકસ હટાવવું જેથી ડિફોલ્ટ બટનો જલ્દી ગાયબ થાય
@@ -415,12 +518,33 @@ document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
 // ૧૧. વીડિયો પ્લેયર પોપઅપ બંધ કરવું
 window.closeVideo = function() {
+  const current =
+  getPlayerCurrentTime();
+
+  const total =
+  getPlayerDuration();
+
+  if(playbackSessionStarted && total > 0){
+    watchProgressEngine.touchPlayback(
+      current,
+      total,
+      {
+        force:true,
+        reason:"closed"
+      }
+    );
+  }
+
+  watchProgressEngine.endSession("closed");
+
   clearInterval(timeUpdateInterval);
   const popup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
   if (popup) popup.style.display = "none";
   if (playerIframe) playerIframe.src = "";
   if (ytPlayer && typeof ytPlayer.stopVideo === "function") ytPlayer.stopVideo();
+  currentVideoId = null;
+  playbackSessionStarted = false;
 }
 
 // ૧૨. ઈન્ફિનાઈટ સ્ક્રોલ (Load More Videos) લોજિક
@@ -524,6 +648,77 @@ async function saveWatchedVideo(videoId){
         console.error(err);
 
     }
+
+}
+
+function getChannelVideoMeta(videoId){
+
+  return channelVideoMeta.get(videoId) || {
+    videoId,
+    videoTitle:"BhaktiTube Channel Video",
+    title:"BhaktiTube Channel Video",
+    channelId,
+    channelName:document.getElementById("channelName").textContent || "BhaktiTube",
+    thumbnailUrl:`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    duration:0
+  };
+
+}
+
+function buildChannelEmbedUrl(videoId,startSeconds = 0){
+
+  const startParam =
+  startSeconds > 0
+  ? `&start=${Math.floor(startSeconds)}`
+  : "";
+
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}${startParam}`;
+
+}
+
+function getPlayerCurrentTime(){
+
+  try{
+    return ytPlayer && typeof ytPlayer.getCurrentTime === "function"
+    ? ytPlayer.getCurrentTime()
+    : 0;
+  }
+  catch(error){
+    return 0;
+  }
+
+}
+
+function getPlayerDuration(){
+
+  try{
+    return ytPlayer && typeof ytPlayer.getDuration === "function"
+    ? ytPlayer.getDuration()
+    : 0;
+  }
+  catch(error){
+    return 0;
+  }
+
+}
+
+function handleChannelVideoCompleted(){
+
+  const total =
+  getPlayerDuration();
+
+  watchProgressEngine.setPlaybackState(
+    "ended",
+    {
+      currentPosition:total,
+      duration:total
+    }
+  );
+
+  if(!watchedSaved){
+    watchedSaved = true;
+    saveWatchedVideo(currentVideoId);
+  }
 
 }
 

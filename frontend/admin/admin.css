@@ -821,6 +821,66 @@ body {
 .btn-card-delete { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
 .btn-card-delete:hover { background: #ef4444; color: #ffffff; }
 
+.audience-analytics-panel {
+    margin-top: 22px;
+}
+
+.audience-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.audience-summary-grid div,
+.audience-user-row {
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.audience-summary-grid span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.audience-summary-grid strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    margin-top: 6px;
+}
+
+.audience-user-list {
+    display: grid;
+    gap: 10px;
+}
+
+.audience-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.audience-user-row span {
+    min-width: 0;
+    color: var(--text-primary);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.audience-user-row strong {
+    color: var(--accent-orange);
+    flex-shrink: 0;
+}
+
 /* 13. YOUTUBE CHANNEL TYPE SPECIAL CARD */
 #channelPreview {
     background: linear-gradient(180deg, var(--bg-surface-hover), var(--bg-surface));
@@ -986,3 +1046,225 @@ body {
         max-width: 100% !important;
     }
 }
+
+/* ADMIN USER HISTORY MODAL Overlay */
+.admin-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: adminFadeIn 0.3s ease forwards;
+}
+
+.admin-modal-overlay.active {
+    display: flex;
+}
+
+.admin-modal-box {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: adminSlideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+@keyframes adminFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes adminSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.admin-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.admin-modal-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.admin-modal-close-btn:hover {
+    color: var(--brand-primary);
+}
+
+.admin-modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 200px;
+}
+
+.admin-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-history-item {
+    display: flex;
+    gap: 16px;
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    align-items: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.admin-history-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-color-hover);
+}
+
+.admin-history-thumb {
+    width: 130px;
+    aspect-ratio: 16/9;
+    background-color: #000000;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.admin-history-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-history-duration {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.admin-history-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-history-details h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.admin-history-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+}
+
+.admin-history-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.admin-history-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.admin-history-progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.admin-history-progress-fill {
+    height: 100%;
+    background-color: var(--accent-orange);
+    border-radius: 3px;
+}
+
+.admin-history-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.skeleton-loader-bar {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (max-width: 576px) {
+    .admin-history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .admin-history-thumb {
+        width: 100%;
+        max-width: 220px;
+    }
+}
+

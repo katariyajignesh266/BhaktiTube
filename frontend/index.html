@@ -163,6 +163,11 @@ viewport-fit=cover">
             Channels
         </a>
 
+        <a href="#" id="journeyBtn">
+            <i class="fa-solid fa-chart-line"></i>
+            My Bhakti Journey
+        </a>
+
     </div>
 
     <div class="sidebar-bottom">
@@ -208,6 +213,16 @@ viewport-fit=cover">
 
   </section>
 
+<section class="continue-section" id="continueWatchingSection">
+  <div class="section-heading-row">
+    <div>
+      <h2>Continue Watching</h2>
+      <p>Resume your devotional videos</p>
+    </div>
+  </div>
+  <div id="continueWatchingList" class="continue-row"></div>
+</section>
+
 
 
 <!-- CHANNELS SECTION -->
@@ -242,6 +257,85 @@ viewport-fit=cover">
     class="videos-container"
     id="videosContainer">
   </div>
+
+
+
+<section class="journey-section" id="journeySection">
+  <div class="journey-header">
+    <div>
+      <span id="journeyGreeting">My Bhakti Journey</span>
+      <h1 id="journeyUserName">Bhakti Progress</h1>
+      <p id="journeyQuickSummary">Loading your devotional activity...</p>
+    </div>
+    <div class="journey-streak-card">
+      <span>Current Streak</span>
+      <strong id="journeyStreak">0 days</strong>
+    </div>
+  </div>
+
+  <div class="journey-stats-grid" id="journeyStatsGrid"></div>
+
+  <div class="journey-insight-layout">
+    <div class="journey-panel progress-hero-panel">
+      <div class="panel-title-row">
+        <h2>Bhakti Progress</h2>
+        <span id="journeyConsistencyBadge">0%</span>
+      </div>
+      <div class="progress-ring-wrap">
+        <div class="progress-ring" id="journeyCompletionRing">
+          <span id="journeyCompletionText">0%</span>
+        </div>
+        <div>
+          <p>Completion Rate</p>
+          <strong id="journeyCompletionLabel">0 completed videos</strong>
+        </div>
+      </div>
+      <div class="goal-row">
+        <span>Weekly Bhakti Time</span>
+        <div class="goal-bar"><div id="journeyWeeklyBar"></div></div>
+        <strong id="journeyWeeklyLabel">0m</strong>
+      </div>
+      <div class="goal-row">
+        <span>Monthly Bhakti Time</span>
+        <div class="goal-bar"><div id="journeyMonthlyBar"></div></div>
+        <strong id="journeyMonthlyLabel">0m</strong>
+      </div>
+    </div>
+
+    <div class="journey-panel">
+      <div class="panel-title-row">
+        <h2>Watch Time Trend</h2>
+        <span>7 days</span>
+      </div>
+      <div id="watchTimeChart" class="bar-chart"></div>
+    </div>
+  </div>
+
+  <div class="journey-chart-grid">
+    <div class="journey-panel">
+      <div class="panel-title-row">
+        <h2>Top Categories</h2>
+        <span id="favoriteCategoryLabel">--</span>
+      </div>
+      <div id="categoryBreakdown" class="breakdown-list"></div>
+    </div>
+    <div class="journey-panel">
+      <div class="panel-title-row">
+        <h2>Top Channels</h2>
+        <span id="favoriteChannelLabel">--</span>
+      </div>
+      <div id="channelBreakdown" class="breakdown-list"></div>
+    </div>
+  </div>
+
+  <div class="journey-panel">
+    <div class="panel-title-row">
+      <h2>Recent History</h2>
+      <span id="historyCountLabel">0 videos</span>
+    </div>
+    <div id="journeyHistoryList" class="history-list"></div>
+  </div>
+</section>
 
 
 
@@ -330,7 +424,9 @@ allowfullscreen>
 
   <!-- JS -->
 
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script type="module" src="script.js"></script>
+  
 
   <div id="voicePopup" class="voice-popup">
 

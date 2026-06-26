@@ -26,6 +26,13 @@ signOut
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
+import {
+watchProgressEngine,
+formatWatchTime,
+formatRelativeTime
+}
+from "./analytics-engine.js";
+
 const logoutBtn =
 document.getElementById("logoutBtn");
 
@@ -69,6 +76,23 @@ document.getElementById("notificationPopup");
 const notificationList =
 document.getElementById("notificationList");
 
+const journeySection =
+document.getElementById("journeySection");
+
+const continueWatchingSection =
+document.getElementById("continueWatchingSection");
+
+let homePlayer = null;
+let homeTrackInterval = null;
+let currentHomeVideoId = null;
+let currentHomeView = "dashboard";
+let youtubeApiReadyPromise = null;
+let historyVideoMeta = new Map();
+
+watchProgressEngine.init({
+source:"home"
+});
+
 
 
 async function getAdvertisement(){
@@ -109,6 +133,271 @@ Math.random() * ads.length
 );
 
 return ads[randomIndex];
+
+}
+
+function getVideoMetadata(videoId){
+
+const video =
+allVideos.find(item => item.videoId === videoId) || historyVideoMeta.get(videoId) || {};
+
+return {
+videoId,
+videoTitle: video.title || video.videoTitle || "BhaktiTube Video",
+channelName: video.channel || video.channelName || "BhaktiTube",
+thumbnailUrl: video.thumbnailUrl || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+duration: Number(video.duration || 0)
+};
+
+}
+
+function getYouTubeApiReady(){
+
+if(window.YT && window.YT.Player){
+return Promise.resolve();
+}
+
+if(!youtubeApiReadyPromise){
+
+youtubeApiReadyPromise =
+new Promise((resolve)=>{
+
+const previousReady =
+window.onYouTubeIframeAPIReady;
+
+window.onYouTubeIframeAPIReady = ()=>{
+
+if(typeof previousReady === "function"){
+previousReady();
+}
+
+resolve();
+
+};
+
+});
+
+}
+
+return youtubeApiReadyPromise;
+
+}
+
+function buildEmbedUrl(videoId, startSeconds = 0){
+
+const startParam =
+startSeconds > 0
+? `&start=${Math.floor(startSeconds)}`
+: "";
+
+return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1&playsinline=0&enablejsapi=1&origin=${window.location.origin}${startParam}`;
+
+}
+
+async function startTrackedVideo(videoId){
+
+currentHomeVideoId = videoId;
+
+videoPopup.style.display =
+"flex";
+
+document.body.style.overflow =
+"hidden";
+
+let resumePosition = 0;
+
+try{
+
+const session =
+await watchProgressEngine.startSession(
+getVideoMetadata(videoId),
+{
+source:"home"
+}
+);
+
+resumePosition =
+session.resumePosition || 0;
+
+}
+catch(error){
+resumePosition = 0;
+}
+
+youtubePlayer.src =
+buildEmbedUrl(
+videoId,
+resumePosition
+);
+
+try{
+
+await getYouTubeApiReady();
+
+if(homePlayer && typeof homePlayer.loadVideoById === "function"){
+
+homePlayer.loadVideoById({
+videoId,
+startSeconds: resumePosition
+});
+
+startHomeTracking();
+
+return;
+
+}
+
+homePlayer =
+new YT.Player(
+"youtubePlayer",
+{
+events:{
+onReady:(event)=>{
+
+if(resumePosition > 0){
+event.target.seekTo(
+resumePosition,
+true
+);
+}
+
+event.target.playVideo();
+startHomeTracking();
+
+},
+onStateChange:handleHomePlayerState,
+onError:()=>{
+watchProgressEngine.recordEvent(
+"playback_error",
+{
+videoId
+}
+);
+}
+}
+}
+);
+
+}
+catch(error){
+startHomeTracking();
+}
+
+}
+
+function handleHomePlayerState(event){
+
+if(!homePlayer) return;
+
+const current =
+getHomePlayerCurrentTime();
+
+const duration =
+getHomePlayerDuration();
+
+if(event.data === YT.PlayerState.PLAYING){
+watchProgressEngine.setPlaybackState(
+"playing",
+{
+currentPosition:current,
+duration
+}
+);
+startHomeTracking();
+}
+
+if(event.data === YT.PlayerState.PAUSED){
+watchProgressEngine.setPlaybackState(
+"paused",
+{
+currentPosition:current,
+duration
+}
+);
+}
+
+if(event.data === YT.PlayerState.BUFFERING){
+watchProgressEngine.setPlaybackState(
+"buffering",
+{
+currentPosition:current,
+duration
+}
+);
+}
+
+if(event.data === YT.PlayerState.ENDED){
+watchProgressEngine.setPlaybackState(
+"ended",
+{
+currentPosition:duration,
+duration
+}
+);
+stopHomeTracking();
+refreshPersonalSections();
+}
+
+}
+
+function startHomeTracking(){
+
+stopHomeTracking();
+
+homeTrackInterval =
+setInterval(()=>{
+
+if(!currentHomeVideoId) return;
+
+const current =
+getHomePlayerCurrentTime();
+
+const duration =
+getHomePlayerDuration();
+
+if(duration > 0){
+watchProgressEngine.touchPlayback(
+current,
+duration
+);
+}
+
+},2000);
+
+}
+
+function stopHomeTracking(){
+
+if(homeTrackInterval){
+clearInterval(homeTrackInterval);
+homeTrackInterval = null;
+}
+
+}
+
+function getHomePlayerCurrentTime(){
+
+try{
+return homePlayer && typeof homePlayer.getCurrentTime === "function"
+? homePlayer.getCurrentTime()
+: 0;
+}
+catch(error){
+return 0;
+}
+
+}
+
+function getHomePlayerDuration(){
+
+try{
+return homePlayer && typeof homePlayer.getDuration === "function"
+? homePlayer.getDuration()
+: 0;
+}
+catch(error){
+return 0;
+}
 
 }
 
@@ -197,14 +486,7 @@ adVideo.pause();
 
 adVideo.src = "";
 
-videoPopup.style.display =
-"flex";
-
-document.body.style.overflow =
-"hidden";
-
-youtubePlayer.src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1&playsinline=0`;
+startTrackedVideo(videoId);
 
 }
 
@@ -223,11 +505,7 @@ startMainVideo();
 }
 else{
 
-videoPopup.style.display =
-"flex";
-
-youtubePlayer.src =
-`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&fs=1&playsinline=0`;
+startTrackedVideo(videoId);
 
 }
 
@@ -239,11 +517,40 @@ youtubePlayer.src =
 
 function closeVideo(){
 
+    const current =
+    getHomePlayerCurrentTime();
+
+    const duration =
+    getHomePlayerDuration();
+
+    if(duration > 0){
+        watchProgressEngine.touchPlayback(
+            current,
+            duration,
+            {
+                force:true,
+                reason:"closed"
+            }
+        );
+    }
+
+    watchProgressEngine.endSession("closed");
+
+    stopHomeTracking();
+
+    if(homePlayer && typeof homePlayer.stopVideo === "function"){
+        homePlayer.stopVideo();
+    }
+
     youtubePlayer.src = "";
 
     videoPopup.style.display = "none";
 
     document.body.style.overflow = "auto";
+
+    currentHomeVideoId = null;
+
+    refreshPersonalSections();
 
 
 
@@ -310,9 +617,425 @@ youtubePlayer.addEventListener("fullscreenchange", async ()=>{
 const videosContainer =
 document.getElementById("videosContainer");
 
+function escapeHtml(value){
+
+return String(value || "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+function getVideoCardMarkup(video){
+
+const videoId =
+escapeHtml(video.videoId);
+
+return `
+
+    <div
+      class="video-card"
+      onclick="openVideo('${videoId}')"
+    >
+
+      <div class="thumbnail">
+
+        <img
+          src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg"
+          alt="${escapeHtml(video.title || "Video thumbnail")}"
+          loading="lazy"
+        >
+
+        <span class="video-time">
+          Video
+        </span>
+
+      </div>
+
+      <div class="video-info">
+
+        <div class="channel-logo">
+          ${escapeHtml(video.logo || "B")}
+        </div>
+
+        <div class="video-details">
+
+          <h3>
+            ${escapeHtml(video.title)}
+          </h3>
+
+          <p class="channel-name">
+            ${escapeHtml(video.channel)}
+          </p>
+
+          <p class="video-stats">
+            ${escapeHtml(video.views)} • ${escapeHtml(video.date)}
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    `;
+
+}
+
+function setHomeView(viewName){
+
+currentHomeView =
+viewName;
+
+const showDashboard =
+viewName === "dashboard";
+
+const showVideos =
+viewName === "videos";
+
+const showChannels =
+viewName === "channels";
+
+const showJourney =
+viewName === "journey";
+
+categorySection.style.display =
+showDashboard ? "flex" : "none";
+
+channelsSection.style.display =
+showDashboard || showChannels ? "block" : "none";
+
+videosSection.style.display =
+showDashboard || showVideos ? "grid" : "none";
+
+continueWatchingSection.style.display =
+showDashboard ? "" : "none";
+
+journeySection.classList.toggle(
+"active",
+showJourney
+);
+
+if(showJourney){
+refreshPersonalSections();
+}
+
+sidebar.classList.remove("active");
+sidebarOverlay.classList.remove("active");
+
+}
+
+function getThumbnailUrl(item){
+
+return item.thumbnailUrl ||
+`https://img.youtube.com/vi/${escapeHtml(item.videoId)}/maxresdefault.jpg`;
+
+}
+
+function getProgressPercent(item){
+
+const percent =
+Number(item.completionPercentage || 0);
+
+if(percent > 0){
+return Math.min(100, Math.max(0, percent));
+}
+
+const duration =
+Number(item.duration || 0);
+
+const current =
+Number(item.currentPosition || 0);
+
+return duration > 0
+? Math.min(100, Math.round((current / duration) * 100))
+: 0;
+
+}
+
+async function refreshPersonalSections(){
+
+try{
+
+const analytics =
+await watchProgressEngine.getUserAnalytics();
+
+if (analytics && analytics.history) {
+  analytics.history.forEach(item => {
+    if (item && item.videoId) {
+      historyVideoMeta.set(item.videoId, item);
+    }
+  });
+}
+if (analytics && analytics.continueWatching) {
+  analytics.continueWatching.forEach(item => {
+    if (item && item.videoId) {
+      historyVideoMeta.set(item.videoId, item);
+    }
+  });
+}
+
+renderContinueWatching(
+analytics.continueWatching || []
+);
+
+renderJourneyDashboard(analytics);
+
+}
+catch(error){
+
+if(continueWatchingSection){
+continueWatchingSection.style.display = "none";
+}
+
+}
+
+}
+
+function renderContinueWatching(items){
+
+const list =
+document.getElementById("continueWatchingList");
+
+if(!list) return;
+
+if(!items.length || currentHomeView !== "dashboard"){
+
+list.innerHTML = "";
+continueWatchingSection.style.display = "none";
+return;
+
+}
+
+continueWatchingSection.style.display = "";
+
+list.innerHTML =
+items.slice(0,8).map((item)=>{
+
+const videoId =
+escapeHtml(item.videoId);
+
+const progress =
+getProgressPercent(item);
+
+return `
+<div class="continue-card" onclick="openVideo('${videoId}')">
+  <div class="continue-thumb">
+    <img src="${escapeHtml(getThumbnailUrl(item))}" alt="${escapeHtml(item.videoTitle || "Continue watching")}" loading="lazy">
+    <div class="continue-progress"><span style="width:${progress}%"></span></div>
+  </div>
+  <div class="continue-body">
+    <h3>${escapeHtml(item.videoTitle)}</h3>
+    <div class="continue-meta">
+      <span>${escapeHtml(item.channelName || "BhaktiTube")}</span>
+      <span>${formatRelativeTime(item.lastViewedMs)}</span>
+    </div>
+  </div>
+</div>
+`;
+
+}).join("");
+
+}
+
+function renderJourneyDashboard(analytics){
+
+if(!journeySection || !analytics) return;
+
+const totals =
+analytics.totals || {};
+
+const profile =
+analytics.profile || {};
+
+setText("journeyUserName", profile.displayName || "Bhakti Progress");
+setText(
+"journeyQuickSummary",
+`${formatWatchTime(totals.lifetimeSeconds)} watched across ${totals.videosWatched || 0} videos`
+);
+setText("journeyStreak", `${totals.currentStreak || 0} days`);
+setText("journeyConsistencyBadge", `${totals.consistencyScore || 0}% consistency`);
+setText("journeyCompletionText", `${totals.completionRate || 0}%`);
+setText("journeyCompletionLabel", `${totals.completedVideos || 0} completed videos`);
+setText("journeyWeeklyLabel", formatWatchTime(totals.weeklySeconds));
+setText("journeyMonthlyLabel", formatWatchTime(totals.monthlySeconds));
+setText("favoriteCategoryLabel", totals.favoriteCategory || "--");
+setText("favoriteChannelLabel", totals.favoriteChannel || "--");
+setText("historyCountLabel", `${(analytics.history || []).length} videos`);
+
+setWidth("journeyWeeklyBar", getGoalPercent(totals.weeklySeconds, 3600));
+setWidth("journeyMonthlyBar", getGoalPercent(totals.monthlySeconds, 14400));
+
+const ring =
+document.getElementById("journeyCompletionRing");
+
+if(ring){
+ring.style.setProperty("--progress", `${(totals.completionRate || 0) * 3.6}deg`);
+}
+
+renderJourneyStats(totals);
+renderTimeSeries(analytics.timeSeries || []);
+renderBreakdown("categoryBreakdown", analytics.categoryStats || []);
+renderBreakdown("channelBreakdown", analytics.channelStats || []);
+renderHistory(analytics.history || []);
+
+}
+
+function renderJourneyStats(totals){
+
+const grid =
+document.getElementById("journeyStatsGrid");
+
+if(!grid) return;
+
+const cards = [
+["fa-clock", "Lifetime Watch Time", formatWatchTime(totals.lifetimeSeconds)],
+["fa-calendar-day", "Today", formatWatchTime(totals.todaySeconds)],
+["fa-circle-check", "Completed", `${totals.completedVideos || 0}`],
+["fa-fire", "Best Session", formatWatchTime(totals.longestSession)],
+["fa-star", "Favorite Category", totals.favoriteCategory || "--"],
+["fa-sun", "Active Time", totals.mostActiveHour || "--"]
+];
+
+grid.innerHTML =
+cards.map(([icon,label,value])=>`
+<div class="journey-stat-card">
+  <i class="fa-solid ${icon}"></i>
+  <span>${escapeHtml(label)}</span>
+  <strong>${escapeHtml(value)}</strong>
+</div>
+`).join("");
+
+}
+
+function renderTimeSeries(series){
+
+const chart =
+document.getElementById("watchTimeChart");
+
+if(!chart) return;
+
+const maxSeconds =
+Math.max(...series.map(item => Number(item.seconds || 0)), 60);
+
+chart.innerHTML =
+series.map((item)=>{
+
+const height =
+Math.max(3, Math.round((Number(item.seconds || 0) / maxSeconds) * 100));
+
+return `
+<div class="bar-item" title="${escapeHtml(formatWatchTime(item.seconds))}">
+  <div class="bar-track"><div class="bar-fill" style="height:${height}%"></div></div>
+  <span>${escapeHtml(item.label)}</span>
+</div>
+`;
+
+}).join("");
+
+}
+
+function renderBreakdown(elementId, stats){
+
+const container =
+document.getElementById(elementId);
+
+if(!container) return;
+
+if(!stats.length){
+container.innerHTML = `<div class="journey-empty">No activity yet</div>`;
+return;
+}
+
+const maxSeconds =
+Math.max(...stats.map(item => Number(item.seconds || 0)), 1);
+
+container.innerHTML =
+stats.slice(0,5).map((item)=>`
+<div class="breakdown-item">
+  <span>${escapeHtml(item.label)}</span>
+  <div class="breakdown-track"><div class="breakdown-fill" style="width:${Math.round((Number(item.seconds || 0) / maxSeconds) * 100)}%"></div></div>
+  <strong>${formatWatchTime(item.seconds)}</strong>
+</div>
+`).join("");
+
+}
+
+function renderHistory(items){
+
+const list =
+document.getElementById("journeyHistoryList");
+
+if(!list) return;
+
+if(!items.length){
+list.innerHTML = `<div class="journey-empty">Start watching videos to build your journey.</div>`;
+return;
+}
+
+list.innerHTML =
+items.slice(0,10).map((item)=>{
+
+const videoId =
+escapeHtml(item.videoId);
+
+const progress =
+getProgressPercent(item);
+
+return `
+<div class="history-item" onclick="openVideo('${videoId}')">
+  <img src="${escapeHtml(getThumbnailUrl(item))}" alt="${escapeHtml(item.videoTitle || "History item")}" loading="lazy">
+  <div>
+    <h3>${escapeHtml(item.videoTitle)}</h3>
+    <p>${escapeHtml(item.channelName || "BhaktiTube")} • ${formatRelativeTime(item.lastViewedMs)}</p>
+  </div>
+  <span class="history-status">${item.completed ? "Completed" : `${progress}%`}</span>
+</div>
+`;
+
+}).join("");
+
+}
+
+function setText(id,value){
+
+const element =
+document.getElementById(id);
+
+if(element){
+element.textContent = value;
+}
+
+}
+
+function setWidth(id,percent){
+
+const element =
+document.getElementById(id);
+
+if(element){
+element.style.width = `${percent}%`;
+}
+
+}
+
+function getGoalPercent(value,goal){
+
+return Math.min(
+100,
+Math.round((Number(value || 0) / goal) * 100)
+);
+
+}
+
 async function loadVideos(){
 
   videosContainer.innerHTML = "";
+
+  const completedVideos =
+  await watchProgressEngine.getCompletedVideoIds();
 
   const q = query(
     collection(db,"videos"),
@@ -327,7 +1050,20 @@ async function loadVideos(){
 
     const video = doc.data();
 
+    if(
+      completedVideos.has(
+        video.videoId
+      )
+    ){
+      return;
+    }
+
     allVideos.push(video);
+
+    videosContainer.innerHTML +=
+    getVideoCardMarkup(video);
+
+    return;
 
     videosContainer.innerHTML += `
 
@@ -377,6 +1113,8 @@ async function loadVideos(){
     `;
 
   });
+
+  refreshPersonalSections();
 
 }
 
@@ -442,6 +1180,11 @@ function renderVideos(videos){
     videosContainer.innerHTML = "";
 
     videos.forEach((video)=>{
+
+        videosContainer.innerHTML +=
+        getVideoCardMarkup(video);
+
+        return;
 
         videosContainer.innerHTML += `
 
@@ -544,6 +1287,9 @@ document.getElementById("videosBtn");
 const channelsBtn =
 document.getElementById("channelsBtn");
 
+const journeyBtn =
+document.getElementById("journeyBtn");
+
 const categorySection =
 document.getElementById("categorySection");
 
@@ -557,18 +1303,7 @@ dashboardBtn.addEventListener("click",(e)=>{
 
 e.preventDefault();
 
-categorySection.style.display =
-"flex";
-
-channelsSection.style.display =
-"block";
-
-videosSection.style.display =
-"grid";
-
-sidebar.classList.remove("active");
-
-sidebarOverlay.classList.remove("active");
+setHomeView("dashboard");
 
 });
 
@@ -576,18 +1311,7 @@ videosBtn.addEventListener("click",(e)=>{
 
 e.preventDefault();
 
-categorySection.style.display =
-"none";
-
-channelsSection.style.display =
-"none";
-
-videosSection.style.display =
-"grid";
-
-sidebar.classList.remove("active");
-
-sidebarOverlay.classList.remove("active");
+setHomeView("videos");
 
 });
 
@@ -595,18 +1319,16 @@ channelsBtn.addEventListener("click",(e)=>{
 
 e.preventDefault();
 
-categorySection.style.display =
-"none";
+setHomeView("channels");
 
-channelsSection.style.display =
-"block";
+});
 
-videosSection.style.display =
-"none";
+journeyBtn.addEventListener("click",(e)=>{
 
-sidebar.classList.remove("active");
+e.preventDefault();
 
-sidebarOverlay.classList.remove("active");
+setHomeView("journey");
+
 
 });
 

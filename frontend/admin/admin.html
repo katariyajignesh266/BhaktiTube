@@ -413,6 +413,21 @@ viewport-fit=cover">
         </main>
     </div>
 
+    <!-- USER HISTORY DETAILS MODAL Overlay -->
+    <div id="adminUserHistoryModal" class="admin-modal-overlay">
+        <div class="admin-modal-box">
+            <div class="admin-modal-header">
+                <h3 id="adminUserHistoryTitle">Watch History</h3>
+                <button id="closeAdminHistoryBtn" class="admin-modal-close-btn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="adminUserHistoryBody" class="admin-modal-body">
+                <!-- Watch history items will be loaded dynamically here -->
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="admin.js"></script>
 </body>
 </html>

@@ -17,6 +17,11 @@ import {
     query,
     orderBy
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import {
+    watchProgressEngine,
+    formatWatchTime,
+    formatRelativeTime
+} from "../analytics-engine.js";
 
 console.log("⚡ PREMIUM BHAKTITUBE CORE ENGINE ACTIVE");
 
@@ -179,6 +184,7 @@ async function calculateGlobalAnalyticsCounters() {
         const videosSnap = await getDocs(collection(db, "videos"));
         const adsSnap = await getDocs(collection(db, "advertisements"));
         const channelsSnap = await getDocs(collection(db, "channels"));
+        const analyticsUsers = await watchProgressEngine.listAnalyticsUsers(50);
 
         let accumulatedViews = 0;
         videosSnap.forEach(v => {
@@ -192,9 +198,166 @@ async function calculateGlobalAnalyticsCounters() {
         document.getElementById("statTotalAds").textContent = adsSnap.size.toLocaleString();
         document.getElementById("statTotalChannels").textContent = channelsSnap.size.toLocaleString();
         document.getElementById("statTotalViews").textContent = accumulatedViews.toLocaleString() + " Core hits";
+        renderAudienceAnalyticsPanel(analyticsUsers);
     } catch (e) {
         console.error("Telemetry Error Matrix:", e);
     }
+}
+
+function renderAudienceAnalyticsPanel(users = []) {
+    const dashboardPage = document.getElementById("dashboardPage");
+    if (!dashboardPage) return;
+
+    let panel = document.getElementById("audienceAnalyticsPanel");
+    if (!panel) {
+        panel = document.createElement("div");
+        panel.id = "audienceAnalyticsPanel";
+        panel.className = "premium-panel audience-analytics-panel";
+        dashboardPage.appendChild(panel);
+    }
+
+    const activeUsers = users.filter(user => Number(user.lastActiveMs || 0) > 0);
+    const totalWatchSeconds = users.reduce((sum, user) => sum + Number(user.totalWatchTime || 0), 0);
+    const completedVideos = users.reduce((sum, user) => sum + Number(user.completedVideos || 0), 0);
+    const topUsers = activeUsers
+        .slice()
+        .sort((a, b) => Number(b.totalWatchTime || 0) - Number(a.totalWatchTime || 0))
+        .slice(0, 5);
+
+    panel.innerHTML = `
+        <div class="panel-header">
+            <h2><i class="fa-solid fa-chart-line text-brand"></i> Audience Bhakti Analytics</h2>
+        </div>
+        <div class="audience-summary-grid">
+            <div><span>Tracked Users</span><strong>${activeUsers.length.toLocaleString()}</strong></div>
+            <div><span>Total Watch Time</span><strong>${formatWatchTime(totalWatchSeconds)}</strong></div>
+            <div><span>Completed Videos</span><strong>${completedVideos.toLocaleString()}</strong></div>
+        </div>
+        <div class="audience-user-list">
+            ${
+                topUsers.length
+                ? topUsers.map(user => `
+                    <div class="audience-user-row" onclick="viewUserHistory('${user.uid}', '${escapeAdminHtml(user.displayName || user.email || "BhaktiTube User")}')" style="cursor: pointer;">
+                        <span>${escapeAdminHtml(user.displayName || user.email || "BhaktiTube User")}</span>
+                        <strong>${formatWatchTime(user.totalWatchTime)}</strong>
+                    </div>
+                `).join("")
+                : `<div class="empty-state-card"><i class="fa-solid fa-chart-simple"></i><p>No user watch analytics recorded yet</p></div>`
+            }
+        </div>
+    `;
+}
+
+function escapeAdminHtml(value) {
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function getProgressPercent(item) {
+    const percent = Number(item.completionPercentage || 0);
+    if (percent > 0) {
+        return Math.min(100, Math.max(0, percent));
+    }
+    const duration = Number(item.duration || 0);
+    const current = Number(item.currentPosition || 0);
+    return duration > 0 ? Math.min(100, Math.round((current / duration) * 100)) : 0;
+}
+
+function formatTimeSeconds(seconds) {
+    if (!seconds || isNaN(seconds)) return "00:00";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) {
+        return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+window.viewUserHistory = async function (uid, displayName) {
+    const modal = document.getElementById("adminUserHistoryModal");
+    const titleEl = document.getElementById("adminUserHistoryTitle");
+    const bodyEl = document.getElementById("adminUserHistoryBody");
+
+    if (!modal || !titleEl || !bodyEl) return;
+
+    titleEl.textContent = `Watch History: ${displayName}`;
+    bodyEl.innerHTML = `<div class="skeleton-loader-bar">Fetching watch history for user...</div>`;
+    modal.classList.add("active");
+
+    try {
+        const analytics = await watchProgressEngine.getUserAnalytics(uid);
+        const history = analytics.history || [];
+
+        if (history.length === 0) {
+            bodyEl.innerHTML = `
+                <div class="admin-history-empty">
+                    <i class="fa-solid fa-clock-rotate-left" style="font-size: 2rem; margin-bottom: 12px; display: block; color: var(--text-muted);"></i>
+                    No watch history recorded for this user.
+                </div>
+            `;
+            return;
+        }
+
+        bodyEl.innerHTML = `
+            <div class="admin-history-list">
+                ${history.map(item => {
+                    const videoId = escapeAdminHtml(item.videoId);
+                    const title = escapeAdminHtml(item.videoTitle || item.title || "Untitled Video");
+                    const channel = escapeAdminHtml(item.channelName || item.channel || "BhaktiTube");
+                    const thumb = item.thumbnailUrl || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                    const progress = getProgressPercent(item);
+                    const lastWatched = formatRelativeTime(item.lastViewedMs);
+                    const durationStr = item.duration ? formatTimeSeconds(item.duration) : "";
+                    const resumeStr = formatTimeSeconds(item.currentPosition || 0);
+
+                    return `
+                        <div class="admin-history-item">
+                            <div class="admin-history-thumb">
+                                <img src="${thumb}" alt="Thumbnail" onerror="this.src='https://img.youtube.com/vi/${videoId}/mqdefault.jpg'">
+                                ${durationStr ? `<span class="admin-history-duration">${durationStr}</span>` : ""}
+                            </div>
+                            <div class="admin-history-details">
+                                <h4>${title}</h4>
+                                <div class="admin-history-meta">
+                                    <span><i class="fa-solid fa-tv"></i> ${channel}</span>
+                                    <span><i class="fa-solid fa-hashtag"></i> ID: ${videoId}</span>
+                                    <span><i class="fa-solid fa-clock"></i> ${lastWatched}</span>
+                                </div>
+                                <div class="admin-history-progress-wrap">
+                                    <div class="admin-history-progress-bar">
+                                        <div class="admin-history-progress-fill" style="width: ${progress}%"></div>
+                                    </div>
+                                    <span>${progress}% (${resumeStr}${durationStr ? ` / ${durationStr}` : ""})</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join("")}
+            </div>
+        `;
+    } catch (error) {
+        console.error("Error loading user watch history:", error);
+        bodyEl.innerHTML = `<div class="admin-history-empty text-brand"><i class="fa-solid fa-triangle-exclamation"></i> Error loading history. Please try again.</div>`;
+    }
+};
+
+// Wire up history modal close listeners
+const userHistoryModal = document.getElementById("adminUserHistoryModal");
+const closeAdminHistoryBtn = document.getElementById("closeAdminHistoryBtn");
+if (closeAdminHistoryBtn && userHistoryModal) {
+    closeAdminHistoryBtn.addEventListener("click", () => {
+        userHistoryModal.classList.remove("active");
+    });
+    userHistoryModal.addEventListener("click", (e) => {
+        if (e.target === userHistoryModal) {
+            userHistoryModal.classList.remove("active");
+        }
+    });
 }
 
 /* 8. PRECISE DATA FILTER BAR ENGINES */
