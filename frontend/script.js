@@ -29,7 +29,9 @@ from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 import {
 watchProgressEngine,
 formatWatchTime,
-formatRelativeTime
+formatRelativeTime,
+profileService,
+generateAvatarDataUrl
 }
 from "./analytics-engine.js";
 
@@ -925,25 +927,21 @@ window.onPlayerClosed = refreshPersonalSections;
 const profilePhoto =
 document.getElementById("profilePhoto");
 
-onAuthStateChanged(
-
-auth,
-
-(user)=>{
-
-if(user){
-
-profilePhoto.src =
-
-user.photoURL ||
-
-"https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-}
-
-}
-
-);
+profileService.subscribe((profile) => {
+  if (profile) {
+    const activePhoto = profile.customPhotoURL || profile.photoURL || "";
+    if (activePhoto) {
+      profilePhoto.src = activePhoto;
+    } else {
+      profilePhoto.src = generateAvatarDataUrl(profile.displayName, profile.email, profile.uid);
+    }
+    
+    const journeyUserName = document.getElementById("journeyUserName");
+    if (journeyUserName) {
+      journeyUserName.textContent = profile.displayName || "Bhakti Progress";
+    }
+  }
+});
 
 bellBtn.addEventListener("click", () => {
 

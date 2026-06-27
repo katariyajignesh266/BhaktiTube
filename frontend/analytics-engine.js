@@ -10,7 +10,8 @@ import {
   limit,
   serverTimestamp,
   writeBatch,
-  increment
+  increment,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import {
   onAuthStateChanged
@@ -1203,4 +1204,141 @@ export function formatRelativeTime(timestampMs) {
   if (hours < 24) return `${hours}h ago`;
   if (days === 1) return "Yesterday";
   return `${days}d ago`;
+}
+
+// CENTRALIZED PROFILE SERVICE
+let profileListeners = [];
+let currentProfileData = null;
+let unsubscribeDoc = null;
+
+// Observe Auth state and attach real-time doc snapshot listener
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    if (unsubscribeDoc) unsubscribeDoc();
+    
+    const docRef = doc(db, "users", user.uid);
+    unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        currentProfileData = { uid: user.uid, ...docSnap.data() };
+      } else {
+        currentProfileData = {
+          uid: user.uid,
+          email: user.email || "",
+          displayName: user.displayName || "BhaktiTube User",
+          photoURL: user.photoURL || ""
+        };
+      }
+      
+      // Save to fast-load cache
+      localStorage.setItem("bt_user_profile_cache", JSON.stringify(currentProfileData));
+      
+      // Propagate update in real-time to all page subscribers
+      profileListeners.forEach(callback => {
+        try { callback(currentProfileData); } catch (e) { console.error(e); }
+      });
+    }, (error) => {
+      console.error("Profile snapshot listener error:", error);
+    });
+  } else {
+    if (unsubscribeDoc) {
+      unsubscribeDoc();
+      unsubscribeDoc = null;
+    }
+    currentProfileData = null;
+    localStorage.removeItem("bt_user_profile_cache");
+    profileListeners.forEach(callback => {
+      try { callback(null); } catch (e) { console.error(e); }
+    });
+  }
+});
+
+export const profileService = {
+  subscribe(callback) {
+    profileListeners.push(callback);
+    
+    // Deliver cache instantly to avoid FOUC
+    const cached = localStorage.getItem("bt_user_profile_cache");
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        callback(parsed);
+      } catch(e) {}
+    } else if (currentProfileData) {
+      callback(currentProfileData);
+    }
+    
+    return () => {
+      profileListeners = profileListeners.filter(cb => cb !== callback);
+    };
+  },
+  getProfile() {
+    if (currentProfileData) return currentProfileData;
+    const cached = localStorage.getItem("bt_user_profile_cache");
+    if (cached) {
+      try { return JSON.parse(cached); } catch(e) {}
+    }
+    return null;
+  }
+};
+
+// DETERMINISTIC PREMIUM SVG AVATAR DATA URL GENERATOR
+export function generateAvatarDataUrl(displayName, email, uid) {
+  const cleanName = (displayName || "").trim();
+  let letter = "B";
+  if (cleanName) {
+    letter = cleanName.charAt(0).toUpperCase();
+  } else if (email) {
+    letter = email.charAt(0).toUpperCase();
+  }
+  
+  const gradients = [
+    ["#ff6b3d", "#ff3d68"], // Saffron-Crimson
+    ["#ff8c00", "#ff0080"], // Orange-Pink
+    ["#4776e6", "#8e54e9"], // Blue-Purple
+    ["#00b4db", "#0083b0"], // Teal-Blue
+    ["#11998e", "#38ef7d"], // Green-Teal
+    ["#f09819", "#edde5d"], // Gold-Yellow
+    ["#8e2de2", "#4a00e0"], // Violet-Indigo
+    ["#f857a6", "#ff5858"], // Rose-Red
+    ["#3a7bd5", "#3a6073"]  // Steel Blue
+  ];
+  
+  const seed = email || uid || "BhaktiTube";
+  let hash = 0;
+  for (let index = 0; index < seed.length; index++) {
+    hash = seed.charCodeAt(index) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % gradients.length;
+  const colors = gradients[idx];
+  
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:${colors[0]};stop-opacity:1" />
+        <stop offset="100%" style="stop-color:${colors[1]};stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="50" fill="url(%23grad)" />
+    <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="44" font-weight="800" fill="%23ffffff">${letter}</text>
+  </svg>`;
+  
+  return `data:image/svg+xml;utf8,${svg.replace(/#/g, '%23')}`;
+}
+
+// RESOLVE ACTIVE PHOTO URL PRIORITY
+export function getActivePhotoURL(profile, user) {
+  if (profile?.customPhotoURL) {
+    return profile.customPhotoURL;
+  }
+  if (user?.providerData) {
+    for (const prov of user.providerData) {
+      if (prov.providerId === "google.com" && prov.photoURL) {
+        return prov.photoURL;
+      }
+    }
+  }
+  if (user?.photoURL && !user.photoURL.startsWith("data:")) {
+    return user.photoURL;
+  }
+  return "";
 }

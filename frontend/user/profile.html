@@ -1,98 +1,607 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta
-name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-minimum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
-
-<title>Profile</title>
-
-<link rel="stylesheet" href="profile.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>BhaktiTube Premium Profile</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Profile Styles -->
+    <link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
-<div class="profile-container">
+    <!-- Pulsing Background Glows -->
+    <div class="glow-bg glow-orange"></div>
+    <div class="glow-bg glow-pink"></div>
 
-    <a href="../index.html" class="back-btn">
-        ← Home
-    </a>
+    <div class="profile-layout-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="profile-sidebar">
+            <a href="../index.html" class="back-home-btn">
+                <i class="fa-solid fa-arrow-left"></i> Home
+            </a>
 
-    <img
-    id="profileImage"
-    class="profile-image"
-    src=""
-    alt="Profile">
+            <div class="sidebar-user-info">
+                <div class="avatar-wrapper">
+                    <!-- Standard profile image -->
+                    <img id="profileImage" class="profile-avatar-img" src="" alt="Profile Image" style="display: none;">
+                    <!-- Deterministic initials fallback -->
+                    <div id="profileAvatarDiv" class="profile-avatar-fallback">B</div>
+                    
+                    <div class="avatar-hover-overlay" id="changePhotoBtn" title="Change profile picture">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Edit</span>
+                    </div>
+                    <span class="status-indicator online" id="onlineIndicator"></span>
+                </div>
 
+                <h2 id="userName">BhaktiTube User</h2>
+                <p id="userEmail">user@email.com</p>
+                <div class="auth-provider-badge" id="accountType">Email Account</div>
+                
+                <div class="joined-date-text">
+                    <i class="fa-regular fa-calendar-days"></i> Joined <span id="joinedDate">Loading...</span>
+                </div>
+            </div>
 
-    <h2 id="userName">
-        User Name
-    </h2>
+            <!-- Vertical Navigation -->
+            <nav class="sidebar-nav">
+                <button class="nav-tab-btn active" data-panel="dashboard">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard & Stats
+                </button>
+                <button class="nav-tab-btn" data-panel="edit-profile" id="editProfileBtn">
+                    <i class="fa-solid fa-user-gear"></i> Edit Profile
+                </button>
+                <button class="nav-tab-btn" data-panel="preferences">
+                    <i class="fa-solid fa-sliders"></i> Preferences
+                </button>
+                <button class="nav-tab-btn" data-panel="security">
+                    <i class="fa-solid fa-shield-halved"></i> Security & Login
+                </button>
+                <button class="nav-tab-btn logout-btn-item" id="logoutBtn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </nav>
+        </aside>
 
-    <p id="userEmail">
-        user@email.com
-    </p>
+        <!-- MAIN PANEL CONTENT -->
+        <main class="profile-content-area">
+            
+            <!-- PANEL: DASHBOARD & STATS -->
+            <section class="profile-panel active" id="panel-dashboard">
+                <div class="panel-header">
+                    <h1>My Bhakti Dashboard</h1>
+                    <p>Overview of your spiritual journey, watched content, and activity statistics.</p>
+                </div>
 
-    <div class="profile-info">
+                <!-- Metrics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon orange-glow"><i class="fa-solid fa-clock"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Watch Time</span>
+                            <span class="stat-value" id="statWatchTime">0m</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pink-glow"><i class="fa-solid fa-circle-play"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Videos Watched</span>
+                            <span class="stat-value" id="statWatchedVideos">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple-glow"><i class="fa-solid fa-square-check"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Completed Videos</span>
+                            <span class="stat-value" id="statCompletedVideos">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon amber-glow"><i class="fa-solid fa-fire"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Current Streak</span>
+                            <span class="stat-value" id="statCurrentStreak">0 Days</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green-glow"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Consistency Score</span>
+                            <span class="stat-value" id="statConsistency">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue-glow"><i class="fa-solid fa-face-smile"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Fav. Deity</span>
+                            <span class="stat-value" id="statFavDeity">Krishna</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="info-box">
-            <span>Account Type</span>
-            <p id="accountType">
-                Google
-            </p>
-        </div>
+                <div class="dashboard-rows-grid">
+                    <!-- Continue Watching -->
+                    <div class="dashboard-section-card continue-watching-container">
+                        <h3><i class="fa-solid fa-rotate-left"></i> Continue Watching</h3>
+                        <div class="continue-watching-list" id="continueWatchingList">
+                            <!-- Populated dynamically -->
+                            <p class="empty-state">No videos in progress. Start watching spiritual content to track playback!</p>
+                        </div>
+                    </div>
 
-        <div class="info-box">
-            <span>Joined</span>
-            <p id="joinedDate">
-                Loading...
-            </p>
-        </div>
+                    <!-- Favorites & Stats Details -->
+                    <div class="dashboard-section-card favorites-details-card">
+                        <h3><i class="fa-solid fa-bookmark"></i> Journey Preferences</h3>
+                        <div class="journey-pref-list">
+                            <div class="journey-pref-item">
+                                <span class="pref-label">Favorite Category</span>
+                                <span class="pref-value" id="statFavCategory">Bhajan</span>
+                            </div>
+                            <div class="journey-pref-item">
+                                <span class="pref-label">Favorite Channel</span>
+                                <span class="pref-value" id="statFavChannel">BhaktiTube</span>
+                            </div>
+                            <div class="journey-pref-item">
+                                <span class="pref-label">Last Watched</span>
+                                <span class="pref-value" id="statLastWatched">Not available</span>
+                            </div>
+                        </div>
 
+                        <!-- Quick Actions Grid -->
+                        <div class="quick-actions-box">
+                            <h4>Quick Actions</h4>
+                            <div class="quick-actions-buttons">
+                                <button class="action-btn" id="qaEditProfile"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+                                <button class="action-btn" id="qaChangePhoto"><i class="fa-solid fa-camera"></i> Change Photo</button>
+                                <button class="action-btn" id="qaHistory"><i class="fa-solid fa-history"></i> Watch History</button>
+                                <button class="action-btn" id="qaDownloads"><i class="fa-solid fa-download"></i> Downloads</button>
+                                <button class="action-btn" id="qaBookmarks"><i class="fa-solid fa-bookmark"></i> Bookmarks</button>
+                                <button class="action-btn" id="qaHelp"><i class="fa-solid fa-circle-question"></i> Help Support</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Timeline -->
+                <div class="dashboard-section-card timeline-card">
+                    <h3><i class="fa-solid fa-chart-bar"></i> Recent Activity Feed</h3>
+                    <div class="activity-timeline" id="activityTimeline">
+                        <!-- Populated dynamically -->
+                        <p class="empty-state">No recent activity detected. Watch some videos to populate your feed!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: EDIT PROFILE -->
+            <section class="profile-panel" id="panel-edit-profile">
+                <div class="panel-header">
+                    <h1>✏️ Edit Profile Information</h1>
+                    <p>Customize your personal profile settings. All fields here can be edited.</p>
+                </div>
+
+                <form class="edit-profile-form" id="editProfileForm">
+                    <div class="form-grid">
+                        
+                        <!-- Personal Info Group -->
+                        <div class="form-group-card">
+                            <h3><i class="fa-solid fa-user"></i> Personal Information</h3>
+                            
+                            <div class="form-field">
+                                <label for="editNameInput">Full Name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-address-card input-icon"></i>
+                                    <input type="text" id="editNameInput" placeholder="Enter Full Name" max="50">
+                                </div>
+                                <div class="field-feedback">
+                                    <span class="char-counter" id="nameCharCount">0/50</span>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editUsernameInput">Username</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-at input-icon"></i>
+                                    <input type="text" id="editUsernameInput" placeholder="Enter Username" max="20">
+                                </div>
+                                <div class="field-feedback">
+                                    <span class="validation-message" id="usernameValidation">Only letters, numbers, and underscores allowed.</span>
+                                    <span class="char-counter" id="usernameCharCount">0/20</span>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editBioInput">Short Bio</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-quote-left input-icon textarea-icon"></i>
+                                    <textarea id="editBioInput" placeholder="Tell us about yourself..." max="150" rows="3"></textarea>
+                                </div>
+                                <div class="field-feedback">
+                                    <span class="char-counter" id="bioCharCount">0/150</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row-2">
+                                <div class="form-field">
+                                    <label for="editGenderSelect">Gender</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-venus-mars input-icon"></i>
+                                        <select id="editGenderSelect">
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                            <option value="Prefer not to say">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="editDobInput">Date of Birth</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-cake-candles input-icon"></i>
+                                        <input type="date" id="editDobInput">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact & Location Group -->
+                        <div class="form-group-card">
+                            <h3><i class="fa-solid fa-location-dot"></i> Contact & Location</h3>
+                            
+                            <div class="form-field">
+                                <label for="editPhoneInput">Mobile Number</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="editPhoneInput" placeholder="Enter Mobile Number">
+                                </div>
+                            </div>
+
+                            <div class="form-row-3">
+                                <div class="form-field">
+                                    <label for="editCountryInput">Country</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-earth-americas input-icon"></i>
+                                        <input type="text" id="editCountryInput" placeholder="Country">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label for="editStateInput">State</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-map input-icon"></i>
+                                        <input type="text" id="editStateInput" placeholder="State">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label for="editCityInput">City</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-city input-icon"></i>
+                                        <input type="text" id="editCityInput" placeholder="City">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row-2">
+                                <div class="form-field">
+                                    <label for="editLanguageInput">Language</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-language input-icon"></i>
+                                        <input type="text" id="editLanguageInput" placeholder="Preferred Language">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label for="editTimezoneInput">Timezone</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-globe input-icon"></i>
+                                        <input type="text" id="editTimezoneInput" placeholder="e.g. Asia/Kolkata">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bhakti & Professional Group -->
+                        <div class="form-group-card">
+                            <h3><i class="fa-solid fa-dharmachakra"></i> Journey Preferences</h3>
+                            
+                            <div class="form-row-2">
+                                <div class="form-field">
+                                    <label for="editDeityInput">Favorite Deity</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-om input-icon"></i>
+                                        <input type="text" id="editDeityInput" placeholder="e.g. Krishna, Shiva, Hanuman">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label for="editCategoryInput">Favorite Category</label>
+                                    <div class="input-wrapper">
+                                        <i class="fa-solid fa-play input-icon"></i>
+                                        <input type="text" id="editCategoryInput" placeholder="e.g. Bhajan, Katha, Mantra">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editOccupationInput">Occupation</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-briefcase input-icon"></i>
+                                    <input type="text" id="editOccupationInput" placeholder="Occupation / Profession">
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editWebsiteInput">Website</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-link input-icon"></i>
+                                    <input type="url" id="editWebsiteInput" placeholder="https://example.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media Links -->
+                        <div class="form-group-card">
+                            <h3><i class="fa-solid fa-share-nodes"></i> Social Links</h3>
+                            
+                            <div class="form-field">
+                                <label for="editYoutubeInput">YouTube Channel</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-brands fa-youtube input-icon yt-icon"></i>
+                                    <input type="url" id="editYoutubeInput" placeholder="YouTube profile URL">
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editInstagramInput">Instagram</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-brands fa-instagram input-icon insta-icon"></i>
+                                    <input type="url" id="editInstagramInput" placeholder="Instagram profile URL">
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editFacebookInput">Facebook</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-brands fa-facebook input-icon fb-icon"></i>
+                                    <input type="url" id="editFacebookInput" placeholder="Facebook profile URL">
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="editTwitterInput">Twitter / X</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-brands fa-x-twitter input-icon twitter-icon"></i>
+                                    <input type="url" id="editTwitterInput" placeholder="Twitter/X profile URL">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Action buttons -->
+                    <div class="form-actions">
+                        <button type="submit" id="saveProfileBtn" class="btn primary-btn"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+                        <button type="button" id="cancelEditBtn" class="btn secondary-btn"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- PANEL: ACCOUNT PREFERENCES -->
+            <section class="profile-panel" id="panel-preferences">
+                <div class="panel-header">
+                    <h1>⚙️ Account Preferences</h1>
+                    <p>Manage application settings and playback preferences.</p>
+                </div>
+
+                <div class="preferences-container">
+                    <div class="form-group-card">
+                        <h3>General Settings</h3>
+                        
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">Dark Mode Ready</span>
+                                <span class="pref-desc">Enable premium dark themed styles. Ready for system styles.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="prefDarkMode" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">Video Quality Preference</span>
+                                <span class="pref-desc">Choose default playback quality resolution.</span>
+                            </div>
+                            <select id="prefQuality" class="select-dropdown">
+                                <option value="auto">Auto (Recommended)</option>
+                                <option value="1080">1080p Full HD</option>
+                                <option value="720">720p HD</option>
+                                <option value="480">480p SD</option>
+                                <option value="360">360p Compact</option>
+                            </select>
+                        </div>
+
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">System Language</span>
+                                <span class="pref-desc">Set the language of the application interface.</span>
+                            </div>
+                            <select id="prefLanguage" class="select-dropdown">
+                                <option value="English">English</option>
+                                <option value="Hindi">Gujarati / Hindi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-card">
+                        <h3>Playback Settings</h3>
+
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">Auto Play Next</span>
+                                <span class="pref-desc">Automatically play subsequent videos on completion.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="prefAutoPlay" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">Remember Playback Position</span>
+                                <span class="pref-desc">Continue videos exactly from where you left off.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="prefRememberPlayback" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group-card">
+                        <h3>Notifications</h3>
+
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">Email Recommendations</span>
+                                <span class="pref-desc">Receive personalized spiritual video updates.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="prefEmailRecs" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="preference-row">
+                            <div class="pref-meta">
+                                <span class="pref-title">Weekly Digest</span>
+                                <span class="pref-desc">Summarized report of your weekly journey analytics.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="prefWeeklyDigest">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: SECURITY -->
+            <section class="profile-panel" id="panel-security">
+                <div class="panel-header">
+                    <h1>🔒 Security & Password Settings</h1>
+                    <p>Manage your account login credentials and verification status.</p>
+                </div>
+
+                <div class="security-container">
+                    <div class="form-group-card">
+                        <h3>Security Overview</h3>
+                        
+                        <div class="security-info-grid">
+                            <div class="sec-info-box">
+                                <span class="sec-label">Login Provider</span>
+                                <span class="sec-value" id="secProvider">Email & Password</span>
+                            </div>
+                            <div class="sec-info-box">
+                                <span class="sec-label">Email Verified</span>
+                                <div class="sec-verified-status">
+                                    <span class="sec-value badge" id="secVerified">Loading...</span>
+                                    <button class="btn link-btn" id="sendVerificationBtn" style="display: none;">Verify Now</button>
+                                </div>
+                            </div>
+                            <div class="sec-info-box">
+                                <span class="sec-label">Last Login Time</span>
+                                <span class="sec-value" id="secLastLogin">Today, 12:00 PM</span>
+                            </div>
+                            <div class="sec-info-box">
+                                <span class="sec-label">User ID (UID)</span>
+                                <span class="sec-value code-font" id="secUid">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Change Password Card (Email Users only) -->
+                    <div class="form-group-card" id="changePasswordCard" style="display: none;">
+                        <h3>Change Password</h3>
+                        <p class="section-subtext">Update your login password. Re-authentication may be required.</p>
+
+                        <form class="password-update-form" id="passwordUpdateForm">
+                            <div class="form-field">
+                                <label for="currPasswordInput">Current Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" id="currPasswordInput" placeholder="Enter current password" required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="newPasswordInput">New Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-key input-icon"></i>
+                                    <input type="password" id="newPasswordInput" placeholder="At least 6 characters" required minlength="6">
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="confirmPasswordInput">Confirm New Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-check-double input-icon"></i>
+                                    <input type="password" id="confirmPasswordInput" placeholder="Confirm new password" required minlength="6">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn primary-btn"><i class="fa-solid fa-shield"></i> Update Password</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <button id="editProfileBtn">
-✏️ Edit Profile
-</button>
+    <!-- Hidden Input for Avatar File Upload -->
+    <input type="file" id="avatarUploadInput" accept="image/*" style="display: none;">
 
-<button id="logoutBtn">
-Logout
-</button>
-
-</div>
-
-<script type="module"
-src="profile.js"></script>
-
-<div id="editProfileModal" class="modal">
-
-    <div class="modal-content">
-
-        <h2>✏️ Edit Profile</h2>
-
-        <input
-type="text"
-id="editNameInput"
-placeholder="Enter Name">
-
-        <button id="saveProfileBtn">
-Save Changes
-</button>
-
-        <button id="closeModalBtn">
-            Cancel
-        </button>
-
+    <!-- MODAL: IMAGE CROPPER -->
+    <div id="cropModal" class="modal">
+        <div class="modal-content crop-modal-content">
+            <h2>Crop Profile Image</h2>
+            <p>Drag the image to position, use the slider to scale inside the circle.</p>
+            
+            <div class="canvas-container">
+                <canvas id="cropCanvas" width="300" height="300"></canvas>
+            </div>
+            
+            <div class="crop-controls">
+                <i class="fa-solid fa-magnifying-glass-minus"></i>
+                <input type="range" id="zoomSlider" min="1" max="4" step="0.01" value="1">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+            </div>
+            
+            <div class="crop-actions">
+                <button id="saveCropBtn" class="btn primary-btn"><i class="fa-solid fa-check"></i> Crop & Save</button>
+                <button id="restoreDefaultBtn" class="btn warning-btn"><i class="fa-solid fa-rotate-left"></i> Remove Custom</button>
+                <button id="cancelCropBtn" class="btn secondary-btn">Cancel</button>
+            </div>
+        </div>
     </div>
 
-</div>
+    <!-- MODAL: GENERIC POPUP (e.g. Watch History / Download / Help) -->
+    <div id="genericModal" class="modal">
+        <div class="modal-content info-modal-content">
+            <h2 id="modalTitle">Info</h2>
+            <div class="modal-body-content" id="modalBody">
+                <!-- Content injected dynamically -->
+            </div>
+            <div class="modal-footer-actions">
+                <button id="closeModalBtn" class="btn secondary-btn">Close</button>
+            </div>
+        </div>
+    </div>
 
+    <script type="module" src="profile.js"></script>
 </body>
 </html>
