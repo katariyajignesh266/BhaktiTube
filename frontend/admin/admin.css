@@ -938,7 +938,7 @@ body {
     border-bottom: 1px solid var(--border-color); padding: 0 20px;
     align-items: center; justify-content: space-between;
     position: fixed; top: 0; left: 0; right: 0;
-    z-index: 1010;
+
 }
 
 .mobile-menu-toggle { background: none; border: none; color: var(--text-primary); font-size: 1.3rem; cursor: pointer; }
@@ -1703,4 +1703,112 @@ html[data-theme="light"] .journey-empty {
         justify-self: start;
     }
 }
+
+/* ==========================================================================
+   ⚡ GLOBAL CHANNEL CARD THEME MANAGER STYLES
+   ========================================================================== */
+
+.theme-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+    padding-bottom: 50px;
+}
+
+.theme-selector-card {
+    background-color: var(--bg-surface);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-premium);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.theme-selector-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-color-hover);
+}
+
+/* Highlight the active card */
+.theme-selector-card.active {
+    border-color: var(--brand-primary) !important;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.25) !important;
+    background-color: var(--bg-surface-hover) !important;
+}
+
+/* Badge for theme selectors */
+.theme-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+}
+
+/* Selected highlights */
+.theme-badge.selected-highlight {
+    background-color: rgba(37, 99, 235, 0.15) !important;
+    color: #3b82f6 !important;
+    border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Saved and active active theme badge */
+.theme-badge.saved-active {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #10b981 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Preview card container layout matching spacing */
+.channel-card-theme-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.channel-card-theme-wrapper .channel-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Metadata text underneath preview card */
+.theme-meta-label {
+    text-align: left;
+}
+
+.theme-meta-label h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+}
+
+.theme-meta-label p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
 

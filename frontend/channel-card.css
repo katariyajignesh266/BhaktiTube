@@ -1,0 +1,118 @@
+/* ==========================================================================
+   ⚡ REUSABLE CHANNEL CARD COMPONENT STYLES - SINGLE SOURCE OF TRUTH
+   ========================================================================== */
+
+.channel-card {
+    background: var(--cc-bg, linear-gradient(145deg, #1f1f1f, #111111)) !important;
+    border: var(--cc-border, 3px solid rgba(255, 255, 255, 0.08)) !important;
+    border-radius: var(--cc-radius, 28px) !important;
+    padding: 28px 20px !important;
+    box-shadow: var(--cc-shadow, 0 10px 35px rgba(0, 0, 0, 0.45)) !important;
+    transition: var(--cc-transition, all .35s ease) !important;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: var(--cc-glass-filter, none) !important;
+    -webkit-backdrop-filter: var(--cc-glass-filter, none) !important;
+}
+
+.channel-card:hover {
+    transform: var(--cc-hover-transform, translateY(-6px) scale(1.02)) !important;
+    box-shadow: var(--cc-hover-shadow, 0 18px 45px rgba(0, 0, 0, 0.55)) !important;
+    border-color: var(--cc-hover-border-color, rgba(255, 255, 255, 0.18)) !important;
+    background: var(--cc-hover-bg, var(--cc-bg)) !important;
+}
+
+.channel-card img.channel-img {
+    width: 110px !important;
+    height: 110px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin-bottom: 18px !important;
+    border: var(--cc-img-border, 4px solid rgba(255, 255, 255, 0.08)) !important;
+    box-shadow: var(--cc-img-shadow, 0 0 25px rgba(255, 255, 255, 0.08)) !important;
+    transition: all 0.3s ease;
+    display: block !important;
+}
+
+.channel-card h3 {
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    color: var(--cc-name-color, #ffffff) !important;
+    margin-bottom: 14px !important;
+    margin-top: 0 !important;
+    letter-spacing: 0.3px;
+    line-height: 1.2 !important;
+}
+
+.channel-card p {
+    font-size: 20px !important;
+    color: var(--cc-text-color, #bdbdbd) !important;
+    margin-bottom: 10px !important;
+    margin-top: 0 !important;
+    line-height: 1.4 !important;
+}
+
+.channel-card a,
+.channel-card button {
+    background: var(--cc-btn-bg, linear-gradient(135deg, #6366f1, #8b5cf6)) !important;
+    color: var(--cc-btn-text, white) !important;
+    border: var(--cc-btn-border, none) !important;
+    border-radius: 16px !important;
+    padding: 14px 28px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    box-shadow: var(--cc-btn-shadow, 0 8px 20px rgba(99, 102, 241, 0.35)) !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    margin-top: auto !important;
+}
+
+.channel-card a:hover,
+.channel-card button:hover {
+    transform: translateY(-2px) !important;
+    background: var(--cc-btn-hover-bg, linear-gradient(135deg, #4f46e5, #7c3aed)) !important;
+    color: var(--cc-btn-hover-text, white) !important;
+    box-shadow: var(--cc-btn-hover-shadow, 0 12px 28px rgba(139, 92, 246, 0.45)) !important;
+}
+
+/* Light mode defaults if no customized card variables are specified */
+body.light-mode [data-cc-theme="dark-glass"] .channel-card,
+body.light-mode:not([data-cc-theme]) .channel-card {
+    background: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+body.light-mode [data-cc-theme="dark-glass"] .channel-card h3,
+body.light-mode:not([data-cc-theme]) .channel-card h3 {
+    color: #111111 !important;
+}
+body.light-mode [data-cc-theme="dark-glass"] .channel-card p,
+body.light-mode:not([data-cc-theme]) .channel-card p {
+    color: #555555 !important;
+}
+
+/* Responsive constraints */
+@media (max-width: 768px) {
+    .channel-card {
+        width: 100% !important;
+        padding: 20px !important;
+    }
+    .channel-card img.channel-img {
+        width: 90px !important;
+        height: 90px !important;
+    }
+    .channel-card h3 {
+        font-size: 30px !important;
+    }
+    .channel-card a,
+    .channel-card button {
+        width: 100% !important;
+    }
+}

@@ -16,6 +16,8 @@ viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../channel-card.css">
+    <link rel="stylesheet" href="../channel-card-themes.css">
 </head>
 <body>
 
@@ -63,6 +65,9 @@ viewport-fit=cover">
                 </a>
                 <a href="#channels" class="nav-link" data-target="channelsPage">
                     <i class="fa-solid fa-tv"></i> YouTube Channels
+                </a>
+                <a href="#theme-manager" class="nav-link" data-target="themeManagerPage">
+                    <i class="fa-solid fa-palette"></i> Card Theme Manager
                 </a>
 
                 <div class="nav-group-title">System & Settings</div>
@@ -406,6 +411,22 @@ viewport-fit=cover">
                                 <p class="term-line text-brand">[success] 12:14:34 - Premium Theme Matrix Layer active.</p>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                <section id="themeManagerPage" class="dashboard-page">
+                    <div class="page-heading">
+                        <div>
+                            <h1>Channel Card Theme Manager</h1>
+                            <p class="text-muted">Select one of the 50 premium designed card layouts and click Save to apply it globally.</p>
+                        </div>
+                        <button id="saveThemeBtn" class="btn-primary" style="margin-left: auto; height: fit-content; padding: 12px 24px; font-weight: 700; border-radius: 12px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Theme Settings
+                        </button>
+                    </div>
+
+                    <div id="themePreviewGrid" class="theme-preview-grid">
+                        <!-- Preview cards will be loaded dynamically here -->
                     </div>
                 </section>
 

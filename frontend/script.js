@@ -35,6 +35,7 @@ from "./analytics-engine.js";
 
 import { playVideo } from "./player-core.js";
 import { renderDashboard } from "./dashboard-renderer.js";
+import { getChannelCardMarkup } from "./channel-card-renderer.js";
 
 const logoutBtn =
 document.getElementById("logoutBtn");
@@ -95,6 +96,28 @@ let historyVideoMeta = new Map();
 watchProgressEngine.init({
 source:"home"
 });
+
+// Apply cached theme immediately to prevent FOUC (flash of unthemed card style)
+const cachedCardTheme = localStorage.getItem("bt_channel_card_theme") || "dark-glass";
+document.body.setAttribute("data-cc-theme", cachedCardTheme);
+
+// Asynchronously sync the card theme from Firestore
+async function syncGlobalChannelCardTheme() {
+    try {
+        const themeDoc = await getDoc(doc(db, "settings", "channelCardTheme"));
+        if (themeDoc.exists()) {
+            const savedTheme = themeDoc.data().themeId;
+            const currentTheme = localStorage.getItem("bt_channel_card_theme");
+            if (savedTheme !== currentTheme) {
+                localStorage.setItem("bt_channel_card_theme", savedTheme);
+                document.body.setAttribute("data-cc-theme", savedTheme);
+            }
+        }
+    } catch (e) {
+        console.error("Error syncing global card theme:", e);
+    }
+}
+syncGlobalChannelCardTheme();
 
 
 
@@ -532,30 +555,7 @@ if(channel.enabled !== true){
 return;
 }
 
-channelsContainer.innerHTML += `
-
-<div class="channel-card">
-
-<img
-src="${channel.channelLogo}"
-class="channel-img">
-
-<h3>${channel.channelName}</h3>
-
-<p>👥 ${channel.subscribers}</p>
-
-<p>🎬 ${channel.totalVideos} Videos</p>
-
-<a
-href="channel.html?id=${channel.channelId}">
-
-View Channel
-
-</a>
-
-</div>
-
-`;
+channelsContainer.innerHTML += getChannelCardMarkup(channel);
 
 });
 
