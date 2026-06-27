@@ -32,6 +32,33 @@ viewport-fit=cover">
 <div id="loader" class="loader"></div>
 <div id="loadMoreTrigger"></div>
 
+<!-- REDESIGNED PREMIUM LUXURY ADVERTISEMENT POPUP -->
+<div id="adPopup" class="ad-popup">
+  <div class="ad-content-card">
+    <div class="ad-media-container">
+      <video id="adVideo" playsinline autoplay></video>
+      <div class="ad-progress-container">
+        <div class="ad-progress-bar" id="adProgressBar"></div>
+      </div>
+      <div class="ad-badge">Sponsored</div>
+    </div>
+    <div class="ad-details-container">
+      <div class="ad-info">
+        <h2 id="adTitleText" class="ad-title">Sponsored Advertisement</h2>
+        <p id="adDescText" class="ad-description">Support our sponsors to continue enjoying free devotional content.</p>
+      </div>
+      <div class="ad-actions">
+        <button id="visitAdBtn" class="ad-btn-primary">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Website
+        </button>
+        <button id="skipAdBtn" class="ad-btn-secondary" disabled>
+          Skip Ad (5)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="videoPopup" class="video-popup">
     <div class="popup-content">
         <div class="video-container" id="videoContainer" onclick="handleOverlayTouch()">

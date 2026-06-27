@@ -708,76 +708,215 @@ align-items:center;
 
 }
 
-.ad-content{
+/* ============================================================
+   👑 LUXURY GLASSMORPHIC ADVERTISEMENT POPUP (Redesigned)
+   ============================================================ */
 
-width:90%;
-max-width:900px;
-
+.ad-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(10, 10, 12, 0.7); /* Translucent dark luxury background */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999999;
+    animation: fadeIn 0.4s ease;
 }
 
-#adVideo{
-
-width:100%;
-border-radius:12px;
-
-background:black;
-
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.ad-buttons{
-
-display:flex;
-gap:10px;
-
-margin-top:15px;
-
+.ad-content-card {
+    background: rgba(25, 25, 30, 0.65);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+    width: 90%;
+    max-width: 760px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+    animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-#visitAdBtn,
-#skipAdBtn{
-
-flex:1;
-
-padding:14px;
-
-border:none;
-
-border-radius:10px;
-
-font-size:16px;
-
-font-weight:600;
-
-cursor:pointer;
-
+@keyframes cardEntrance {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
-#visitAdBtn{
-
-background:#ff0000;
-color:white;
-
+.ad-media-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
 }
 
-#skipAdBtn{
-
-background:#333;
-color:white;
-
+#adVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
-#adPopup{
-    position:fixed;
-    inset:0;
+.ad-progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 10;
+}
 
-    display:none;
+.ad-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff6600, #ff9900);
+    transition: width 0.1s linear;
+}
 
-    justify-content:center;
-    align-items:center;
+.ad-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 10;
+}
 
-    background:rgba(0,0,0,.95);
+.ad-details-container {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    background: rgba(15, 15, 20, 0.4);
+}
 
-    z-index:999999;
+.ad-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ad-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ad-description {
+    font-size: 0.88rem;
+    color: #aaaaaa;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.ad-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.ad-btn-primary {
+    background: linear-gradient(135deg, #ff0000, #d32f2f);
+    color: #ffffff;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.25);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ad-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+    filter: brightness(1.1);
+}
+
+.ad-btn-primary:active {
+    transform: translateY(0);
+}
+
+.ad-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.ad-btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.ad-btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 680px) {
+    .ad-details-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        padding: 20px;
+    }
+    
+    .ad-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .ad-btn-primary, .ad-btn-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+    }
 }
 
 .notification-popup{
@@ -3207,6 +3346,587 @@ body.light-mode .journey-empty{
         grid-column:2;
         justify-self:start;
     }
+}
+
+/* ============================================================
+   🌟 ફૂલસ્ક્રીન માસ્ટર ઓવરલે અને વિડિયો ઝૂમ-હાઇડ લોજિક
+   ============================================================ */
+
+/* નોર્મલ મોડમાં ફૂલસ્ક્રીન લેયર બંધ રહેશે */
+.fs-overlay {
+    display: none;
+}
+
+/* વિડિયો કન્ટેનર પ્રોપર સેટિંગ્સ - બહાર જતો ભાગ છુપાવવા માટે overflow: hidden */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important; /* આ લાઈન આઇફ્રેમના બહાર જતા કંટ્રોલ્સને કાપી નાખશે */
+    background: #000;
+}
+
+/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું માસ્ટર લેયર સેટિંગ */
+.video-container:fullscreen .fs-overlay,
+.video-container:-webkit-full-screen .fs-overlay {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 2147483647 !important; /* તમારા બનાવેલા કંટ્રોલ્સ હંમેશા યુટ્યુબની ઉપર જ રેહશે */
+    cursor: pointer;
+    box-sizing: border-box;
+    padding: 40px;
+    transition: background 0.25s ease-in-out;
+    pointer-events: auto !important;
+}
+
+/* ૨ સેકન્ડ પછી જ્યારે બટનો હાઇડ થાય ત્યારે */
+.fs-overlay.hide-fs-btn {
+    background: rgba(0, 0, 0, 0) !important; 
+    pointer-events: auto !important; 
+}
+
+/* હાઇડ ક્લાસ લાગે ત્યારે બટનો સ્મૂથલી ગાયબ થશે */
+.fs-overlay.hide-fs-btn .fs-btn,
+.fs-overlay.hide-fs-btn .fs-center-controls,
+.fs-overlay.hide-fs-btn .fs-bottom-controls {
+    opacity: 0 !important;
+    pointer-events: none !important; 
+}
+
+/* ઓવરલે ઓપન હોય ત્યારે બટનો દેખાડવા માટે */
+.fs-overlay:not(.hide-fs-btn) .fs-btn,
+.fs-overlay:not(.hide-fs-btn) .fs-center-controls,
+.fs-overlay:not(.hide-fs-btn) .fs-bottom-controls {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+/* 🌟 ફૂલસ્ક્રીનમાં યુટ્યુબ આઇફ્રેમ પર જાદુઈ સ્કેલિંગ (ઝૂમ) ટ્રીક 🌟 */
+.video-container:fullscreen #youtubePlayer,
+.video-container:-webkit-full-screen #youtubePlayer {
+    pointer-events: none !important; /* યુઝર યુટ્યુબ પ્લેયરને ટચ ન કરી શકે */
+    z-index: 1 !important;
+    
+    /* આઇફ્રેમને કન્ટેનર કરતા મોટી કરો જેથી યુટ્યુબના બટન્સ/લોગો ક્રોપ થઈને નાબૂદ થઈ જાય */
+    width: 130% !important;
+    height: 130% !important;
+    position: absolute !important;
+    top: -15% !important;
+    left: -15% !important;
+    
+    /* આઇફ્રેમની બધી વસ્તુઓને ઝીણી કરવા માટે તેને સ્કેલ (ઝૂમ આઉટ/ઇન બેલેન્સ) કરો */
+    transform: scale(1) !important; 
+}
+
+/* કોમન ફૂલસ્ક્રીન બટન સ્ટાઇલ્સ */
+.fs-btn {
+    background: rgba(28, 28, 28, 0.9) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.7) !important;
+    transition: opacity 0.2s ease-in-out, transform 0.1s, background 0.2s;
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+.fs-btn:active {
+    transform: scale(0.9) !important;
+    background: #ff0000 !important;
+    border-color: #ff0000 !important;
+}
+
+/* સેન્ટર કંટ્રોલ્સ લેઆઉટ */
+.fs-center-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 45px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: auto !important;
+}
+
+.fs-main-play-btn {
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 28px !important;
+}
+
+.fs-mid-btn {
+    width: 55px !important;
+    height: 55px !important;
+    font-size: 18px !important;
+    flex-direction: column;
+}
+
+.skip-txt {
+    font-size: 10px !important;
+    font-weight: bold;
+    margin-top: -2px;
+    color: #ccc;
+}
+
+/* બોટમ કંટ્રોલ્સ લેઆઉટ */
+.fs-bottom-controls {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    right: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+}
+
+.fs-side-btn {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+    pointer-events: auto !important;
+}
+
+/* નોર્મલ કંટ્રોલ્સ ફૂલસ્ક્રીનમાં છુપાવવા */
+.video-container:fullscreen .custom-controls,
+.video-container:-webkit-full-screen .custom-controls {
+    display: none !important;
+}
+
+
+/* ============================================================
+   👑 અલ્ટ્રા-પ્રીમિયમ મોર્ડન વિડિયો પ્લેયર CSS (Big Icons)
+   ============================================================ */
+
+/* વિડિયો પોપઅપનું મેઇન બેકગ્રાઉન્ડ લેયર */
+.video-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 10, 12, 0.98); 
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    box-sizing: border-box;
+}
+
+/* પોપઅપ કન્ટેન્ટ - મોબાઈલ સેન્ટર વ્યુ */
+.popup-content {
+    position: relative;
+    width: 100%; 
+    max-width: 420px; 
+    height: 100%;
+    max-height: 840px;
+    margin: auto; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #000;
+    box-shadow: 0px 30px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* માસ્ટર ઓવરલે કંટ્રોલ્સ - સ્મૂધ પ્રીમિયમ સિનેમેટિક શેડો */
+.custom-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2147483647 !important;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 15%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.7) 100%); 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 24px; 
+    transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 1;
+    pointer-events: auto !important;
+}
+
+.custom-overlay.hide-controls {
+    opacity: 0 !important;
+}
+.custom-overlay.hide-controls * {
+    pointer-events: none !important; 
+}
+
+/* ------------------------------------------------------------
+   ⬆️ ટોપ બાર: મોટો બેક એરો (Big Back Arrow)
+   ------------------------------------------------------------ */
+.player-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    padding-top: 4px;
+}
+
+/* કોઈપણ વધારાના બેકગ્રાઉન્ડ વગરનો માત્ર ક્લીન મોટો એરો */
+.player-top-bar .back-btn, 
+.player-top-bar .back-btn i,
+.player-top-bar i[class*="back"] {
+    font-size: 28px !important; 
+    color: #ffffff !important;
+    cursor: pointer;
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.6);
+    transition: transform 0.2s ease, color 0.2s;
+}
+
+.player-top-bar .back-btn:active {
+    transform: scale(0.85);
+    color: #00bfa5 !important; /* ક્લિક કરતા પ્રીમિયમ ગ્રીન ગ્લો */
+}
+
+.video-title-mini {
+    font-size: 18px; 
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ------------------------------------------------------------
+   🎯 સેન્ટર ૧૦ સેકન્ડ સ્કીપ બટન્સ (ગ્લાસ સર્કલ લૂક)
+   ------------------------------------------------------------ */
+.middle-skip-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 45px; 
+    box-sizing: border-box;
+    pointer-events: none; 
+}
+
+.skip-btn-center {
+    pointer-events: auto; 
+    background: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    width: 64px;  
+    height: 64px; 
+    border-radius: 50% !important; 
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.2s cubic-bezier(0.1, 1, 0.1, 1), background 0.3s;
+}
+
+.skip-btn-center:active {
+    transform: scale(0.9) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.skip-btn-center i {
+    font-size: 22px !important; 
+}
+
+.skip-btn-center .btn-text {
+    font-size: 10px !important;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* ------------------------------------------------------------
+   👇 બોટમ પેનલ અને પ્રોગ્રેસ બાર
+   ------------------------------------------------------------ */
+.player-bottom-controls {
+    width: 100%;
+    padding-bottom: 6px; 
+    box-sizing: border-box;
+}
+
+.progress-container {
+    width: 100%;
+    height: 4px; 
+    background: rgba(255, 255, 255, 0.24);
+    border-radius: 10px;
+    margin-bottom: 24px; 
+    position: relative;
+    cursor: pointer;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #00bfa5; 
+    border-radius: 10px;
+}
+
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 4px; 
+}
+
+.controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 24px; /* બે બટનો વચ્ચે પૂરતી પ્રીમિયમ સ્પેસ */
+}
+
+/* સેન્ટર ટાઇમ ડિસ્પ્લે */
+.controls-center {
+    color: #ffffff;
+    font-size: 14px; 
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    padding: 6px 14px;
+    border-radius: 30px;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ------------------------------------------------------------
+   ⚙️ બોટમ આઇકન્સ: વોલ્યુમ, સ્પીડ, ફુલસ્ક્રીન (ચોરસ બોક્સ રીમૂવલ)
+   ------------------------------------------------------------ */
+/* આ કોડ ડિફોલ્ટ ચોરસ બોક્સ અને ઇમેજ બેકગ્રાઉન્ડને જડમૂળથી હટાવી દેશે */
+.player-btn, 
+.player-btn *, 
+.fullscreen-btn,
+.controls-left button,
+.controls-right button {
+    background: transparent !important; 
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important; 
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important; /* ડિફોલ્ટ પ્લેયર બોક્સ હટાવવા */
+    appearance: none !important;
+    color: #ffffff !important;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: transform 0.2s ease, color 0.2s;
+}
+
+/* ડાબી બાજુનું વોલ્યુમ અને જમણી બાજુનું ફુલસ્ક્રીન આઇકન એકદમ મોટા કરવા */
+.player-btn i, 
+.player-btn svg,
+.fullscreen-btn i,
+.fullscreen-btn svg,
+.controls-left i,
+.controls-right i {
+    font-size: 28px !important; /* સાઇઝ વધારીને એકદમ મોટી કરી */
+    transform: scale(1.25); /* વધારાનો મોટો લૂક આપવા */
+    color: #ffffff !important;
+    background: transparent !important;
+}
+
+/* બટન દબાવવા પર પ્રીમિયમ ગ્રીન રિસ્પોન્સ */
+.player-btn:active, .fullscreen-btn:active {
+    transform: scale(0.9) !important;
+}
+.player-btn:active i, .fullscreen-btn:active i, .player-btn:active svg, .fullscreen-btn:active svg {
+    color: #00bfa5 !important; /* સુંદર ગ્રીન ગ્લો */
+}
+
+/* ------------------------------------------------------------
+   ⏱️ ULTRA-PREMIUM AESTHETIC SPEED CONTROL (1x)
+   ------------------------------------------------------------ */
+
+/* Base style for the speed control button/select container */
+.player-btn span, 
+.speed-control span, 
+.speed-control select,
+.player-btn select {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    /* Glassmorphism background */
+    background: rgba(255, 255, 255, 0.06) !important; 
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    /* Subtle premium border */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+    padding: 6px 14px !important;
+    border-radius: 20px !important; /* Elegant capsule shape */
+    letter-spacing: 0.5px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* Ultra smooth transitions */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Hover State - Glow and slightly raise */
+.player-btn:hover span, 
+.speed-control:hover span, 
+.speed-control:hover select,
+.player-btn:hover select {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Native dropdown options styling (For browsers that support it) */
+.speed-control select option {
+    background: #111113;
+    color: #ffffff;
+    font-family: inherit;
+    padding: 10px;
+}
+
+/* Active/Click State - Premium Accent Feedback */
+.speed-control:active span, 
+.speed-control:active select {
+    border-color: #00f5d4 !important;
+    color: #00f5d4 !important;
+    transform: scale(0.96); /* Micro-compression effect */
+}
+
+/* ------------------------------------------------------------
+   💎 CUSTOM SPEED MENU DROPDOWN (Highly Aesthetic)
+   ------------------------------------------------------------ */
+.speed-menu {
+    position: absolute;
+    bottom: 65px;
+    right: 0;
+    /* Dark, sleek cinematic glass background */
+    background: rgba(18, 18, 22, 0.82) !important;
+    backdrop-filter: blur(30px) -webkit-backdrop-filter(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    display: none;
+    flex-direction: column;
+    z-index: 2147483647 !important;
+    overflow: hidden;
+    /* Soft multi-layered studio shadow */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: 6px;
+    transform-origin: bottom right;
+    animation: menuFadeIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.speed-menu.show {
+    display: flex;
+}
+
+/* Individual Dropdown Menu Items */
+.speed-menu div {
+    color: #e4e4e7;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 10px; /* Rounded items inside menu */
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+/* Hover State for Menu Items - Vibrant Teal Gradient */
+.speed-menu div:hover {
+    background: linear-gradient(135deg, #00bfa5, #00f5d4);
+    color: #000000; /* Dark text on bright background for high contrast/premium look */
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 245, 212, 0.3);
+}
+
+/* Active selection state indicator (Optional helper class) */
+.speed-menu div.active {
+    color: #00f5d4;
+    font-weight: 600;
+}
+
+/* Smooth entry animation for the custom menu */
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ------------------------------------------------------------
+   📱 રિસ્પોન્સિવ ઓપ્ટિમાઇઝેશન (મોબાઈલ ફોન માટે)
+   ------------------------------------------------------------ */
+@media (max-width: 480px) {
+    .custom-overlay {
+        padding: 24px 20px; 
+    }
+    .player-top-bar .back-btn {
+        font-size: 26px !important; 
+    }
+    .player-btn i, .fullscreen-btn i, .controls-left i, .controls-right i {
+        font-size: 26px !important; /* મોબાઈલ પર પણ એકદમ સ્પષ્ટ અને આકર્ષક મોટા આઇકન્સ */
+        transform: scale(1.2);
+    }
+    .controls-left, .controls-right {
+        gap: 22px; 
+    }
+    .skip-btn-center {
+        width: 58px;
+        height: 58px;
+    }
+}
+
+/* 🌟 આઇફ્રેમ પ્લેયર નોર્મલ અને ફૂલસ્ક્રીન બંને મોડ માટે 🌟 */
+#youtubePlayer {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    display: block;
+}
+
+#youtubePlayer:fullscreen,
+#youtubePlayer:-webkit-full-screen,
+#youtubePlayer:-moz-full-screen,
+#youtubePlayer:-ms-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
 }
 
 

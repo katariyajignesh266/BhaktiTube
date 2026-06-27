@@ -344,77 +344,105 @@ viewport-fit=cover">
 
 
 
-<!-- ADVERTISEMENT POPUP -->
-
+<!-- REDESIGNED PREMIUM LUXURY ADVERTISEMENT POPUP -->
 <div id="adPopup" class="ad-popup">
-
-  <div class="ad-content">
-
-    <video
-      id="adVideo"
-      playsinline
-      controls
-      autoplay>
-    </video>
-
-    <div class="ad-buttons">
-
-      <button id="visitAdBtn">
-        Visit Website
-      </button>
-
-      <button id="skipAdBtn" disabled>
-        Skip Ad (5)
-      </button>
-
+  <div class="ad-content-card">
+    <div class="ad-media-container">
+      <video id="adVideo" playsinline autoplay></video>
+      <div class="ad-progress-container">
+        <div class="ad-progress-bar" id="adProgressBar"></div>
+      </div>
+      <div class="ad-badge">Sponsored</div>
     </div>
-
+    <div class="ad-details-container">
+      <div class="ad-info">
+        <h2 id="adTitleText" class="ad-title">Sponsored Advertisement</h2>
+        <p id="adDescText" class="ad-description">Support our sponsors to continue enjoying free devotional content.</p>
+      </div>
+      <div class="ad-actions">
+        <button id="visitAdBtn" class="ad-btn-primary">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Website
+        </button>
+        <button id="skipAdBtn" class="ad-btn-secondary" disabled>
+          Skip Ad (5)
+        </button>
+      </div>
+    </div>
   </div>
-
 </div>
 
 
 
 
-  <!-- VIDEO POPUP -->
-
+  <!-- UNIFIED PREMIUM VIDEO POPUP -->
   <div class="video-popup" id="videoPopup">
-
     <div class="popup-content">
+      <div class="video-container" id="videoContainer" onclick="handleOverlayTouch()">
+        <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
+        
+        <div id="customOverlay" class="custom-overlay">
+          
+          <div class="player-top-bar">
+            <button class="player-btn-round top-back-btn" onclick="event.stopPropagation(); closeVideo();">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <span class="video-title-mini">Playing Video...</span>
+          </div>
 
-      <div class="close-btn" onclick="closeVideo()">
+          <div class="middle-skip-controls">
+            <button class="skip-btn-center backward-btn" onclick="event.stopPropagation(); skipTime(-10)">
+              <i class="fa-solid fa-undo"></i>
+              <span class="btn-text">10s</span>
+            </button>
+            <button class="skip-btn-center forward-btn" onclick="event.stopPropagation(); skipTime(10)">
+              <i class="fa-solid fa-redo"></i>
+              <span class="btn-text">10s</span>
+            </button>
+          </div>
 
-        <i class="fa-solid fa-xmark"></i>
+          <div class="player-bottom-controls" onclick="event.stopPropagation();">
+            
+            <div class="progress-container">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="controls-row">
+              <div class="controls-left">
+                <button class="player-btn-round" id="muteBtn" onclick="toggleMute()">
+                  <i class="fa-solid fa-volume-high"></i>
+                </button>
+              </div>
+
+              <div class="controls-center">
+                <span id="currentTime">00:00</span>
+                <span class="time-separator">/</span>
+                <span id="totalTime">00:00</span>
+              </div>
+
+              <div class="controls-right">
+                <div class="speed-control">
+                  <button class="player-btn-rect" onclick="toggleSpeedMenu()">
+                    <i class="fa-solid fa-gauge-high"></i> <span id="speedTxt">1x</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
+                  </button>
+                  <div id="speedMenu" class="speed-menu">
+                    <div onclick="changeSpeed(0.5)">0.5x</div>
+                    <div onclick="changeSpeed(1)">Normal</div>
+                    <div onclick="changeSpeed(1.5)">1.5x</div>
+                    <div onclick="changeSpeed(2)">2x</div>
+                  </div>
+                </div>
+
+                <button class="player-btn-round fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">
+                  <i class="fa-solid fa-expand"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
 
       </div>
-
-
-
-
-
-      <div class="popup-video">
-
-        <iframe
-id="youtubePlayer"
-src=""
-frameborder="0"
-
-allow="
-accelerometer;
-autoplay;
-clipboard-write;
-encrypted-media;
-gyroscope;
-picture-in-picture;
-web-share"
-
-allowfullscreen>
-</iframe>
-
-      </div>
-
     </div>
-
   </div>
 
 

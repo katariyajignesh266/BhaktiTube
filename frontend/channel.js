@@ -15,6 +15,8 @@ watchProgressEngine
 }
 from "./analytics-engine.js";
 
+import { playVideo } from "./player-core.js";
+
 const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
 const watchedVideos =
@@ -34,11 +36,7 @@ let nextPageToken = "";
 let loading = false;
 let uploadsPlaylistId = "";
 
-let ytPlayer = null;
-let isMuted = false;
-let controlsTimeout = null;
-let timeUpdateInterval = null;
-let playbackSessionStarted = false;
+// State remapped to player-core.js
 
 const params = new URLSearchParams(window.location.search);
 const channelId = params.get("id");
@@ -231,321 +229,8 @@ ${item.snippet.title}
 }
 
 // ૩. કસ્ટમ વીડિયો પ્લેયર પોપઅપ ઓપન કરવું
-window.openVideo = async function(videoId) {
-
-  currentVideoId = videoId;
-watchedSaved = false;
-playbackSessionStarted = false;
-
-
-  const popup = document.getElementById("videoPopup");
-  const playerIframe = document.getElementById("youtubePlayer");
-  if (popup) popup.style.display = "flex";
-
-  let resumePosition = 0;
-
-  try{
-
-    const session =
-    await watchProgressEngine.startSession(
-      getChannelVideoMeta(videoId),
-      {
-        source:"channel"
-      }
-    );
-
-    resumePosition =
-    session.resumePosition || 0;
-
-    playbackSessionStarted = true;
-
-  }
-  catch(error){
-
-    resumePosition = 0;
-
-  }
-  
-  if (playerIframe) {
-    // આઇફ્રેમમાં યુટ્યુબના ડિફોલ્ટ બટનો અને કીબોર્ડ બંધ કરવા માટેના પેરામીટર્સ સેટ કર્યા છે
-    playerIframe.src = buildChannelEmbedUrl(
-      videoId,
-      resumePosition
-    );
-  }
-  
-  if (!ytPlayer) {
-    ytPlayer = new YT.Player('youtubePlayer', {
-      events: {
-        'onReady': (event) => {
-          if(resumePosition > 0){
-            event.target.seekTo(
-              resumePosition,
-              true
-            );
-          }
-
-          event.target.playVideo();
-          isMuted = false;
-          updateMuteButtons();
-          startTimeTracking();
-          startControlsTimer();
-        },
-        'onStateChange': (event) => {
-          // જો યુઝર બેકગ્રાઉન્ડમાં વીડિયો પ્લે કરે તો પણ ટ્રેકિંગ ચાલુ રાખવું
-          if (event.data === YT.PlayerState.PLAYING) {
-            watchProgressEngine.setPlaybackState(
-              "playing",
-              {
-                currentPosition:getPlayerCurrentTime(),
-                duration:getPlayerDuration()
-              }
-            );
-            startTimeTracking();
-          } else {
-            if(event.data === YT.PlayerState.PAUSED){
-              watchProgressEngine.setPlaybackState(
-                "paused",
-                {
-                  currentPosition:getPlayerCurrentTime(),
-                  duration:getPlayerDuration()
-                }
-              );
-            }
-
-            if(event.data === YT.PlayerState.BUFFERING){
-              watchProgressEngine.setPlaybackState(
-                "buffering",
-                {
-                  currentPosition:getPlayerCurrentTime(),
-                  duration:getPlayerDuration()
-                }
-              );
-            }
-
-            if(event.data === YT.PlayerState.ENDED){
-              handleChannelVideoCompleted();
-            }
-
-            clearInterval(timeUpdateInterval);
-          }
-        }
-      }
-    });
-  } else {
-    setTimeout(() => {
-      if(ytPlayer && typeof ytPlayer.loadVideoById === "function") {
-        ytPlayer.loadVideoById({
-          videoId,
-          startSeconds:resumePosition
-        });
-        ytPlayer.playVideo();
-        startTimeTracking();
-        startControlsTimer();
-      }
-    }, 500);
-  }
-}
-
-// ૪. રિયલ-ટાઇમ પ્રોગ્રેસ બાર અને ટાઇમર અપડેટ લોજિક
-function startTimeTracking() {
-  clearInterval(timeUpdateInterval);
-  timeUpdateInterval = setInterval(() => {
-    if (ytPlayer && typeof ytPlayer.getCurrentTime === "function") {
-      const current = getPlayerCurrentTime();
-      const total = getPlayerDuration();
-
-      if(total > 0){
-        watchProgressEngine.touchPlayback(
-          current,
-          total
-        );
-      }
-
-      if(
-total > 0 &&
-!watchedSaved &&
-(current / total) >= 0.95
-){
-
-    watchedSaved = true;
-
-    saveWatchedVideo(
-        currentVideoId
-    );
-
-}
-      
-      if (total > 0) {
-        // ગ્રીન પ્રોગ્રેસ બારની વિડ્થ (લાંબી લાઈન) સેટ કરવી
-        const pct = (current / total) * 100;
-        const pBar = document.getElementById("progressBar");
-        if (pBar) pBar.style.width = pct + "%";
-        
-        // HTML માં ટાઇમ અપડેટ કરવો (દા.ત. 00:26 / 01:24)
-        document.getElementById("currentTime").textContent = formatTime(current);
-        document.getElementById("totalTime").textContent = formatTime(total);
-      }
-    }
-  }, 500);
-}
-
-// સેકન્ડ્સને પ્રોપર MM:SS ફોર્મેટમાં ફેરવવાનું હેલ્પર ફંક્શન
-function formatTime(seconds) {
-  if (isNaN(seconds)) return "00:00";
-  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-  const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-// ૫. ૧૦ સેકન્ડ આગળ અથવા પાછળ સ્કીપ કરવાનું ફંક્શન
-window.skipTime = function(seconds) {
-  if (ytPlayer && typeof ytPlayer.getCurrentTime === "function" && typeof ytPlayer.seekTo === "function") {
-    const currentTime = ytPlayer.getCurrentTime();
-    watchProgressEngine.recordSeek(seconds);
-    ytPlayer.seekTo(currentTime + seconds, true);
-    
-    // આઇફ્રેમ પરથી ફોકસ હટાવવું જેથી ડિફોલ્ટ બટનો જલ્દી ગાયબ થાય
-    if (document.activeElement) {
-        document.activeElement.blur();
-    }
-    
-    startControlsTimer();
-  }
-}
-
-// ૬. મ્યુટ / અનમ્યુટ કરવાનું ફંક્શન
-window.toggleMute = function() {
-  if (ytPlayer && typeof ytPlayer.mute === "function") {
-    if (isMuted) {
-      ytPlayer.unMute(); isMuted = false;
-    } else {
-      ytPlayer.mute(); isMuted = true;
-    }
-    updateMuteButtons();
-  }
-}
-
-function updateMuteButtons() {
-  const muteBtn = document.getElementById('muteBtn');
-  const icon = isMuted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
-  if(muteBtn) muteBtn.innerHTML = icon;
-}
-
-// ૭. વીડિયો પ્લેબેક સ્પીડ બદલવાનું લોજિક
-window.toggleSpeedMenu = function() {
-  const menu = document.getElementById("speedMenu");
-  if (menu) menu.classList.toggle("show");
-}
-
-window.changeSpeed = function(speed) {
-  if (ytPlayer && typeof ytPlayer.setPlaybackRate === "function") {
-    ytPlayer.setPlaybackRate(speed);
-    document.getElementById("speedTxt").textContent = speed === 1 ? "Normal" : speed + "x";
-    document.getElementById("speedMenu").classList.remove("show");
-  }
-}
-
-// ૮. ફુલસ્ક્રીન એન્ટર / એક્ઝિટ કંટ્રોલ
-window.toggleFullScreen = function() {
-  const container = document.getElementById('videoContainer');
-  if (!container) return;
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    if (container.requestFullscreen) { container.requestFullscreen().catch(e => console.log(e)); }
-    else if (container.webkitRequestFullscreen) { container.webkitRequestFullscreen(); }
-  } else {
-    if (document.exitFullscreen) { document.exitFullscreen(); }
-    else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-  }
-}
-
-// ૯. સ્ક્રીન પર ટચ કરવાથી કંટ્રોલ્સ લાવવા/છુપાવવાનું માસ્ટર ફંક્શન
-window.handleOverlayTouch = function() {
-  const overlay = document.getElementById('customOverlay');
-  if (!overlay) return;
-
-  if (overlay.classList.contains('hide-controls')) {
-    overlay.classList.remove('hide-controls');
-    startControlsTimer();
-  } else {
-    overlay.classList.add('hide-controls');
-    clearTimeout(controlsTimeout);
-  }
-}
-
-// ૨.૫ સેકન્ડ સુધી કોઈ ટચ ન થાય તો કંટ્રોલ્સ ઓટોમેટિક ગાયબ કરવા
-function startControlsTimer() {
-  clearTimeout(controlsTimeout);
-  controlsTimeout = setTimeout(() => {
-    const overlay = document.getElementById('customOverlay');
-    if (overlay) {
-      overlay.classList.add('hide-controls');
-    }
-  }, 2500); 
-}
-
-// ૧૦. સ્ક્રીન રોટેશન અને ઓરિએન્ટેશન લોક (Landscape mode)
-const handleFullscreenChange = async () => {
-  const playerIframe = document.getElementById("youtubePlayer");
-  const fsBtn = document.getElementById("fsBtn");
-  const isFS = document.fullscreenElement || document.webkitFullscreenElement;
-  
-  if (isFS) {
-    try {
-      if (screen.orientation && screen.orientation.lock) {
-        await screen.orientation.lock("landscape").catch(e => console.log(e));
-      }
-      if (playerIframe) playerIframe.classList.add("fullscreen");
-      if (fsBtn) fsBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-      startControlsTimer();
-    } catch (err) {
-      console.log("FS Entry Error: ", err);
-    }
-  } else {
-    try {
-      if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
-      if (playerIframe) playerIframe.classList.remove("fullscreen");
-      if (fsBtn) fsBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-      startControlsTimer();
-    } catch (err) {
-      console.log(err);
-    }
-  }
-};
-
-document.addEventListener("fullscreenchange", handleFullscreenChange);
-document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-
-// ૧૧. વીડિયો પ્લેયર પોપઅપ બંધ કરવું
-window.closeVideo = function() {
-  const current =
-  getPlayerCurrentTime();
-
-  const total =
-  getPlayerDuration();
-
-  if(playbackSessionStarted && total > 0){
-    watchProgressEngine.touchPlayback(
-      current,
-      total,
-      {
-        force:true,
-        reason:"closed"
-      }
-    );
-  }
-
-  watchProgressEngine.endSession("closed");
-
-  clearInterval(timeUpdateInterval);
-  const popup = document.getElementById("videoPopup");
-  const playerIframe = document.getElementById("youtubePlayer");
-  if (popup) popup.style.display = "none";
-  if (playerIframe) playerIframe.src = "";
-  if (ytPlayer && typeof ytPlayer.stopVideo === "function") ytPlayer.stopVideo();
-  currentVideoId = null;
-  playbackSessionStarted = false;
-}
+// Video opening remapped to player-core.js
+window.openVideo = (videoId) => playVideo(videoId, getChannelVideoMeta(videoId), true);
 
 // ૧૨. ઈન્ફિનાઈટ સ્ક્રોલ (Load More Videos) લોજિક
 const trigger = document.getElementById("loadMoreTrigger");
@@ -563,11 +248,7 @@ if (trigger) {
 window.goHome = function() { window.location.href = "index.html"; }
 
 // જો યુઝર એપ મિનિમાઇઝ કરે કે ટેબ બદલે તો વીડિયો ઓટોમેટિક બંધ કરવો
-document.addEventListener("visibilitychange", function() {
-  if (document.hidden && typeof window.closeVideo === "function") {
-    window.closeVideo();
-  }
-});
+// Visibility remapped to player-core.js
 
 
 function convertDurationToSeconds(duration){
@@ -599,57 +280,7 @@ function convertDurationToSeconds(duration){
 }
 
 
-async function saveWatchedVideo(videoId){
-
-    if(!videoId) return;
-
-    watchedVideos.add(videoId);
-
-    localStorage.setItem(
-        "watchedChannelVideos",
-        JSON.stringify(
-            [...watchedVideos]
-        )
-    );
-
-    const user =
-    auth.currentUser;
-
-    if(!user) return;
-
-    try{
-
-        await setDoc(
-
-            doc(
-                db,
-                "users",
-                user.uid,
-                "watchedChannelVideos",
-                videoId
-            ),
-
-            {
-                videoId,
-                watchedAt:
-                Date.now()
-            }
-
-        );
-
-        console.log(
-            "WATCHED SAVED:",
-            videoId
-        );
-
-    }
-    catch(err){
-
-        console.error(err);
-
-    }
-
-}
+// watched save remapped to player-core.js
 
 function getChannelVideoMeta(videoId){
 
@@ -665,62 +296,7 @@ function getChannelVideoMeta(videoId){
 
 }
 
-function buildChannelEmbedUrl(videoId,startSeconds = 0){
-
-  const startParam =
-  startSeconds > 0
-  ? `&start=${Math.floor(startSeconds)}`
-  : "";
-
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}${startParam}`;
-
-}
-
-function getPlayerCurrentTime(){
-
-  try{
-    return ytPlayer && typeof ytPlayer.getCurrentTime === "function"
-    ? ytPlayer.getCurrentTime()
-    : 0;
-  }
-  catch(error){
-    return 0;
-  }
-
-}
-
-function getPlayerDuration(){
-
-  try{
-    return ytPlayer && typeof ytPlayer.getDuration === "function"
-    ? ytPlayer.getDuration()
-    : 0;
-  }
-  catch(error){
-    return 0;
-  }
-
-}
-
-function handleChannelVideoCompleted(){
-
-  const total =
-  getPlayerDuration();
-
-  watchProgressEngine.setPlaybackState(
-    "ended",
-    {
-      currentPosition:total,
-      duration:total
-    }
-  );
-
-  if(!watchedSaved){
-    watchedSaved = true;
-    saveWatchedVideo(currentVideoId);
-  }
-
-}
+// Embed building and completion remapped to player-core.js
 
 document.addEventListener("gesturestart", function(e){
     e.preventDefault();
