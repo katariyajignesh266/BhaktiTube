@@ -34,6 +34,7 @@ formatRelativeTime
 from "./analytics-engine.js";
 
 import { playVideo } from "./player-core.js";
+import { renderDashboard } from "./dashboard-renderer.js";
 
 const logoutBtn =
 document.getElementById("logoutBtn");
@@ -356,7 +357,7 @@ renderContinueWatching(
 analytics.continueWatching || []
 );
 
-renderJourneyDashboard(analytics);
+renderDashboard(journeySection, analytics, window.openVideo);
 
 }
 catch(error){
@@ -415,195 +416,7 @@ return `
 
 }
 
-function renderJourneyDashboard(analytics){
 
-if(!journeySection || !analytics) return;
-
-const totals =
-analytics.totals || {};
-
-const profile =
-analytics.profile || {};
-
-setText("journeyUserName", profile.displayName || "Bhakti Progress");
-setText(
-"journeyQuickSummary",
-`${formatWatchTime(totals.lifetimeSeconds)} watched across ${totals.videosWatched || 0} videos`
-);
-setText("journeyStreak", `${totals.currentStreak || 0} days`);
-setText("journeyConsistencyBadge", `${totals.consistencyScore || 0}% consistency`);
-setText("journeyCompletionText", `${totals.completionRate || 0}%`);
-setText("journeyCompletionLabel", `${totals.completedVideos || 0} completed videos`);
-setText("journeyWeeklyLabel", formatWatchTime(totals.weeklySeconds));
-setText("journeyMonthlyLabel", formatWatchTime(totals.monthlySeconds));
-setText("favoriteCategoryLabel", totals.favoriteCategory || "--");
-setText("favoriteChannelLabel", totals.favoriteChannel || "--");
-setText("historyCountLabel", `${(analytics.history || []).length} videos`);
-
-setWidth("journeyWeeklyBar", getGoalPercent(totals.weeklySeconds, 3600));
-setWidth("journeyMonthlyBar", getGoalPercent(totals.monthlySeconds, 14400));
-
-const ring =
-document.getElementById("journeyCompletionRing");
-
-if(ring){
-ring.style.setProperty("--progress", `${(totals.completionRate || 0) * 3.6}deg`);
-}
-
-renderJourneyStats(totals);
-renderTimeSeries(analytics.timeSeries || []);
-renderBreakdown("categoryBreakdown", analytics.categoryStats || []);
-renderBreakdown("channelBreakdown", analytics.channelStats || []);
-renderHistory(analytics.history || []);
-
-}
-
-function renderJourneyStats(totals){
-
-const grid =
-document.getElementById("journeyStatsGrid");
-
-if(!grid) return;
-
-const cards = [
-["fa-clock", "Lifetime Watch Time", formatWatchTime(totals.lifetimeSeconds)],
-["fa-calendar-day", "Today", formatWatchTime(totals.todaySeconds)],
-["fa-circle-check", "Completed", `${totals.completedVideos || 0}`],
-["fa-fire", "Best Session", formatWatchTime(totals.longestSession)],
-["fa-star", "Favorite Category", totals.favoriteCategory || "--"],
-["fa-sun", "Active Time", totals.mostActiveHour || "--"]
-];
-
-grid.innerHTML =
-cards.map(([icon,label,value])=>`
-<div class="journey-stat-card">
-  <i class="fa-solid ${icon}"></i>
-  <span>${escapeHtml(label)}</span>
-  <strong>${escapeHtml(value)}</strong>
-</div>
-`).join("");
-
-}
-
-function renderTimeSeries(series){
-
-const chart =
-document.getElementById("watchTimeChart");
-
-if(!chart) return;
-
-const maxSeconds =
-Math.max(...series.map(item => Number(item.seconds || 0)), 60);
-
-chart.innerHTML =
-series.map((item)=>{
-
-const height =
-Math.max(3, Math.round((Number(item.seconds || 0) / maxSeconds) * 100));
-
-return `
-<div class="bar-item" title="${escapeHtml(formatWatchTime(item.seconds))}">
-  <div class="bar-track"><div class="bar-fill" style="height:${height}%"></div></div>
-  <span>${escapeHtml(item.label)}</span>
-</div>
-`;
-
-}).join("");
-
-}
-
-function renderBreakdown(elementId, stats){
-
-const container =
-document.getElementById(elementId);
-
-if(!container) return;
-
-if(!stats.length){
-container.innerHTML = `<div class="journey-empty">No activity yet</div>`;
-return;
-}
-
-const maxSeconds =
-Math.max(...stats.map(item => Number(item.seconds || 0)), 1);
-
-container.innerHTML =
-stats.slice(0,5).map((item)=>`
-<div class="breakdown-item">
-  <span>${escapeHtml(item.label)}</span>
-  <div class="breakdown-track"><div class="breakdown-fill" style="width:${Math.round((Number(item.seconds || 0) / maxSeconds) * 100)}%"></div></div>
-  <strong>${formatWatchTime(item.seconds)}</strong>
-</div>
-`).join("");
-
-}
-
-function renderHistory(items){
-
-const list =
-document.getElementById("journeyHistoryList");
-
-if(!list) return;
-
-if(!items.length){
-list.innerHTML = `<div class="journey-empty">Start watching videos to build your journey.</div>`;
-return;
-}
-
-list.innerHTML =
-items.slice(0,10).map((item)=>{
-
-const videoId =
-escapeHtml(item.videoId);
-
-const progress =
-getProgressPercent(item);
-
-return `
-<div class="history-item" onclick="openVideo('${videoId}')">
-  <img src="${escapeHtml(getThumbnailUrl(item))}" alt="${escapeHtml(item.videoTitle || "History item")}" loading="lazy">
-  <div>
-    <h3>${escapeHtml(item.videoTitle)}</h3>
-    <p>${escapeHtml(item.channelName || "BhaktiTube")} • ${formatRelativeTime(item.lastViewedMs)}</p>
-  </div>
-  <span class="history-status">${item.completed ? "Completed" : `${progress}%`}</span>
-</div>
-`;
-
-}).join("");
-
-}
-
-function setText(id,value){
-
-const element =
-document.getElementById(id);
-
-if(element){
-element.textContent = value;
-}
-
-}
-
-function setWidth(id,percent){
-
-const element =
-document.getElementById(id);
-
-if(element){
-element.style.width = `${percent}%`;
-}
-
-}
-
-function getGoalPercent(value,goal){
-
-return Math.min(
-100,
-Math.round((Number(value || 0) / goal) * 100)
-);
-
-}
 
 async function loadVideos(){
 

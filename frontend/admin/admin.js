@@ -22,6 +22,7 @@ import {
     formatWatchTime,
     formatRelativeTime
 } from "../analytics-engine.js";
+import { renderDashboard } from "../dashboard-renderer.js";
 
 console.log("⚡ PREMIUM BHAKTITUBE CORE ENGINE ACTIVE");
 
@@ -285,64 +286,40 @@ window.viewUserHistory = async function (uid, displayName) {
 
     if (!modal || !titleEl || !bodyEl) return;
 
-    titleEl.textContent = `Watch History: ${displayName}`;
-    bodyEl.innerHTML = `<div class="skeleton-loader-bar">Fetching watch history for user...</div>`;
+    titleEl.textContent = displayName || "Bhakti Progress";
+    bodyEl.innerHTML = `<div class="skeleton-loader-bar">Fetching user analytics...</div>`;
     modal.classList.add("active");
+    modal.classList.add("fullscreen");
 
     try {
         const analytics = await watchProgressEngine.getUserAnalytics(uid);
-        const history = analytics.history || [];
+        const profile = analytics.profile || {};
+        const totals = analytics.totals || {};
 
-        if (history.length === 0) {
-            bodyEl.innerHTML = `
-                <div class="admin-history-empty">
-                    <i class="fa-solid fa-clock-rotate-left" style="font-size: 2rem; margin-bottom: 12px; display: block; color: var(--text-muted);"></i>
-                    No watch history recorded for this user.
-                </div>
+        // Populate header metadata details (email, join date, total watch time)
+        const emailStr = profile.email ? `<span><i class="fa-solid fa-envelope"></i> ${escapeAdminHtml(profile.email)}</span>` : "";
+        
+        let joinDate = "--";
+        if (profile.joinedAtMs) {
+            joinDate = new Date(profile.joinedAtMs).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        
+        const watchTimeStr = formatWatchTime(totals.lifetimeSeconds || 0);
+
+        const metaContainer = document.getElementById("adminUserHeaderMetadata");
+        if (metaContainer) {
+            metaContainer.innerHTML = `
+                ${emailStr}
+                <span><i class="fa-solid fa-calendar-days"></i> Joined: ${joinDate}</span>
+                <span><i class="fa-solid fa-clock"></i> Watch Time: ${watchTimeStr}</span>
             `;
-            return;
         }
 
-        bodyEl.innerHTML = `
-            <div class="admin-history-list">
-                ${history.map(item => {
-                    const videoId = escapeAdminHtml(item.videoId);
-                    const title = escapeAdminHtml(item.videoTitle || item.title || "Untitled Video");
-                    const channel = escapeAdminHtml(item.channelName || item.channel || "BhaktiTube");
-                    const thumb = item.thumbnailUrl || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-                    const progress = getProgressPercent(item);
-                    const lastWatched = formatRelativeTime(item.lastViewedMs);
-                    const durationStr = item.duration ? formatTimeSeconds(item.duration) : "";
-                    const resumeStr = formatTimeSeconds(item.currentPosition || 0);
-
-                    return `
-                        <div class="admin-history-item">
-                            <div class="admin-history-thumb">
-                                <img src="${thumb}" alt="Thumbnail" onerror="this.src='https://img.youtube.com/vi/${videoId}/mqdefault.jpg'">
-                                ${durationStr ? `<span class="admin-history-duration">${durationStr}</span>` : ""}
-                            </div>
-                            <div class="admin-history-details">
-                                <h4>${title}</h4>
-                                <div class="admin-history-meta">
-                                    <span><i class="fa-solid fa-tv"></i> ${channel}</span>
-                                    <span><i class="fa-solid fa-hashtag"></i> ID: ${videoId}</span>
-                                    <span><i class="fa-solid fa-clock"></i> ${lastWatched}</span>
-                                </div>
-                                <div class="admin-history-progress-wrap">
-                                    <div class="admin-history-progress-bar">
-                                        <div class="admin-history-progress-fill" style="width: ${progress}%"></div>
-                                    </div>
-                                    <span>${progress}% (${resumeStr}${durationStr ? ` / ${durationStr}` : ""})</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join("")}
-            </div>
-        `;
+        // Render the complete analytics dashboard
+        renderDashboard(bodyEl, analytics);
     } catch (error) {
-        console.error("Error loading user watch history:", error);
-        bodyEl.innerHTML = `<div class="admin-history-empty text-brand"><i class="fa-solid fa-triangle-exclamation"></i> Error loading history. Please try again.</div>`;
+        console.error("Error loading user analytics dashboard:", error);
+        bodyEl.innerHTML = `<div class="admin-history-empty text-brand"><i class="fa-solid fa-triangle-exclamation"></i> Error loading analytics dashboard. Please try again.</div>`;
     }
 };
 
@@ -352,10 +329,12 @@ const closeAdminHistoryBtn = document.getElementById("closeAdminHistoryBtn");
 if (closeAdminHistoryBtn && userHistoryModal) {
     closeAdminHistoryBtn.addEventListener("click", () => {
         userHistoryModal.classList.remove("active");
+        userHistoryModal.classList.remove("fullscreen");
     });
     userHistoryModal.addEventListener("click", (e) => {
         if (e.target === userHistoryModal) {
             userHistoryModal.classList.remove("active");
+            userHistoryModal.classList.remove("fullscreen");
         }
     });
 }

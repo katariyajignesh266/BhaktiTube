@@ -417,7 +417,12 @@ viewport-fit=cover">
     <div id="adminUserHistoryModal" class="admin-modal-overlay">
         <div class="admin-modal-box">
             <div class="admin-modal-header">
-                <h3 id="adminUserHistoryTitle">Watch History</h3>
+                <div class="admin-modal-header-left" style="display: flex; flex-direction: column; gap: 4px;">
+                    <h3 id="adminUserHistoryTitle">Watch History</h3>
+                    <div id="adminUserHeaderMetadata" class="admin-user-metadata-subrow">
+                        <!-- Email, Join Date, Total Watch Time will be populated here -->
+                    </div>
+                </div>
                 <button id="closeAdminHistoryBtn" class="admin-modal-close-btn" aria-label="Close modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
