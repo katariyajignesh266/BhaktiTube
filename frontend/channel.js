@@ -205,7 +205,7 @@ async function renderPlaylistVideos(sanitizedItems) {
       const videoIds = batch.map(item => item.snippet.resourceId.videoId).join(",");
       
       const detailsResponse = await fetch(
-        `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`
+        `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet&id=${videoIds}&key=${API_KEY}`
       );
       const detailsData = await detailsResponse.json();
       
@@ -226,6 +226,9 @@ async function renderPlaylistVideos(sanitizedItems) {
                             item.snippet.thumbnails?.medium?.url || 
                             item.snippet.thumbnails?.default?.url;
         
+        const viewCount = details.statistics?.viewCount ? formatViewCount(details.statistics.viewCount) : "0 views";
+        const publishedAt = details.snippet?.publishedAt ? formatTimeAgo(details.snippet.publishedAt) : "";
+        
         channelVideoMeta.set(videoId, {
           videoId,
           videoTitle: item.snippet.title,
@@ -233,18 +236,40 @@ async function renderPlaylistVideos(sanitizedItems) {
           channelId: item.snippet.channelId || channelId,
           channelName: item.snippet.videoOwnerChannelTitle || document.getElementById("channelName").textContent || "BhaktiTube",
           thumbnailUrl: thumbnailUrl,
-          duration: seconds
+          duration: seconds,
+          viewCount: viewCount,
+          publishedAt: publishedAt
         });
         
         if (seconds < 300) continue;
         if (watchedVideos.has(videoId)) continue;
         
+        const channelLogoUrl = document.getElementById("channelLogo")?.src || "";
+        const channelNameText = item.snippet.videoOwnerChannelTitle || document.getElementById("channelName").textContent || "BhaktiTube";
+        
         container.innerHTML += `
-          <div class="video-card" onclick="openVideo('${videoId}')" style="margin-bottom:20px; background:#111; border-radius:1px; overflow:hidden; padding-bottom:10px; cursor:pointer; padding-top: 0px; padding-left: 0px; padding-right: 0px;">
-            <img src="${thumbnailUrl}" style="width:100%; display:block;" loading="lazy">
-            <h3 style="font-size:14px !important; font-weight:500; line-height:1.5 !important; margin:10px; color:#ffffff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; height:50px;">
-              ${item.snippet.title}
-            </h3>
+          <div class="video-card" onclick="openVideo('${videoId}')">
+            <div class="video-thumbnail-wrapper">
+              <img src="${thumbnailUrl}" class="video-thumbnail" loading="lazy" alt="${escapeHtml(item.snippet.title)}">
+            </div>
+            <div class="video-metadata-row">
+              <div class="channel-avatar">
+                ${channelLogoUrl ? `<img src="${channelLogoUrl}" alt="${escapeHtml(channelNameText)}">` : `<span>${escapeHtml(channelNameText.charAt(0).toUpperCase())}</span>`}
+              </div>
+              <div class="video-info-section">
+                <h3 class="video-title">${escapeHtml(item.snippet.title)}</h3>
+                <div class="video-meta-line">
+                  <span class="channel-name">${escapeHtml(channelNameText)}</span>
+                  <span class="separator">•</span>
+                  <span class="view-count">${viewCount}</span>
+                  <span class="separator">•</span>
+                  <span class="publish-time">${publishedAt}</span>
+                </div>
+              </div>
+              <div class="video-menu-btn" onclick="event.stopPropagation(); shareVideo('${videoId}')">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+              </div>
+            </div>
           </div>
         `;
       }
@@ -284,7 +309,7 @@ item.snippet.resourceId.videoId
 
 const detailsResponse =
 await fetch(
-`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`
+`https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet&id=${videoIds}&key=${API_KEY}`
 );
 
 const detailsData =
@@ -320,6 +345,9 @@ duration
 const videoId =
 item.snippet.resourceId.videoId;
 
+const viewCount = details.statistics?.viewCount ? formatViewCount(details.statistics.viewCount) : "0 views";
+const publishedAt = details.snippet?.publishedAt ? formatTimeAgo(details.snippet.publishedAt) : "";
+
 channelVideoMeta.set(
 videoId,
 {
@@ -329,7 +357,9 @@ title:item.snippet.title,
 channelId:item.snippet.channelId || channelId,
 channelName:item.snippet.videoOwnerChannelTitle || document.getElementById("channelName").textContent || "BhaktiTube",
 thumbnailUrl:item.snippet.thumbnails?.high?.url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-duration:seconds
+duration:seconds,
+viewCount: viewCount,
+publishedAt: publishedAt
 }
 );
 
@@ -345,48 +375,32 @@ videoId
 continue;
 }
 
+const channelLogoUrl = document.getElementById("channelLogo")?.src || "";
+const channelNameText = item.snippet.videoOwnerChannelTitle || document.getElementById("channelName").textContent || "BhaktiTube";
+
 container.innerHTML += `
-<div
-class="video-card"
-onclick="openVideo('${videoId}')"
-style="
-margin-bottom:20px;
-background:#111;
-border-radius:1px;
-overflow:hidden;
-padding-bottom:10px;
-cursor:pointer;
-padding-top: 0px;
-padding-left: 0px;
-padding-right: 0px;
-">
-
-<img
-src="${item.snippet.thumbnails.high.url}"
-style="
-width:100%;
-display:block;
-">
-
-<h3
-style="
-font-size:14px !important;
-font-weight:500;
-line-height:1.5 !important;
-margin:10px;
-color:#ffffff;
-display:-webkit-box;
--webkit-line-clamp:2;
--webkit-box-orient:vertical;
-overflow:hidden;
-text-overflow:ellipsis;
-height:50px;
-">
-
-${item.snippet.title}
-
-</h3>
-
+<div class="video-card" onclick="openVideo('${videoId}')">
+  <div class="video-thumbnail-wrapper">
+    <img src="${item.snippet.thumbnails.high.url}" class="video-thumbnail" loading="lazy" alt="${escapeHtml(item.snippet.title)}">
+  </div>
+  <div class="video-metadata-row">
+    <div class="channel-avatar">
+      ${channelLogoUrl ? `<img src="${channelLogoUrl}" alt="${escapeHtml(channelNameText)}">` : `<span>${escapeHtml(channelNameText.charAt(0).toUpperCase())}</span>`}
+    </div>
+    <div class="video-info-section">
+      <h3 class="video-title">${escapeHtml(item.snippet.title)}</h3>
+      <div class="video-meta-line">
+        <span class="channel-name">${escapeHtml(channelNameText)}</span>
+        <span class="separator">•</span>
+        <span class="view-count">${viewCount}</span>
+        <span class="separator">•</span>
+        <span class="publish-time">${publishedAt}</span>
+      </div>
+    </div>
+    <div class="video-menu-btn" onclick="event.stopPropagation(); shareVideo('${videoId}')">
+      <i class="fa-solid fa-ellipsis-vertical"></i>
+    </div>
+  </div>
 </div>
 `;
 
@@ -465,6 +479,80 @@ function getChannelVideoMeta(videoId){
     duration:0
   };
 
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatViewCount(count) {
+  const num = parseInt(count);
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + 'B views';
+  } else if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M views';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K views';
+  }
+  return num + ' views';
+}
+
+function formatTimeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  
+  const intervals = {
+    year: 31536000,
+    month: 2592000,
+    week: 604800,
+    day: 86400,
+    hour: 3600,
+    minute: 60
+  };
+  
+  for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+    const interval = Math.floor(seconds / secondsInUnit);
+    if (interval >= 1) {
+      return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
+    }
+  }
+  
+  return 'Just now';
+}
+
+async function shareVideo(videoId) {
+  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'BhaktiTube Video',
+        text: 'Check out this devotional video on BhaktiTube',
+        url: videoUrl
+      });
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Error sharing:', err);
+        fallbackShare(videoUrl);
+      }
+    }
+  } else {
+    fallbackShare(videoUrl);
+  }
+}
+
+function fallbackShare(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    alert('Video URL copied to clipboard!');
+  }).catch(() => {
+    prompt('Copy this video URL:', url);
+  });
 }
 
 // Embed building and completion remapped to player-core.js
