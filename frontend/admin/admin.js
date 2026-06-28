@@ -554,52 +554,150 @@ window.deleteAd = async function (id) {
    ⚡ BHAKTITUBE PREMIUM JS ENGINE - PART 4 OF 4
    ========================================================================== */
 
-/* 12. ADVANCED INTERACTIVE AUTOMATED CHANNEL REGISTRATION SYNC ENGINE */
+/* 12. URL DETECTION HELPER */
+function detectYouTubeSourceType(url) {
+    // Playlist URL patterns
+    if (url.includes("playlist?list=")) {
+        const match = url.match(/[?&]list=([^&]+)/);
+        return match ? { type: "playlist", id: match[1] } : null;
+    }
+    if (url.includes("watch?v=") && url.includes("list=")) {
+        const match = url.match(/[?&]list=([^&]+)/);
+        return match ? { type: "playlist", id: match[1] } : null;
+    }
+    
+    // Channel URL patterns
+    if (url.includes("@")) {
+        const match = url.match(/@([^/?]+)/);
+        return match ? { type: "channel", handle: match[1] } : null;
+    }
+    if (url.includes("/channel/")) {
+        const match = url.match(/\/channel\/([^/?]+)/);
+        return match ? { type: "channel", id: match[1] } : null;
+    }
+    if (url.includes("/c/")) {
+        const match = url.match(/\/c\/([^/?]+)/);
+        return match ? { type: "channel", custom: match[1] } : null;
+    }
+    
+    return null;
+}
+
+/* 13. PLAYLIST FETCHING ADAPTER */
+async function fetchPlaylistData(playlistId) {
+    try {
+        // Fetch playlist details
+        const playlistResponse = await fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&id=${playlistId}&key=${YOUTUBE_API_KEY}`);
+        const playlistData = await playlistResponse.json();
+        
+        if (!playlistData.items || !playlistData.items.length) {
+            throw new Error("Playlist not found");
+        }
+        
+        const playlist = playlistData.items[0];
+        const channelId = playlist.snippet.channelId;
+        
+        // Fetch channel details
+        const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`);
+        const channelData = await channelResponse.json();
+        const channel = channelData.items[0];
+        
+        return {
+            sourceType: "playlist",
+            playlistId: playlistId,
+            playlistTitle: playlist.snippet.title,
+            playlistThumbnail: playlist.snippet.thumbnails?.high?.url || playlist.snippet.thumbnails?.medium?.url || playlist.snippet.thumbnails?.default?.url || "",
+            totalVideos: playlist.contentDetails.itemCount,
+            channelId: channelId,
+            channelName: channel.snippet.title,
+            channelLogo: channel.snippet.thumbnails.high.url,
+            subscribers: Number(channel.statistics.subscriberCount).toLocaleString(),
+            previewBanner: channel.snippet.thumbnails.banner?.maxres?.url || channel.snippet.thumbnails.banner?.high?.url || ""
+        };
+    } catch (err) {
+        throw new Error(`Failed to fetch playlist: ${err.message}`);
+    }
+}
+
+/* 14. ADVANCED INTERACTIVE AUTOMATED CHANNEL/PLAYLIST REGISTRATION SYNC ENGINE */
 document.getElementById("fetchChannelBtn").addEventListener("click", async () => {
     const url = document.getElementById("channelUrl").value.trim();
     const preview = document.getElementById("channelPreview");
     if (!url) {
-        showToast("Paste a clean YouTube Handle Link structure", "error");
+        showToast("Paste a clean YouTube Link structure", "error");
         return;
     }
 
-    const match = url.match(/@([^/?]+)/);
-    if (!match) {
-        showToast("Malformed URL handle signature configuration pattern", "error");
+    const detected = detectYouTubeSourceType(url);
+    if (!detected) {
+        showToast("Malformed URL signature configuration pattern", "error");
         return;
     }
-    const handle = match[1];
 
     try {
-        const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${handle}&maxResults=1&key=${YOUTUBE_API_KEY}`);
-        const data = await response.json();
+        let channelData;
+        
+        if (detected.type === "playlist") {
+            // Fetch playlist data
+            channelData = await fetchPlaylistData(detected.id);
+            channelData.channelUrl = url;
+        } else {
+            // Fetch channel data (existing logic)
+            const handle = detected.handle;
+            const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${handle}&maxResults=1&key=${YOUTUBE_API_KEY}`);
+            const data = await response.json();
 
-        if (!data.items || !data.items.length) {
-            showToast("No channel index bound to parameters", "error");
-            return;
+            if (!data.items || !data.items.length) {
+                showToast("No channel index bound to parameters", "error");
+                return;
+            }
+
+            const channelId = data.items[0].snippet.channelId;
+            const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`);
+            const channelDataRaw = await channelResponse.json();
+            const channel = channelDataRaw.items[0];
+
+            const uploadsPlaylistId = channel.contentDetails.relatedPlaylists.uploads;
+            const channelName = channel.snippet.title;
+            const subscribers = Number(channel.statistics.subscriberCount).toLocaleString();
+            const totalVideos = Number(channel.statistics.videoCount).toLocaleString();
+            const logo = channel.snippet.thumbnails.high.url;
+            const previewBanner = channel.snippet.thumbnails.banner?.maxres?.url || channel.snippet.thumbnails.banner?.high?.url || "";
+
+            channelData = {
+                sourceType: "channel",
+                channelId,
+                uploadsPlaylistId,
+                channelName,
+                channelLogo: logo,
+                previewBanner,
+                subscribers,
+                totalVideos,
+                channelUrl: url
+            };
         }
 
-        const channelId = data.items[0].snippet.channelId;
-        const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`);
-        const channelData = await channelResponse.json();
-        const channel = channelData.items[0];
+        // Add announcement fields
+        channelData.announcementEnabled = true;
+        channelData.announcementCreatedAt = serverTimestamp();
 
-        const uploadsPlaylistId = channel.contentDetails.relatedPlaylists.uploads;
-        const channelName = channel.snippet.title;
-        const subscribers = Number(channel.statistics.subscriberCount).toLocaleString();
-        const totalVideos = Number(channel.statistics.videoCount).toLocaleString();
-        const logo = channel.snippet.thumbnails.high.url;
-
-        fetchedChannel = { channelId, uploadsPlaylistId, channelName, channelLogo: logo, subscribers, totalVideos, channelUrl: url };
+        fetchedChannel = channelData;
 
         // Transition UI elements out inside preview card overlay framework
         preview.style.display = "block";
-        document.getElementById("previewLogo").src = logo;
-        document.getElementById("previewName").textContent = channelName;
-        document.getElementById("previewSubscribers").innerHTML = `<i class="fa-solid fa-users"></i> Followers: ${subscribers}`;
-        document.getElementById("previewVideos").innerHTML = `<i class="fa-solid fa-video"></i> Indexed Blocks: ${totalVideos}`;
+        document.getElementById("previewLogo").src = channelData.channelLogo;
+        document.getElementById("previewName").textContent = channelData.channelName;
+        document.getElementById("previewSubscribers").innerHTML = `<i class="fa-solid fa-users"></i> Followers: ${channelData.subscribers}`;
+        document.getElementById("previewVideos").innerHTML = `<i class="fa-solid fa-video"></i> Indexed Blocks: ${channelData.totalVideos}`;
 
-        showToast("Channel profile signature extracted", "success");
+        // Show source type badge
+        const sourceBadge = document.getElementById("sourceTypeBadge");
+        if (sourceBadge) {
+            sourceBadge.textContent = channelData.sourceType === "playlist" ? "📋 Playlist" : "📺 Channel";
+            sourceBadge.style.display = "inline-block";
+        }
+
+        showToast(`${channelData.sourceType === "playlist" ? "Playlist" : "Channel"} profile signature extracted`, "success");
     } catch (err) {
         showToast(err.message, "error");
     }
@@ -635,6 +733,7 @@ document.getElementById("manualAddChannelBtn").addEventListener("click", async (
     const uploadsPlaylistId = document.getElementById("manualUploadsPlaylistId").value.trim();
     const channelName = document.getElementById("manualChannelName").value.trim();
     const channelLogo = document.getElementById("manualChannelLogo").value.trim() || "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e";
+    const previewBanner = document.getElementById("manualPreviewBanner").value.trim() || "";
     const subscribers = document.getElementById("manualSubscribers").value.trim() || "0";
     const totalVideos = document.getElementById("manualTotalVideos").value.trim() || "0";
     const channelUrl = document.getElementById("channelUrl").value.trim() || "#";
@@ -645,14 +744,42 @@ document.getElementById("manualAddChannelBtn").addEventListener("click", async (
     }
 
     try {
-        await addDoc(collection(db, "channels"), { channelId, uploadsPlaylistId, channelName, channelLogo, subscribers, totalVideos, channelUrl, active: true, enabled: true, createdAt: serverTimestamp() });
+        await addDoc(collection(db, "channels"), { channelId, uploadsPlaylistId, channelName, channelLogo, previewBanner, subscribers, totalVideos, channelUrl, active: true, enabled: true, announcementEnabled: true, announcementCreatedAt: serverTimestamp(), createdAt: serverTimestamp() });
         showToast("Manual allocation entry built successfully", "success");
         loadChannels();
         calculateGlobalAnalyticsCounters();
     } catch (e) { showToast(e.message, "error"); }
 });
 
-/* 14. CHANNELS LOADER GRID FACTORY WRAPPER */
+/* 14. ONE-TIME MIGRATION FOR EXISTING CHANNELS */
+async function migrateExistingChannels() {
+    try {
+        const snapshot = await getDocs(collection(db, "channels"));
+        let migratedCount = 0;
+
+        for (const docSnap of snapshot.docs) {
+            const channel = docSnap.data();
+            if (channel.announcementEnabled === undefined) {
+                await updateDoc(doc(db, "channels", docSnap.id), {
+                    announcementEnabled: false,
+                    announcementCreatedAt: serverTimestamp()
+                });
+                migratedCount++;
+            }
+        }
+
+        if (migratedCount > 0) {
+            console.log(`✅ Migration complete: ${migratedCount} existing channels marked as already announced`);
+        }
+    } catch (e) {
+        console.error("Migration error:", e);
+    }
+}
+
+// Run migration once on admin panel load
+migrateExistingChannels();
+
+/* 15. CHANNELS LOADER GRID FACTORY WRAPPER */
 async function loadChannels() {
     const channelsList = document.getElementById("channelsList");
     if (!channelsList) return;

@@ -35,6 +35,8 @@ let channelVideoMeta = new Map();
 let nextPageToken = "";
 let loading = false;
 let uploadsPlaylistId = "";
+let currentSourceType = "channel";
+let allPlaylistItems = []; // Store all playlist items for sequential processing
 
 // State remapped to player-core.js
 
@@ -83,14 +85,179 @@ doc.id
       document.getElementById("channelName").textContent = channel.channelName;
       document.getElementById("channelSubscribers").textContent = "Subscribers : " + channel.subscribers;
       document.getElementById("channelVideos").textContent = "Videos : " + channel.totalVideos;
-      uploadsPlaylistId = channel.uploadsPlaylistId;
-      loadYouTubeVideos(channel.uploadsPlaylistId);
+      
+      // Store source type for pagination
+      currentSourceType = channel.sourceType || "channel";
+      
+      // Reset playlist items array for new load
+      allPlaylistItems = [];
+      
+      // Check if this is a playlist or channel
+      if (channel.sourceType === "playlist" && channel.playlistId) {
+        uploadsPlaylistId = channel.playlistId;
+        // For playlists, fetch all pages sequentially first
+        loadAllPlaylistPages(channel.playlistId);
+      } else {
+        uploadsPlaylistId = channel.uploadsPlaylistId;
+        loadYouTubeVideos(channel.uploadsPlaylistId, "", "channel");
+      }
     }
   });
 }
 
-// ૨. યુટ્યુબ API માંથી વીડિયો લીસ્ટ લોડ કરવું
-async function loadYouTubeVideos(playlistId, pageToken = "") {
+// ૨. Sanitize playlist items - remove private/deleted/unavailable videos
+function sanitizePlaylistItems(items) {
+  const sanitized = [];
+  const seenVideoIds = new Set();
+  
+  for (const item of items) {
+    // Validate required fields
+    if (!item?.snippet?.resourceId?.videoId) continue;
+    if (!item?.snippet?.title) continue;
+    
+    const videoId = item.snippet.resourceId.videoId;
+    const title = item.snippet.title.toLowerCase();
+    
+    // Skip duplicates
+    if (seenVideoIds.has(videoId)) continue;
+    
+    // Filter out private/deleted/unavailable videos by title patterns
+    if (title.includes('private video') || 
+        title.includes('deleted video') || 
+        title.includes('unavailable') ||
+        title.includes('this video is unavailable') ||
+        title.includes('this video is private')) {
+      continue;
+    }
+    
+    // Validate thumbnail exists
+    const hasThumbnail = item.snippet.thumbnails && (
+      item.snippet.thumbnails.maxres?.url ||
+      item.snippet.thumbnails.high?.url ||
+      item.snippet.thumbnails.standard?.url ||
+      item.snippet.thumbnails.medium?.url ||
+      item.snippet.thumbnails.default?.url
+    );
+    
+    if (!hasThumbnail) continue;
+    
+    // Item is valid - add to sanitized list
+    sanitized.push(item);
+    seenVideoIds.add(videoId);
+  }
+  
+  return sanitized;
+}
+
+// ૩. Fetch all playlist pages sequentially (for playlists only)
+async function loadAllPlaylistPages(playlistId, pageToken = "") {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "block";
+  
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&pageToken=${pageToken}&key=${API_KEY}`
+    );
+    if (!response.ok) return;
+    const data = await response.json();
+    if (!data.items) return;
+
+    // Append items in the correct sequence (YouTube's order)
+    allPlaylistItems.push(...data.items);
+
+    // If there are more pages, fetch them recursively
+    if (data.nextPageToken) {
+      await loadAllPlaylistPages(playlistId, data.nextPageToken);
+    } else {
+      // All pages collected - sanitize, reverse, and render
+      const sanitizedItems = sanitizePlaylistItems(allPlaylistItems);
+      renderPlaylistVideos(sanitizedItems);
+    }
+  } catch (error) {
+    console.error("Error fetching playlist pages:", error);
+  } finally {
+    if (loader && pageToken === "") loader.style.display = "none";
+  }
+}
+
+// ૪. Render playlist videos after all pages are collected, sanitized, and reversed
+async function renderPlaylistVideos(sanitizedItems) {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "block";
+  
+  try {
+    // Reverse the entire collection once (newest first)
+    const reversedItems = [...sanitizedItems].reverse();
+    
+    const container = document.getElementById("channelVideosContainer");
+    if (container) container.innerHTML = "";
+
+    if (reversedItems.length === 0) {
+      container.innerHTML = "<p style='color:#aaa; text-align:center; padding:20px;'>No videos available in this playlist.</p>";
+      return;
+    }
+
+    // Process all items in batches for video details
+    const batchSize = 50;
+    for (let i = 0; i < reversedItems.length; i += batchSize) {
+      const batch = reversedItems.slice(i, i + batchSize);
+      
+      const videoIds = batch.map(item => item.snippet.resourceId.videoId).join(",");
+      
+      const detailsResponse = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoIds}&key=${API_KEY}`
+      );
+      const detailsData = await detailsResponse.json();
+      
+      for (let j = 0; j < batch.length; j++) {
+        const item = batch[j];
+        const details = detailsData.items?.[j];
+        
+        if (!details || !details.contentDetails) continue;
+        
+        const duration = details.contentDetails.duration;
+        const seconds = convertDurationToSeconds(duration);
+        const videoId = item.snippet.resourceId.videoId;
+        
+        // Get thumbnail with comprehensive fallback chain (items already validated in sanitization)
+        const thumbnailUrl = item.snippet.thumbnails?.maxres?.url ||
+                            item.snippet.thumbnails?.high?.url || 
+                            item.snippet.thumbnails?.standard?.url ||
+                            item.snippet.thumbnails?.medium?.url || 
+                            item.snippet.thumbnails?.default?.url;
+        
+        channelVideoMeta.set(videoId, {
+          videoId,
+          videoTitle: item.snippet.title,
+          title: item.snippet.title,
+          channelId: item.snippet.channelId || channelId,
+          channelName: item.snippet.videoOwnerChannelTitle || document.getElementById("channelName").textContent || "BhaktiTube",
+          thumbnailUrl: thumbnailUrl,
+          duration: seconds
+        });
+        
+        if (seconds < 300) continue;
+        if (watchedVideos.has(videoId)) continue;
+        
+        container.innerHTML += `
+          <div class="video-card" onclick="openVideo('${videoId}')" style="margin-bottom:20px; background:#111; border-radius:1px; overflow:hidden; padding-bottom:10px; cursor:pointer; padding-top: 0px; padding-left: 0px; padding-right: 0px;">
+            <img src="${thumbnailUrl}" style="width:100%; display:block;" loading="lazy">
+            <h3 style="font-size:14px !important; font-weight:500; line-height:1.5 !important; margin:10px; color:#ffffff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; height:50px;">
+              ${item.snippet.title}
+            </h3>
+          </div>
+        `;
+      }
+    }
+  } catch (error) {
+    console.error("Error rendering playlist videos:", error);
+  } finally {
+    if (loader) loader.style.display = "none";
+  }
+}
+
+// ૪. યુટ્યુબ API માંથી વીડિયો લીસ્ટ લોડ કરવું (channels only - no changes)
+async function loadYouTubeVideos(playlistId, pageToken = "", sourceType = "channel") {
   const loader = document.getElementById("loader");
   if (loader) loader.style.display = "block";
   try {
@@ -101,12 +268,15 @@ async function loadYouTubeVideos(playlistId, pageToken = "") {
     const data = await response.json();
     if (!data.items) return;
 
+    // No reversal for channels - use original order
+    const items = data.items;
+
     nextPageToken = data.nextPageToken || "";
     const container = document.getElementById("channelVideosContainer");
     if (pageToken === "" && container) container.innerHTML = "";
 
     const videoIds =
-data.items
+items
 .map(item =>
 item.snippet.resourceId.videoId
 )
@@ -122,12 +292,12 @@ await detailsResponse.json();
 
 for(
 let i = 0;
-i < data.items.length;
+i < items.length;
 i++
 ){
 
 const item =
-data.items[i];
+items[i];
 
 const details =
 detailsData.items[i];
@@ -232,13 +402,14 @@ ${item.snippet.title}
 // Video opening remapped to player-core.js
 window.openVideo = (videoId) => playVideo(videoId, getChannelVideoMeta(videoId), true);
 
-// ૧૨. ઈન્ફિનાઈટ સ્ક્રોલ (Load More Videos) લોજિક
+// ૧૨. ઈન્ફિનાઈટ સ્ક્રોલ (Load More Videos) લોજિક - channels only
 const trigger = document.getElementById("loadMoreTrigger");
 if (trigger) {
   const observer = new IntersectionObserver(async (entries) => {
-    if (entries[0].isIntersecting && !loading && nextPageToken) {
+    // Only enable infinite scroll for channels, not playlists
+    if (entries[0].isIntersecting && !loading && nextPageToken && currentSourceType === "channel") {
       loading = true;
-      await loadYouTubeVideos(uploadsPlaylistId, nextPageToken);
+      await loadYouTubeVideos(uploadsPlaylistId, nextPageToken, "channel");
       loading = false;
     }
   }, { threshold: 0.1 });

@@ -910,6 +910,21 @@ body {
 .badge-sub { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
 .badge-vid { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
 
+.source-type-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--accent-green);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
 /* 14. TOAST NOTIFICATION PLATFORM STYLES */
 .toast-container {
     position: fixed; top: 20px; right: 20px; z-index: 2000;

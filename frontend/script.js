@@ -16,6 +16,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
   increment,
   onSnapshot
 }
@@ -642,6 +643,7 @@ document.body.classList.add(
 loadVideos();
 loadChannels();
 loadNotifications();
+checkForNewChannelAnnouncements();
 
 const menuBtn =
 document.querySelector(".fa-bars");
@@ -1092,3 +1094,226 @@ document.addEventListener("touchend", function(event){
     lastTouchEnd = now;
 
 }, { passive:false });
+
+/* ==========================================================================
+   ⚡ NEW CHANNEL ANNOUNCEMENT SYSTEM - CLEAN ARCHITECTURE
+   ========================================================================== */
+
+const ANNOUNCEMENT_SEEN_KEY = "bt_announcement_seen_channels";
+let announcementQueue = [];
+let currentAnnouncementChannel = null;
+let currentUser = null;
+let queueInitialized = false;
+
+// Track current user for Firebase-based seen state
+onAuthStateChanged(auth, (user) => {
+    const wasLoggedIn = currentUser !== null;
+    const isLoggedIn = user !== null;
+    
+    currentUser = user;
+    
+    // Rebuild queue on login/logout changes
+    if (wasLoggedIn !== isLoggedIn) {
+        queueInitialized = false;
+        if (isLoggedIn) {
+            initializeAnnouncementQueue();
+        }
+    }
+});
+
+// Get seen channels from appropriate storage
+async function getSeenAnnouncementChannels() {
+    if (currentUser) {
+        try {
+            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                return userData.announcementsSeen || {};
+            }
+        } catch (e) {
+            console.error("Error fetching Firebase seen state:", e);
+        }
+    }
+    
+    // Fallback to localStorage for guests or on error
+    try {
+        const seen = localStorage.getItem(ANNOUNCEMENT_SEEN_KEY);
+        return seen ? JSON.parse(seen) : {};
+    } catch (e) {
+        console.error("Error reading localStorage seen state:", e);
+        return {};
+    }
+}
+
+// Mark channel as seen in appropriate storage
+async function markAnnouncementAsSeen(channelId) {
+    if (currentUser) {
+        try {
+            const userRef = doc(db, "users", currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            let currentSeen = {};
+            
+            if (userDoc.exists()) {
+                currentSeen = userDoc.data().announcementsSeen || {};
+            }
+            
+            currentSeen[channelId] = true;
+            await setDoc(userRef, { announcementsSeen: currentSeen }, { merge: true });
+            return;
+        } catch (e) {
+            console.error("Error saving Firebase seen state:", e);
+        }
+    }
+    
+    // Fallback to localStorage for guests or on error
+    try {
+        const seen = await getSeenAnnouncementChannels();
+        seen[channelId] = true;
+        localStorage.setItem(ANNOUNCEMENT_SEEN_KEY, JSON.stringify(seen));
+    } catch (e) {
+        console.error("Error saving localStorage seen state:", e);
+    }
+}
+
+// Initialize announcement queue - called once on page load and auth changes
+async function initializeAnnouncementQueue() {
+    if (queueInitialized) return;
+    
+    try {
+        const seenChannels = await getSeenAnnouncementChannels();
+        
+        // Only fetch channels with announcementEnabled === true
+        const q = query(collection(db, "channels"), orderBy("announcementCreatedAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        announcementQueue = [];
+
+        snapshot.forEach((docSnap) => {
+            const channel = docSnap.data();
+            // Only include channels that are enabled AND have announcementEnabled === true
+            if (channel.enabled !== true || channel.announcementEnabled !== true) return;
+            // Exclude channels already seen by this user
+            if (!seenChannels[channel.channelId]) {
+                // Prevent duplicates in queue
+                if (!announcementQueue.some(c => c.channelId === channel.channelId)) {
+                    announcementQueue.push({ id: docSnap.id, ...channel });
+                }
+            }
+        });
+
+        queueInitialized = true;
+        
+        // Show first announcement if queue is not empty
+        if (announcementQueue.length > 0) {
+            showNextChannelAnnouncement();
+        }
+    } catch (e) {
+        console.error("Error initializing announcement queue:", e);
+    }
+}
+
+// Check for new channel announcements - deprecated, use initializeAnnouncementQueue instead
+async function checkForNewChannelAnnouncements() {
+    await initializeAnnouncementQueue();
+}
+
+// Show next announcement in queue
+function showNextChannelAnnouncement() {
+    if (announcementQueue.length === 0) return;
+
+    currentAnnouncementChannel = announcementQueue.shift();
+    const modal = document.getElementById("channelAnnouncementModal");
+    const channelCardContainer = document.getElementById("announcementChannelCard");
+    const bannerContainer = document.getElementById("announcementBannerContainer");
+    const bannerImage = document.getElementById("announcementBannerImage");
+
+    if (!modal || !channelCardContainer) return;
+
+    // Reuse existing channel card component - NO DUPLICATION
+    channelCardContainer.innerHTML = getChannelCardMarkup(currentAnnouncementChannel);
+
+    // Show preview banner if available
+    if (currentAnnouncementChannel.previewBanner) {
+        bannerImage.src = currentAnnouncementChannel.previewBanner;
+        bannerImage.loading = "lazy";
+        bannerContainer.classList.add("has-banner");
+    } else {
+        bannerContainer.classList.remove("has-banner");
+    }
+
+    modal.classList.add("active");
+
+    // Handle channel card click
+    const channelCard = channelCardContainer.querySelector(".channel-card");
+    if (channelCard) {
+        const link = channelCard.querySelector("a");
+        if (link) {
+            link.addEventListener("click", handleAnnouncementClick);
+        }
+    }
+}
+
+// Handle announcement click - mark seen and navigate
+async function handleAnnouncementClick(e) {
+    e.preventDefault();
+    if (!currentAnnouncementChannel) return;
+
+    // Mark as seen BEFORE navigation
+    await markAnnouncementAsSeen(currentAnnouncementChannel.channelId);
+    
+    // Close modal
+    const modal = document.getElementById("channelAnnouncementModal");
+    if (modal) modal.classList.remove("active");
+    
+    // Navigate to channel
+    window.location.href = `channel.html?id=${currentAnnouncementChannel.channelId}`;
+}
+
+// Handle close button click
+const closeAnnouncementBtn = document.getElementById("closeAnnouncementBtn");
+if (closeAnnouncementBtn) {
+    closeAnnouncementBtn.addEventListener("click", async () => {
+        if (!currentAnnouncementChannel) return;
+
+        // Mark as seen BEFORE any action
+        await markAnnouncementAsSeen(currentAnnouncementChannel.channelId);
+        
+        const modal = document.getElementById("channelAnnouncementModal");
+        if (modal) modal.classList.remove("active");
+        
+        // Navigate to channel immediately
+        window.location.href = `channel.html?id=${currentAnnouncementChannel.channelId}`;
+    });
+}
+
+// Handle backdrop click
+const announcementModal = document.getElementById("channelAnnouncementModal");
+if (announcementModal) {
+    announcementModal.addEventListener("click", async (e) => {
+        if (e.target === announcementModal || e.target.classList.contains("announcement-backdrop")) {
+            if (!currentAnnouncementChannel) return;
+
+            // Mark as seen BEFORE any action
+            await markAnnouncementAsSeen(currentAnnouncementChannel.channelId);
+            
+            announcementModal.classList.remove("active");
+            
+            // Navigate to channel immediately
+            window.location.href = `channel.html?id=${currentAnnouncementChannel.channelId}`;
+        }
+    });
+}
+
+// Handle Escape key to close
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        const modal = document.getElementById("channelAnnouncementModal");
+        if (modal && modal.classList.contains("active") && currentAnnouncementChannel) {
+            markAnnouncementAsSeen(currentAnnouncementChannel.channelId).then(() => {
+                modal.classList.remove("active");
+                window.location.href = `channel.html?id=${currentAnnouncementChannel.channelId}`;
+            });
+        }
+    }
+});
+
