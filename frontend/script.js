@@ -122,6 +122,118 @@ async function syncGlobalChannelCardTheme() {
 }
 syncGlobalChannelCardTheme();
 
+/* ==========================================================================
+   ⚡ DASHBOARD LAYOUT MODE CONTROLLER
+   ========================================================================== */
+
+let dashboardLayoutMode = "classic"; // Default to classic layout
+
+function setPremiumDashboardMode(isActive) {
+    document.body.classList.toggle("premium-dashboard-mode", isActive);
+}
+
+// Check dashboard layout setting from Firestore
+async function checkDashboardLayoutMode() {
+    try {
+        const layoutDoc = await getDoc(doc(db, "settings", "dashboardLayout"));
+        if (layoutDoc.exists()) {
+            dashboardLayoutMode = layoutDoc.data().layoutMode || "classic";
+        }
+    } catch (e) {
+        console.error("Error checking dashboard layout mode:", e);
+        dashboardLayoutMode = "classic"; // Fallback to classic
+    }
+    return dashboardLayoutMode;
+}
+
+// Apply dashboard layout mode
+function applyDashboardLayoutMode(mode) {
+    const channelsSection = document.getElementById("channelsSection");
+    const videosContainer = document.getElementById("videosContainer");
+    const videosLoader = document.getElementById("videosLoader");
+    const premiumChannelFeed = document.getElementById("premiumChannelFeed");
+    const premiumScrollIndicator = document.getElementById("premiumScrollIndicator");
+    const categorySection = document.getElementById("categorySection");
+    const continueWatchingSection = document.getElementById("continueWatchingSection");
+
+    if (mode === "premium") {
+        // Premium Channel Feed Mode - Content area only
+        setPremiumDashboardMode(true);
+        if (channelsSection) channelsSection.style.display = "none";
+        if (videosContainer) videosContainer.style.display = "none";
+        if (videosLoader) videosLoader.style.display = "none";
+        if (premiumChannelFeed) premiumChannelFeed.style.display = "block";
+        if (premiumScrollIndicator) premiumScrollIndicator.style.display = "flex";
+        if (categorySection) categorySection.style.display = "flex"; // Keep category visible
+        if (continueWatchingSection) continueWatchingSection.style.display = "none";
+    } else {
+        // Classic Layout Mode (default behavior)
+        setPremiumDashboardMode(false);
+        if (channelsSection) channelsSection.style.display = "block";
+        if (videosContainer) videosContainer.style.display = "grid";
+        if (premiumChannelFeed) premiumChannelFeed.style.display = "none";
+        if (premiumScrollIndicator) premiumScrollIndicator.style.display = "none";
+        if (categorySection) categorySection.style.display = "flex";
+        if (continueWatchingSection) continueWatchingSection.style.display = "";
+    }
+}
+
+// Render premium channel feed
+async function renderPremiumChannelFeed() {
+    const premiumFeedContent = document.getElementById("premiumFeedContent");
+    if (!premiumFeedContent) return;
+
+    try {
+        const q = query(collection(db, "channels"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            premiumFeedContent.innerHTML = `
+                <div class="premium-feed-empty">
+                    <i class="fa-solid fa-tv"></i>
+                    <h3>No Channels Available</h3>
+                    <p>Check back later for new devotional content</p>
+                </div>
+            `;
+            return;
+        }
+
+        let channels = [];
+        snapshot.forEach((docSnap) => {
+            const channel = docSnap.data();
+            if (channel.enabled === true) {
+                channels.push(channel);
+            }
+        });
+
+        if (channels.length === 0) {
+            premiumFeedContent.innerHTML = `
+                <div class="premium-feed-empty">
+                    <i class="fa-solid fa-tv"></i>
+                    <h3>No Active Channels</h3>
+                    <p>Channels will appear here when enabled</p>
+                </div>
+            `;
+            return;
+        }
+
+        premiumFeedContent.innerHTML = channels.map(channel => `
+            <div class="premium-channel-slide">
+                ${getChannelCardMarkup(channel, { applyChannelTheme: true })}
+            </div>
+        `).join("");
+    } catch (e) {
+        console.error("Error rendering premium channel feed:", e);
+        premiumFeedContent.innerHTML = `
+            <div class="premium-feed-empty">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h3>Error Loading Channels</h3>
+                <p>Please try refreshing the page</p>
+            </div>
+        `;
+    }
+}
+
 
 
 async function getAdvertisement(){
@@ -286,7 +398,7 @@ return `
 
 }
 
-function setHomeView(viewName){
+async function setHomeView(viewName){
 
 currentHomeView =
 viewName;
@@ -306,14 +418,43 @@ viewName === "journey";
 categorySection.style.display =
 showDashboard ? "flex" : "none";
 
-channelsSection.style.display =
-showDashboard || showChannels ? "block" : "none";
-
-videosSection.style.display =
-showDashboard || showVideos ? "grid" : "none";
-
-continueWatchingSection.style.display =
-showDashboard ? "" : "none";
+// Check dashboard layout mode when showing dashboard
+if (showDashboard) {
+    const layoutMode = await checkDashboardLayoutMode();
+    
+    if (layoutMode === "premium") {
+        // Premium mode: only show premium feed in content area
+        setPremiumDashboardMode(true);
+        channelsSection.style.display = "none";
+        videosSection.style.display = "none";
+        document.getElementById("premiumChannelFeed").style.display = "block";
+        document.getElementById("premiumScrollIndicator").style.display = "flex";
+        continueWatchingSection.style.display = "none";
+        categorySection.style.display = "flex"; // Keep category visible
+    } else {
+        // Classic mode: show channels and videos
+        setPremiumDashboardMode(false);
+        channelsSection.style.display = "block";
+        videosSection.style.display = "grid";
+        document.getElementById("premiumChannelFeed").style.display = "none";
+        document.getElementById("premiumScrollIndicator").style.display = "none";
+        continueWatchingSection.style.display = "";
+        categorySection.style.display = "flex";
+    }
+} else {
+    // Non-dashboard views
+    setPremiumDashboardMode(false);
+    channelsSection.style.display =
+    showChannels ? "block" : "none";
+    
+    videosSection.style.display =
+    showVideos ? "grid" : "none";
+    
+    document.getElementById("premiumChannelFeed").style.display = "none";
+    document.getElementById("premiumScrollIndicator").style.display = "none";
+    continueWatchingSection.style.display = "none";
+    categorySection.style.display = "none"; // Hide category in non-dashboard views
+}
 
 journeySection.classList.toggle(
 "active",
@@ -562,6 +703,14 @@ channelsContainer.innerHTML += getChannelCardMarkup(channel);
 
 });
 
+// Check dashboard layout mode and apply it
+const layoutMode = await checkDashboardLayoutMode();
+applyDashboardLayoutMode(layoutMode);
+
+// If premium mode, render premium channel feed
+if (layoutMode === "premium") {
+    await renderPremiumChannelFeed();
+}
 }
 
 
@@ -691,11 +840,11 @@ document.getElementById("channelsSection");
 const videosSection =
 document.getElementById("videosContainer");
 
-dashboardBtn.addEventListener("click",(e)=>{
+dashboardBtn.addEventListener("click",async (e)=>{
 
 e.preventDefault();
 
-setHomeView("dashboard");
+await setHomeView("dashboard");
 
 });
 

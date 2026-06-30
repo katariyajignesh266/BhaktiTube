@@ -1,0 +1,239 @@
+/* ==========================================================================
+   ⚡ PREMIUM CHANNEL FEED - SCROLL SNAP EXPERIENCE
+   ========================================================================== */
+
+/* Premium Feed Container - Occupies content area only */
+.premium-channel-feed {
+    display: none; /* Hidden by default, shown when enabled */
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
+    position: relative;
+    isolation: isolate;
+    
+    /* Premium Glassmorphism Background - within content area only */
+    background:
+        radial-gradient(circle at 18% 18%, rgba(255, 35, 151, 0.22) 0, rgba(255, 35, 151, 0.08) 24%, transparent 48%),
+        radial-gradient(circle at 84% 34%, rgba(0, 229, 255, 0.18) 0, rgba(0, 229, 255, 0.07) 25%, transparent 52%),
+        radial-gradient(circle at 44% 92%, rgba(158, 91, 255, 0.14) 0, rgba(158, 91, 255, 0.05) 30%, transparent 58%),
+        linear-gradient(145deg, #050509 0%, #11131d 48%, #07080d 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.premium-channel-feed::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 26% 28%, rgba(255, 71, 166, 0.16), transparent 34%),
+        radial-gradient(circle at 74% 62%, rgba(25, 215, 255, 0.14), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 22%, rgba(255, 255, 255, 0.035));
+    opacity: 0.9;
+}
+
+body.premium-dashboard-mode {
+    --premium-bottom-nav-height: 50px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding-bottom: var(--premium-bottom-nav-height);
+}
+
+body.premium-dashboard-mode .header,
+body.premium-dashboard-mode .category-section {
+    flex: 0 0 auto;
+}
+
+body.premium-dashboard-mode .premium-channel-feed {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+}
+
+#premiumFeedContent {
+    height: 100%;
+    min-height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-channel-feed::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+/* Individual Channel Slide - occupies full content area height */
+.premium-channel-slide {
+    width: 100%;
+    height: 100%; /* Each slide occupies full container height */
+    min-height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 0;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+/* Premium Channel Card in Feed - Inherits theme from base channel-card.css */
+.premium-channel-slide .channel-card {
+    max-width: 500px;
+    width: calc(100% - 40px); /* Horizontal margins for floating effect */
+    height: auto;
+    max-height: calc(100% - 44px); /* Card doesn't touch top/bottom of content area */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto; /* Center horizontally */
+    isolation: isolate;
+    
+    background: var(--cc-bg) !important;
+    border: var(--cc-border) !important;
+    border-radius: var(--cc-radius) !important;
+    backdrop-filter: var(--cc-glass-filter, none) !important;
+    -webkit-backdrop-filter: var(--cc-glass-filter, none) !important;
+    box-shadow: var(--cc-shadow) !important;
+    
+    /* All theme variables inherited from channel-card.css via [data-cc-theme] */
+}
+
+.premium-channel-slide .channel-card:hover {
+    transform: var(--cc-hover-transform) !important;
+    background: var(--cc-hover-bg, var(--cc-bg)) !important;
+    border-color: var(--cc-hover-border-color) !important;
+    box-shadow: var(--cc-hover-shadow, var(--cc-shadow)) !important;
+}
+
+.premium-channel-slide .channel-card i {
+    color: var(--cc-icon-color) !important;
+}
+
+.premium-channel-slide .channel-card img.channel-img {
+    border: var(--cc-img-border) !important;
+    box-shadow: var(--cc-img-shadow) !important;
+}
+
+.premium-channel-slide .channel-card a,
+.premium-channel-slide .channel-card button {
+    background: var(--cc-btn-bg) !important;
+    border: var(--cc-btn-border) !important;
+    color: var(--cc-btn-text) !important;
+    box-shadow: var(--cc-btn-shadow) !important;
+}
+
+.premium-channel-slide .channel-card a:hover,
+.premium-channel-slide .channel-card button:hover {
+    background: var(--cc-btn-hover-bg, var(--cc-btn-bg)) !important;
+    color: var(--cc-btn-hover-text, var(--cc-btn-text)) !important;
+    box-shadow: var(--cc-btn-hover-shadow, var(--cc-btn-shadow)) !important;
+}
+
+/* Empty State */
+.premium-feed-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Full container height for empty state */
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.premium-feed-empty i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.premium-feed-empty h3 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.premium-feed-empty p {
+    font-size: 18px;
+}
+
+/* Scroll Indicator */
+.premium-scroll-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    z-index: 100;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+.premium-scroll-indicator i {
+    font-size: 24px;
+}
+
+body.premium-dashboard-mode .premium-scroll-indicator {
+    bottom: calc(var(--premium-bottom-nav-height) + 18px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .premium-channel-slide .channel-card {
+        max-width: 380px;
+        width: calc(100% - 30px); /* Slightly smaller margins on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .premium-channel-slide .channel-card {
+        max-width: 340px;
+        width: calc(100% - 24px); /* Even smaller margins on very small screens */
+        max-height: 70%;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .premium-channel-slide .channel-card {
+        max-width: 450px;
+        width: calc(100% - 50px); /* Larger margins on tablets */
+    }
+}
+
+@media (min-width: 1025px) {
+    .premium-channel-slide .channel-card {
+        max-width: 550px;
+        width: calc(100% - 60px); /* Largest margins on desktop */
+    }
+}

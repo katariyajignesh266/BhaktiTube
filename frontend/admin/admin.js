@@ -779,6 +779,54 @@ async function migrateExistingChannels() {
 // Run migration once on admin panel load
 migrateExistingChannels();
 
+/* ==========================================================================
+   ⚡ DASHBOARD LAYOUT MODE CONTROLLER
+   ========================================================================== */
+
+// Load dashboard layout setting on page load
+async function loadDashboardLayoutSetting() {
+    try {
+        const layoutDoc = await getDoc(doc(db, "settings", "dashboardLayout"));
+        if (layoutDoc.exists()) {
+            const layoutMode = layoutDoc.data().layoutMode || "classic";
+            const radioButtons = document.querySelectorAll('input[name="dashboardLayout"]');
+            radioButtons.forEach(radio => {
+                if (radio.value === layoutMode) {
+                    radio.checked = true;
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Error loading dashboard layout setting:", e);
+    }
+}
+
+// Save dashboard layout setting
+document.getElementById("saveDashboardLayoutBtn").addEventListener("click", async () => {
+    const selectedLayout = document.querySelector('input[name="dashboardLayout"]:checked');
+    if (!selectedLayout) {
+        showToast("Please select a layout mode", "error");
+        return;
+    }
+
+    try {
+        await setDoc(doc(db, "settings", "dashboardLayout"), {
+            layoutMode: selectedLayout.value,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+        showToast(`Dashboard layout set to ${selectedLayout.value.charAt(0).toUpperCase() + selectedLayout.value.slice(1)}`, "success");
+    } catch (e) {
+        showToast(e.message, "error");
+    }
+});
+
+// Load dashboard layout setting when admin panel initializes
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        await loadDashboardLayoutSetting();
+    }
+});
+
 /* 15. CHANNELS LOADER GRID FACTORY WRAPPER */
 async function loadChannels() {
     const channelsList = document.getElementById("channelsList");

@@ -9,9 +9,36 @@
  * @param {string|number} channel.totalVideos - Total videos count
  * @param {string} channel.channelId - ID of the channel
  */
-export function getChannelCardMarkup(channel) {
+function getChannelThemeId(channel) {
+    const theme =
+        channel.channelCardTheme ||
+        channel.channelCardThemeId ||
+        channel.channelTheme ||
+        channel.channelThemeId ||
+        channel.channelThemeKey ||
+        channel.cardTheme ||
+        channel.cardThemeId ||
+        channel.cardThemeKey ||
+        channel.selectedTheme ||
+        channel.selectedThemeId ||
+        channel.themeId ||
+        channel.themeKey ||
+        channel.theme;
+    const themeId = typeof theme === "string"
+        ? theme
+        : theme?.id || theme?.themeId || theme?.key;
+
+    return typeof themeId === "string" && /^[a-z0-9_-]+$/i.test(themeId)
+        ? themeId
+        : "";
+}
+
+export function getChannelCardMarkup(channel, options = {}) {
+    const themeId = options.applyChannelTheme === true ? getChannelThemeId(channel) : "";
+    const themeAttribute = themeId ? ` data-cc-theme="${themeId}"` : "";
+
     return `
-    <div class="channel-card">
+    <div class="channel-card"${themeAttribute}>
         <img src="${channel.channelLogo}" class="channel-img" alt="${channel.channelName || 'Channel'} Logo" loading="lazy">
         <h3>${channel.channelName || ''}</h3>
         <p>👥 ${channel.subscribers || '0'}</p>

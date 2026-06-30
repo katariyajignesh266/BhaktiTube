@@ -371,6 +371,37 @@ viewport-fit=cover">
                             <p class="text-muted">Configure default constants, localization, and presentation rules</p>
                         </div>
                     </div>
+                    
+                    <div class="premium-panel max-w-2xl" style="margin-bottom: 24px;">
+                        <div class="panel-header"><h2><i class="fa-solid fa-layer-group text-brand"></i> Dashboard Layout Mode</h2></div>
+                        <div class="premium-form">
+                            <div class="form-group">
+                                <label>Dashboard Layout Style</label>
+                                <div class="dashboard-layout-options">
+                                    <label class="layout-option">
+                                        <input type="radio" name="dashboardLayout" value="classic" checked>
+                                        <div class="layout-option-card">
+                                            <i class="fa-solid fa-grip"></i>
+                                            <span>Classic Layout</span>
+                                            <small>Traditional grid with channels and videos</small>
+                                        </div>
+                                    </label>
+                                    <label class="layout-option">
+                                        <input type="radio" name="dashboardLayout" value="premium">
+                                        <div class="layout-option-card">
+                                            <i class="fa-solid fa-bolt"></i>
+                                            <span>Premium Channel Feed</span>
+                                            <small>Immersive scroll-snap channel experience</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="button" id="saveDashboardLayoutBtn" class="btn-primary">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Dashboard Layout
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="premium-panel max-w-2xl">
                         <div class="panel-header"><h2><i class="fa-solid fa-sliders-up"></i> Global Interface Configurations</h2></div>
                         <div class="dummy-settings-body premium-form">

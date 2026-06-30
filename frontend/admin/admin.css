@@ -1,4 +1,78 @@
 /* ==========================================================================
+   ⚡ DASHBOARD LAYOUT OPTIONS STYLES
+   ========================================================================== */
+
+.dashboard-layout-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.layout-option {
+    cursor: pointer;
+    position: relative;
+}
+
+.layout-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.layout-option-card {
+    padding: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-surface);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+}
+
+.layout-option-card i {
+    font-size: 32px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.layout-option-card span {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.layout-option-card small {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.layout-option input[type="radio"]:checked + .layout-option-card {
+    border-color: var(--brand-primary);
+    background: var(--bg-surface-hover);
+    box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.layout-option input[type="radio"]:checked + .layout-option-card i {
+    color: var(--brand-primary);
+}
+
+.layout-option input[type="radio"]:checked + .layout-option-card span {
+    color: var(--brand-primary);
+}
+
+.layout-option:hover .layout-option-card {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
    ⚡ BHAKTITUBE PREMIUM DASHBOARD ARCHITECTURE - COMPLETE PRODUCTION REFACTOR
    ========================================================================== */
 
