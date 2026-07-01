@@ -266,7 +266,7 @@ async function renderPlaylistVideos(sanitizedItems) {
                   <span class="publish-time">${publishedAt}</span>
                 </div>
               </div>
-              <div class="video-menu-btn" onclick="event.stopPropagation(); shareVideo('${videoId}')">
+              <div class="video-menu-btn" onclick="event.stopPropagation(); window.shareVideo('${videoId}')">
                 <i class="fa-solid fa-ellipsis-vertical"></i>
               </div>
             </div>
@@ -397,7 +397,7 @@ container.innerHTML += `
         <span class="publish-time">${publishedAt}</span>
       </div>
     </div>
-    <div class="video-menu-btn" onclick="event.stopPropagation(); shareVideo('${videoId}')">
+    <div class="video-menu-btn" onclick="event.stopPropagation(); window.shareVideo('${videoId}')">
       <i class="fa-solid fa-ellipsis-vertical"></i>
     </div>
   </div>
@@ -526,34 +526,7 @@ function formatTimeAgo(dateString) {
   return 'Just now';
 }
 
-async function shareVideo(videoId) {
-  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-  
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'BhaktiTube Video',
-        text: 'Check out this devotional video on BhaktiTube',
-        url: videoUrl
-      });
-    } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('Error sharing:', err);
-        fallbackShare(videoUrl);
-      }
-    }
-  } else {
-    fallbackShare(videoUrl);
-  }
-}
-
-function fallbackShare(url) {
-  navigator.clipboard.writeText(url).then(() => {
-    alert('Video URL copied to clipboard!');
-  }).catch(() => {
-    prompt('Copy this video URL:', url);
-  });
-}
+// Share video function is now defined in script.js for global availability
 
 // Embed building and completion remapped to player-core.js
 

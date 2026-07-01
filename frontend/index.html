@@ -20,6 +20,7 @@ viewport-fit=cover">
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="channel-card-themes.css"/>
   <link rel="stylesheet" href="premium-channel-feed.css"/>
+  <link rel="stylesheet" href="all-channels-feed.css"/>
 
   <!-- ICONS -->
   <link
@@ -254,6 +255,16 @@ viewport-fit=cover">
 <div id="premiumScrollIndicator" class="premium-scroll-indicator" style="display: none;">
   <i class="fa-solid fa-chevron-down"></i>
   <span>Scroll for more</span>
+</div>
+
+<!-- ALL CHANNELS FEED (Hidden by default, shown when enabled) -->
+
+<div id="allChannelsFeed" class="all-channels-feed">
+  <div class="all-channels-feed-loader">
+    <div class="spinner"></div>
+  </div>
+  <div id="allChannelsFeedContent"></div>
+  <div id="allChannelsLoadMoreTrigger"></div>
 </div>
 
 

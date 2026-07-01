@@ -814,7 +814,15 @@ document.getElementById("saveDashboardLayoutBtn").addEventListener("click", asyn
             layoutMode: selectedLayout.value,
             updatedAt: serverTimestamp()
         }, { merge: true });
-        showToast(`Dashboard layout set to ${selectedLayout.value.charAt(0).toUpperCase() + selectedLayout.value.slice(1)}`, "success");
+        
+        // Format display name for toast message
+        const layoutNames = {
+            'classic': 'Classic Layout',
+            'premium': 'Premium Channel Feed',
+            'all-channels': 'All Channels Feed'
+        };
+        const displayName = layoutNames[selectedLayout.value] || selectedLayout.value;
+        showToast(`Dashboard layout set to ${displayName}`, "success");
     } catch (e) {
         showToast(e.message, "error");
     }

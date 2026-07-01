@@ -1,0 +1,334 @@
+/* ==========================================================================
+   ⚡ ALL CHANNELS FEED - YOUTUBE HOME STYLE LAYOUT
+   ========================================================================== */
+
+/* All Channels Feed Container - Occupies content area only */
+.all-channels-feed {
+    display: none; /* Hidden by default, shown when enabled */
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #606060 #f0f0f0;
+    position: relative;
+    isolation: isolate;
+    
+    /* YouTube-style background */
+    background-color: #ffffff;
+}
+
+body.all-channels-dashboard-mode {
+    --all-channels-feed-height: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+}
+
+body.all-channels-dashboard-mode .header,
+body.all-channels-dashboard-mode .category-section {
+    flex: 0 0 auto;
+}
+
+body.all-channels-dashboard-mode .all-channels-feed {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+}
+
+/* Feed Content Container */
+#allChannelsFeedContent {
+    width: 100%;
+    min-height: 100%;
+    position: relative;
+    z-index: 1;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff;
+}
+
+/* Custom Scrollbar for Chrome/Safari */
+.all-channels-feed::-webkit-scrollbar {
+    width: 8px;
+}
+
+.all-channels-feed::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+.all-channels-feed::-webkit-scrollbar-thumb {
+    background: #606060;
+    border-radius: 4px;
+}
+
+.all-channels-feed::-webkit-scrollbar-thumb:hover {
+    background: #404040;
+}
+
+/* Loading Spinner */
+.all-channels-feed-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    width: 100%;
+}
+
+.all-channels-feed-loader .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f0f0f0;
+    border-top: 4px solid #ff0000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.all-channels-feed-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #606060;
+    text-align: center;
+    width: 100%;
+}
+
+.all-channels-feed-empty i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+    color: #ff0000;
+}
+
+.all-channels-feed-empty h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #0f0f0f;
+}
+
+.all-channels-feed-empty p {
+    font-size: 16px;
+    color: #606060;
+}
+
+/* Load More Trigger - Invisible element for IntersectionObserver */
+#allChannelsLoadMoreTrigger {
+    width: 100%;
+    height: 100px;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Feed Video Container - Single column vertical layout */
+.all-channels-videos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #ffffff;
+    width: 100%;
+}
+
+/* Reuse exact Channel Page Video Card Styles */
+.all-channels-videos-container .video-card {
+    background-color: #ffffff;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    overflow: visible;
+    transition: none;
+    width: 100%;
+}
+
+.all-channels-videos-container .video-thumbnail-wrapper {
+    width: 100%;
+    position: relative;
+    margin: 0;
+}
+
+.all-channels-videos-container .video-thumbnail {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    border-radius: 0;
+    margin: 0;
+}
+
+.all-channels-videos-container .video-metadata-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.all-channels-videos-container .channel-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #606060;
+}
+
+.all-channels-videos-container .channel-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.all-channels-videos-container .channel-avatar span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.all-channels-videos-container .video-info-section {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.all-channels-videos-container .video-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #0f0f0f;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+}
+
+.all-channels-videos-container .video-meta-line {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: #606060;
+    line-height: 1.3;
+    flex-wrap: wrap;
+}
+
+.all-channels-videos-container .video-meta-line .channel-name {
+    color: #0f0f0f;
+    font-weight: 500;
+}
+
+.all-channels-videos-container .video-meta-line .separator {
+    color: #606060;
+    font-size: 12px;
+}
+
+.all-channels-videos-container .video-meta-line .view-count,
+.all-channels-videos-container .video-meta-line .publish-time {
+    color: #606060;
+}
+
+.all-channels-videos-container .video-menu-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: #606060;
+    transition: background-color 0.2s;
+}
+
+.all-channels-videos-container .video-menu-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.all-channels-videos-container .video-menu-btn i {
+    font-size: 18px;
+}
+
+/* Responsive Design */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .all-channels-videos-container {
+        padding: 0 16px;
+    }
+    
+    .all-channels-videos-container .video-title {
+        font-size: 15px;
+    }
+}
+
+@media (min-width: 1025px) {
+    .all-channels-videos-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+    
+    .all-channels-videos-container .video-title {
+        font-size: 16px;
+    }
+    
+    .all-channels-videos-container .channel-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .all-channels-videos-container .video-menu-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .all-channels-videos-container {
+        padding: 0;
+    }
+    
+    .all-channels-videos-container .video-title {
+        font-size: 15px;
+    }
+    
+    .all-channels-videos-container .channel-avatar {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .all-channels-videos-container .video-menu-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
