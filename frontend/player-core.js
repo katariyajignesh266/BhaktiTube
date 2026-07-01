@@ -8,6 +8,7 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import { watchProgressEngine } from "./analytics-engine.js";
+import { ViewportUtility } from "./viewport-utility.js";
 
 // Module variables for state management
 let ytPlayer = null;
@@ -24,6 +25,10 @@ let youtubeApiReadyPromise = null;
 const watchedVideos = new Set(
   JSON.parse(localStorage.getItem("watchedChannelVideos") || "[]")
 );
+
+// Initialize viewport utility for dynamic viewport tracking
+const viewportUtility = new ViewportUtility();
+let isViewportInitialized = false;
 
 // Load the YouTube API Promise
 function getYouTubeApiReady() {
@@ -206,7 +211,31 @@ async function startPremiumVideoPlayer(videoId, videoMeta, isChannelVideo) {
   const playerIframe = document.getElementById("youtubePlayer");
   const titleEl = document.querySelector(".video-title-mini");
 
-  if (videoPopup) videoPopup.style.display = "flex";
+  // Initialize viewport utility for dynamic viewport tracking
+  if (!isViewportInitialized) {
+    viewportUtility.init();
+    isViewportInitialized = true;
+    
+    // Observe video container for resize changes
+    const videoContainer = document.getElementById("videoContainer");
+    if (videoContainer) {
+      viewportUtility.observeElement(videoContainer);
+    }
+    
+    // Add callback for viewport changes
+    viewportUtility.onResize((viewport) => {
+      console.log('Viewport changed:', viewport);
+      // Update player dimensions if needed
+      if (videoPopup && videoPopup.style.display === 'flex') {
+        // Player is active, dimensions are handled by CSS custom properties
+      }
+    });
+  }
+
+  if (videoPopup) {
+    videoPopup.style.display = "flex";
+    videoPopup.classList.add("active");
+  }
   document.body.style.overflow = "hidden";
 
   let resumePosition = 0;
@@ -517,9 +546,19 @@ window.closeVideo = function () {
 
   const popup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
-  if (popup) popup.style.display = "none";
+  const videoContainer = document.getElementById("videoContainer");
+  
+  if (popup) {
+    popup.style.display = "none";
+    popup.classList.remove("active");
+  }
   if (playerIframe) playerIframe.src = "";
   document.body.style.overflow = "auto";
+  
+  // Unobserve video container when player closes
+  if (videoContainer && isViewportInitialized) {
+    viewportUtility.unobserveElement(videoContainer);
+  }
 
   if (ytPlayer && typeof ytPlayer.stopVideo === "function") {
     ytPlayer.stopVideo();

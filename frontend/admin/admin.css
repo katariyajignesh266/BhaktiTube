@@ -139,8 +139,9 @@ html {
 body {
     background-color: var(--bg-main);
     color: var(--text-primary);
-    min-height: 100dvh; /* Dynamic viewport height for Chrome mobile */
-    min-height: 100vh; /* Fallback for older browsers */
+    /* Dynamic viewport height handled by viewport-fix.css */
+    min-height: var(--viewport-height);
+    min-height: 100dvh; /* Fallback */
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -164,8 +165,9 @@ body {
 /* 3. SYSTEM MASTER LAYOUT CONTAINER */
 .dashboard-wrapper {
     display: flex;
-    min-height: 100dvh; /* Dynamic viewport height for Chrome mobile */
-    min-height: 100vh; /* Fallback for older browsers */
+    /* Dynamic viewport height handled by viewport-fix.css */
+    min-height: var(--viewport-height);
+    min-height: 100dvh; /* Fallback */
     position: relative;
 }
 
@@ -340,8 +342,9 @@ body {
 .main-content {
     flex: 1;
     margin-left: clamp(250px, 15.625rem + 2vw, 280px);
-    min-height: 100dvh; /* Dynamic viewport height for Chrome mobile */
-    min-height: 100vh; /* Fallback for older browsers */
+    /* Dynamic viewport height handled by viewport-fix.css */
+    min-height: var(--viewport-height);
+    min-height: 100dvh; /* Fallback */
     display: flex;
     flex-direction: column;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);

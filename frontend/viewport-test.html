@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Viewport Fix Test - BhaktiTube</title>
+    <link rel="stylesheet" href="responsive-system.css">
+    <link rel="stylesheet" href="viewport-fix.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="channel.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-info {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        .test-info h3 {
+            margin: 0 0 10px 0;
+            color: #00bfa5;
+        }
+        .test-info p {
+            margin: 5px 0;
+            color: #ccc;
+        }
+        .test-info .value {
+            color: #fff;
+            font-weight: bold;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .test-buttons button {
+            padding: 10px 15px;
+            background: #00bfa5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .test-buttons button:hover {
+            background: #00a896;
+        }
+        .test-player-trigger {
+            background: #ff6600;
+            margin-top: 20px;
+        }
+        .viewport-status {
+            background: #0f0f0f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+        .viewport-status.pass {
+            border-color: #00ff00;
+        }
+        .viewport-status.fail {
+            border-color: #ff0000;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px;
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+        .status-item.pass {
+            color: #00ff00;
+        }
+        .status-item.fail {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Viewport Fix Test</h1>
+        <p>This page tests the dynamic viewport implementation for Chrome Mobile and other mobile browsers.</p>
+        
+        <div class="test-info">
+            <h3>Current Viewport Information</h3>
+            <p>Window Inner Width: <span class="value" id="windowWidth">-</span></p>
+            <p>Window Inner Height: <span class="value" id="windowHeight">-</span></p>
+            <p>Screen Width: <span class="value" id="screenWidth">-</span></p>
+            <p>Screen Height: <span class="value" id="screenHeight">-</span></p>
+            <p>Device Pixel Ratio: <span class="value" id="devicePixelRatio">-</span></p>
+            <p>Visual Viewport Available: <span class="value" id="visualViewportAvailable">-</span></p>
+            <p>Visual Viewport Width: <span class="value" id="visualViewportWidth">-</span></p>
+            <p>Visual Viewport Height: <span class="value" id="visualViewportHeight">-</span></p>
+            <p>Visual Viewport Scale: <span class="value" id="visualViewportScale">-</span></p>
+        </div>
+
+        <div class="viewport-status" id="viewportStatus">
+            <h3>Viewport Fix Status</h3>
+            <div class="status-item" id="cssVarStatus">
+                <span>CSS Custom Properties Set:</span>
+                <span>Checking...</span>
+            </div>
+            <div class="status-item" id="dvhSupport">
+                <span>100dvh Support:</span>
+                <span>Checking...</span>
+            </div>
+            <div class="status-item" id="visualViewportApi">
+                <span>Visual Viewport API:</span>
+                <span>Checking...</span>
+            </div>
+            <div class="status-item" id="safeAreaSupport">
+                <span>Safe Area Insets:</span>
+                <span>Checking...</span>
+            </div>
+        </div>
+
+        <div class="test-buttons">
+            <button onclick="simulateViewport(320, 568)">Simulate iPhone 5 (320×568)</button>
+            <button onclick="simulateViewport(375, 667)">Simulate iPhone 8 (375×667)</button>
+            <button onclick="simulateViewport(390, 844)">Simulate iPhone 12 (390×844)</button>
+            <button onclick="simulateViewport(412, 915)">Simulate Pixel 5 (412×915)</button>
+            <button onclick="simulateViewport(414, 896)">Simulate Pixel 3 (414×896)</button>
+            <button onclick="simulateViewport(360, 640)">Simulate Galaxy S8 (360×640)</button>
+            <button onclick="simulateViewport(412, 915)">Simulate Galaxy S21 (412×915)</button>
+            <button onclick="simulateViewport(430, 932)">Simulate OnePlus 9 (430×932)</button>
+        </div>
+
+        <div class="test-buttons">
+            <button onclick="testToolbarToggle()">Test Toolbar Toggle</button>
+            <button onclick="testOrientationChange()">Test Orientation Change</button>
+            <button onclick="refreshViewportInfo()">Refresh Info</button>
+        </div>
+
+        <div class="test-buttons">
+            <button class="test-player-trigger" onclick="openTestPlayer()">Open Test Player</button>
+        </div>
+
+        <div class="test-info">
+            <h3>Test Instructions</h3>
+            <p>1. Open this page on Chrome Android to test the dynamic viewport fix</p>
+            <p>2. Check that all viewport information is displayed correctly</p>
+            <p>3. Use the simulate buttons to test different viewport sizes</p>
+            <p>4. Test toolbar toggle to ensure player adjusts correctly</p>
+            <p>5. Open the test player to verify controls are never clipped</p>
+            <p>6. Test in both portrait and landscape orientations</p>
+        </div>
+    </div>
+
+    <!-- Test Player (Same structure as main player) -->
+    <div id="videoPopup" class="video-popup">
+        <div class="popup-content">
+            <div class="video-container" id="videoContainer">
+                <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
+                
+                <div id="customOverlay" class="custom-overlay">
+                    <div class="player-top-bar">
+                        <button class="player-btn-round top-back-btn" onclick="event.stopPropagation(); closeTestVideo();">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <span class="video-title-mini">Test Video - Viewport Fix Verification</span>
+                    </div>
+
+                    <div class="middle-skip-controls">
+                        <button class="skip-btn-center backward-btn">
+                            <i class="fa-solid fa-undo"></i>
+                            <span class="btn-text">10s</span>
+                        </button>
+                        <button class="skip-btn-center forward-btn">
+                            <i class="fa-solid fa-redo"></i>
+                            <span class="btn-text">10s</span>
+                        </button>
+                    </div>
+
+                    <div class="player-bottom-controls">
+                        <div class="progress-container">
+                            <div class="progress-bar" id="progressBar" style="width: 50%;"></div>
+                        </div>
+
+                        <div class="controls-row">
+                            <div class="controls-left">
+                                <button class="player-btn-round">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                </button>
+                            </div>
+
+                            <div class="controls-center">
+                                <span id="currentTime">05:30</span>
+                                <span class="time-separator">/</span>
+                                <span id="totalTime">10:00</span>
+                            </div>
+
+                            <div class="controls-right">
+                                <div class="speed-control">
+                                    <button class="player-btn-rect">
+                                        <i class="fa-solid fa-gauge-high"></i> <span id="speedTxt">1x</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
+                                    </button>
+                                </div>
+
+                                <button class="player-btn-round fullscreen-btn">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script type="module">
+        import { ViewportUtility } from './viewport-utility.js';
+
+        // Initialize viewport utility
+        const viewportUtility = new ViewportUtility();
+        viewportUtility.init();
+
+        // Update viewport information
+        function updateViewportInfo() {
+            document.getElementById('windowWidth').textContent = window.innerWidth + 'px';
+            document.getElementById('windowHeight').textContent = window.innerHeight + 'px';
+            document.getElementById('screenWidth').textContent = screen.width + 'px';
+            document.getElementById('screenHeight').textContent = screen.height + 'px';
+            document.getElementById('devicePixelRatio').textContent = window.devicePixelRatio;
+
+            const visualViewportAvailable = window.visualViewport ? 'Yes' : 'No';
+            document.getElementById('visualViewportAvailable').textContent = visualViewportAvailable;
+
+            if (window.visualViewport) {
+                document.getElementById('visualViewportWidth').textContent = window.visualViewport.width + 'px';
+                document.getElementById('visualViewportHeight').textContent = window.visualViewport.height + 'px';
+                document.getElementById('visualViewportScale').textContent = window.visualViewport.scale;
+            } else {
+                document.getElementById('visualViewportWidth').textContent = 'N/A';
+                document.getElementById('visualViewportHeight').textContent = 'N/A';
+                document.getElementById('visualViewportScale').textContent = 'N/A';
+            }
+
+            // Check CSS custom properties
+            const root = document.documentElement;
+            const viewportHeight = getComputedStyle(root).getPropertyValue('--viewport-height');
+            const cssVarStatus = document.getElementById('cssVarStatus');
+            if (viewportHeight && viewportHeight !== 'none' && viewportHeight !== '') {
+                cssVarStatus.className = 'status-item pass';
+                cssVarStatus.querySelector('span:last-child').textContent = '✓ Set (' + viewportHeight.trim() + ')';
+            } else {
+                cssVarStatus.className = 'status-item fail';
+                cssVarStatus.querySelector('span:last-child').textContent = '✗ Not set';
+            }
+
+            // Check dvh support
+            const dvhSupport = document.getElementById('dvhSupport');
+            const testElement = document.createElement('div');
+            testElement.style.height = '100dvh';
+            const dvhSupported = testElement.style.height === '100dvh';
+            dvhSupport.className = dvhSupported ? 'status-item pass' : 'status-item fail';
+            dvhSupport.querySelector('span:last-child').textContent = dvhSupported ? '✓ Supported' : '✗ Not supported';
+
+            // Check visual viewport API
+            const visualViewportApi = document.getElementById('visualViewportApi');
+            visualViewportApi.className = window.visualViewport ? 'status-item pass' : 'status-item fail';
+            visualViewportApi.querySelector('span:last-child').textContent = window.visualViewport ? '✓ Available' : '✗ Not available';
+
+            // Check safe area support
+            const safeAreaSupport = document.getElementById('safeAreaSupport');
+            const safeAreaTop = getComputedStyle(root).getPropertyValue('--safe-area-inset-top');
+            safeAreaSupport.className = safeAreaTop && safeAreaTop !== '0px' ? 'status-item pass' : 'status-item fail';
+            safeAreaSupport.querySelector('span:last-child').textContent = safeAreaTop && safeAreaTop !== '0px' ? '✓ Supported (' + safeAreaTop.trim() + ')' : '✗ Not supported (0px)';
+
+            // Update overall status
+            const allPass = document.querySelectorAll('.status-item.pass').length === 4;
+            const viewportStatus = document.getElementById('viewportStatus');
+            viewportStatus.className = allPass ? 'viewport-status pass' : 'viewport-status fail';
+        }
+
+        // Simulate different viewport sizes
+        window.simulateViewport = function(width, height) {
+            // This is a simulation - in real testing, you'd use device emulation
+            alert(`Simulating viewport size: ${width}×${height}\n\nIn a real test, use Chrome DevTools device emulation or test on actual devices.`);
+            updateViewportInfo();
+        };
+
+        // Test toolbar toggle
+        window.testToolbarToggle = function() {
+            alert('To test toolbar toggle:\n1. Open this page in Chrome Android\n2. Scroll up to collapse address bar\n3. Scroll down to expand address bar\n4. Verify player adjusts correctly');
+        };
+
+        // Test orientation change
+        window.testOrientationChange = function() {
+            alert('To test orientation change:\n1. Rotate your device\n2. Verify player adjusts to new orientation\n3. Check controls remain visible');
+        };
+
+        // Refresh viewport info
+        window.refreshViewportInfo = function() {
+            updateViewportInfo();
+        };
+
+        // Open test player
+        window.openTestPlayer = function() {
+            const videoPopup = document.getElementById('videoPopup');
+            if (videoPopup) {
+                videoPopup.style.display = 'flex';
+                videoPopup.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Load a test video
+                const playerIframe = document.getElementById('youtubePlayer');
+                if (playerIframe) {
+                    playerIframe.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3';
+                }
+            }
+        };
+
+        // Close test player
+        window.closeTestVideo = function() {
+            const videoPopup = document.getElementById('videoPopup');
+            const playerIframe = document.getElementById('youtubePlayer');
+            
+            if (videoPopup) {
+                videoPopup.style.display = 'none';
+                videoPopup.classList.remove('active');
+            }
+            if (playerIframe) {
+                playerIframe.src = '';
+            }
+            document.body.style.overflow = 'auto';
+        };
+
+        // Initial update
+        updateViewportInfo();
+
+        // Update on viewport changes
+        viewportUtility.onResize(() => {
+            updateViewportInfo();
+        });
+
+        // Update on window resize
+        window.addEventListener('resize', updateViewportInfo);
+
+        // Update on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateViewportInfo, 100);
+        });
+    </script>
+</body>
+</html>

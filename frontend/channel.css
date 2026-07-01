@@ -253,14 +253,13 @@ cursor:pointer;
 
 }
 
-/* ૧. વિડિયો પોપઅપ કન્ટેનર (આખી સ્ક્રીન કવર કરશે અને બ્લેક બેકગ્રાઉન્ડ આપશે) - Chrome Mobile Fix */
+/* ૧. વિડિયો પોપઅપ કન્ટેનર (આખી સ્ક્રીન કવર કરશે અને બ્લેક બેકગ્રાઉન્ડ આપશે) - Dynamic viewport handled by viewport-fix.css */
 .video-popup {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
-    height: 100dvh !important; /* Dynamic viewport height for Chrome mobile */
-    height: 100vh !important; /* Fallback for older browsers */
+    /* height is now handled by viewport-fix.css using dynamic viewport CSS custom properties */
     background-color: #000000 !important;
     z-index: 99999 !important; /* સૌથી ઉપર દેખાય તે માટે */
     display: none; /* JS થી flex થશે */
@@ -269,28 +268,26 @@ cursor:pointer;
     overflow: hidden !important;
 }
 
-/* પોપઅપની અંદરનું મેઈન કન્ટેન્ટ બોક્સ - Chrome Mobile Fix */
+/* પોપઅપની અંદરનું મેઈન કન્ટેન્ટ બોક્સ - Dynamic viewport handled by viewport-fix.css */
 .popup-content {
     position: relative !important;
     width: 100% !important;
-    height: 100dvh !important; /* Dynamic viewport height for Chrome mobile */
-    height: 100vh !important; /* Fallback for older browsers */
+    /* height is now handled by viewport-fix.css using dynamic viewport CSS custom properties */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
 }
 
-/* ૨. આઇફ્રેમ પ્લેયર - ૪ થી ૫ ગણું મેજિક સ્કેલિંગ સેટિંગ - Chrome Mobile Fix */
+/* ૨. આઇફ્રેમ પ્લેયર - Dynamic viewport handled by viewport-fix.css */
 .popup-content iframe {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
     
-    /* 100vw/vh રાખવાથી સ્કેલિંગ વખતે વિડિયો કપાશે નહીં અને બધું મોટું દેખાશે */
+    /* width/height are now handled by viewport-fix.css using dynamic viewport CSS custom properties */
     width: 100vw !important; 
-    height: 100dvh !important; /* Dynamic viewport height for Chrome mobile */
-    height: 100vh !important; /* Fallback for older browsers */
+    /* height is now handled by viewport-fix.css using dynamic viewport CSS custom properties */
 
     /* સેન્ટર કરવા માટે અને બધું ૪.૫ ગણું (4.5x) મોટું કરવા માટે scale નો ઉપયોગ કર્યો */
     transform: translate(-50%, -50%) scale(1) !important; 
@@ -345,9 +342,12 @@ cursor:pointer;
 #youtubePlayer:-moz-full-screen,
 #youtubePlayer:-ms-fullscreen {
     width: 100vw !important;
-    height: 100vh !important;
+    /* Dynamic viewport height handled by viewport-fix.css */
+    height: var(--viewport-height) !important;
+    height: 100dvh !important; /* Fallback */
     max-width: 100vw !important;
-    max-height: 100vh !important;
+    max-height: var(--viewport-height) !important;
+    max-height: 100dvh !important; /* Fallback */
     
     /* આ મેજિક લાઇન છે જે વીડિયોને આજુબાજુ જગ્યા છોડવા નહીં દે અને પ્રોપર સેન્ટરમાં રાખશે */
     object-fit: cover !important; 
@@ -361,13 +361,15 @@ cursor:pointer;
     background-color: #000000 !important;
 }
 
-/* પોપઅપ કન્ટેનર માટે પણ પ્રોપર સેટિંગ */
+/* પોપઅપ કન્ટેનર માટે પણ પ્રોપર સેટિંગ - Dynamic viewport handled by viewport-fix.css */
 .video-popup {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
+    /* Dynamic viewport height handled by viewport-fix.css */
+    height: var(--viewport-height) !important;
+    height: 100dvh !important; /* Fallback */
     background-color: #000000 !important;
     z-index: 99999 !important;
     display: none;
@@ -386,23 +388,22 @@ cursor:pointer;
 }
 
 
-/* ૧. આખી સ્ક્રીનમાં ફિટ કરવા માટેનું મેઈન વિડિયો કન્ટેનર - Chrome Mobile Fix */
+/* ૧. આખી સ્ક્રીનમાં ફિટ કરવા માટેનું મેઈન વિડિયો કન્ટેનર - Dynamic viewport handled by viewport-fix.css */
 .video-container {
     position: relative;
     width: 100vw;
-    height: 100dvh; /* Dynamic viewport height for Chrome mobile */
-    height: 100vh; /* Fallback for older browsers */
+    /* height is now handled by viewport-fix.css using dynamic viewport CSS custom properties */
     background: #000000;
     overflow: hidden;
 }
 
-/* ૨. આઈફ્રેમ (YouTube પ્લેયર) નું સેટિંગ - Chrome Mobile Fix */
+/* ૨. આઈફ્રેમ (YouTube પ્લેયર) નું સેટિંગ - Dynamic viewport handled by viewport-fix.css */
 .video-container iframe {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    /* height is now handled by viewport-fix.css using dynamic viewport CSS custom properties */
     border: none;
     object-fit: cover;
     pointer-events: auto; /* જેથી કસ્ટમ બટન સિવાયની જગ્યાએ ક્લિક કરવાથી વિડિયો પોઝ ન થાય */
@@ -451,10 +452,12 @@ cursor:pointer;
     border-color: #ff0000;
 }
 
-/* ૬. ફુલસ્ક્રીન મોડ માટે ખાસ વધારાનું સેટિંગ */
+/* ૬. ફુલસ્ક્રીન મોડ માટે ખાસ વધારાનું સેટિંગ - Dynamic viewport handled by viewport-fix.css */
 .fullscreen {
     width: 100vw !important;
-    height: 100vh !important;
+    /* Dynamic viewport height handled by viewport-fix.css */
+    height: var(--viewport-height) !important;
+    height: 100dvh !important; /* Fallback */
 }
 
 
@@ -761,7 +764,7 @@ body {
     background: #000;
 }
 
-/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું માસ્ટર લેયર સેટિંગ */
+/* જ્યારે ફૂલસ્ક્રીન એક્ટિવેટ થાય ત્યારનું માસ્ટર લેયર સેટિંગ - Dynamic viewport handled by viewport-fix.css */
 .video-container:fullscreen .fs-overlay,
 .video-container:-webkit-full-screen .fs-overlay {
     display: flex !important;
@@ -771,7 +774,9 @@ body {
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
+    /* Dynamic viewport height handled by viewport-fix.css */
+    height: var(--viewport-height) !important;
+    height: 100dvh !important; /* Fallback */
     background: rgba(0, 0, 0, 0.5); 
     z-index: 2147483647 !important; /* તમારા બનાવેલા કંટ્રોલ્સ હંમેશા યુટ્યુબની ઉપર જ રેહશે */
     cursor: pointer;
@@ -906,13 +911,15 @@ body {
    👑 અલ્ટ્રા-પ્રીમિયમ મોર્ડન વિડિયો પ્લેયર CSS (Big Icons)
    ============================================================ */
 
-/* વિડિયો પોપઅપનું મેઇન બેકગ્રાઉન્ડ લેયર */
+/* વિડિયો પોપઅપનું મેઇન બેકગ્રાઉન્ડ લેયર - Dynamic viewport handled by viewport-fix.css */
 .video-popup {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    /* Dynamic viewport height handled by viewport-fix.css */
+    height: var(--viewport-height);
+    height: 100dvh; /* Fallback */
     background: rgba(10, 10, 12, 0.98); 
     display: none; 
     align-items: center;
@@ -936,7 +943,7 @@ body {
     box-shadow: 0px 30px 60px rgba(0, 0, 0, 0.8);
 }
 
-/* માસ્ટર ઓવરલે કંટ્રોલ્સ - સ્મૂધ પ્રીમિયમ સિનેમેટિક શેડો */
+/* માસ્ટર ઓવરલે કંટ્રોલ્સ - સ્મૂધ પ્રીમિયમ સિનેમેટિક શેડો - Dynamic viewport handled by viewport-fix.css */
 .custom-overlay {
     position: absolute;
     top: 0;
@@ -949,7 +956,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
-    padding: 24px; 
+    /* padding is now handled by viewport-fix.css with safe-area insets */
     transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     opacity: 1;
     pointer-events: auto !important;
@@ -1057,11 +1064,11 @@ body {
 }
 
 /* ------------------------------------------------------------
-   👇 બોટમ પેનલ અને પ્રોગ્રેસ બાર
+   👇 બોટમ પેનલ અને પ્રોગ્રેસ બાર - Dynamic viewport handled by viewport-fix.css
    ------------------------------------------------------------ */
 .player-bottom-controls {
     width: 100%;
-    padding-bottom: 6px; 
+    /* padding-bottom is now handled by viewport-fix.css with safe-area insets */
     box-sizing: border-box;
 }
 

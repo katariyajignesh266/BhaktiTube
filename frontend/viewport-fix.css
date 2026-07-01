@@ -1,0 +1,383 @@
+/**
+ * Dynamic Viewport Fix for Chrome Mobile
+ * 
+ * This CSS file integrates with viewport-utility.js to provide
+ * correct viewport calculations for all mobile browsers.
+ * 
+ * KEY FEATURES:
+ * - Uses CSS custom properties updated by viewport-utility.js
+ * - Handles dynamic browser toolbars
+ * - Respects safe-area insets
+ * - Keyboard-aware layout
+ * - No hardcoded heights
+ */
+
+/* ==========================================================================
+   ROOT VARIABLES - Updated dynamically by viewport-utility.js
+   ========================================================================== */
+:root {
+    /* Dynamic viewport dimensions (updated by JS) */
+    --viewport-width: 100vw;
+    --viewport-height: 100dvh;
+    --usable-viewport-height: 100dvh;
+    --viewport-scale: 1;
+    
+    /* Safe area insets */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    
+    /* Calculated usable viewport */
+    --player-height: var(--usable-viewport-height);
+    --player-width: var(--viewport-width);
+}
+
+/* ==========================================================================
+   BODY & HTML - Base viewport setup
+   ========================================================================== */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    
+    /* Use dynamic viewport height */
+    min-height: var(--viewport-height);
+    min-height: 100dvh; /* Fallback */
+}
+
+body {
+    /* Handle keyboard state */
+    transition: none;
+}
+
+body.keyboard-open {
+    /* Adjust layout when keyboard is open */
+    --player-height: var(--viewport-height-with-keyboard, var(--viewport-height));
+}
+
+/* ==========================================================================
+   VIDEO POPUP - Dynamic viewport container
+   ========================================================================== */
+.video-popup {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    
+    /* Use dynamic viewport dimensions */
+    width: var(--viewport-width) !important;
+    height: var(--viewport-height) !important;
+    
+    background-color: #000000 !important;
+    z-index: 99999 !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    
+    /* Ensure no scroll */
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+}
+
+.video-popup.active {
+    display: flex !important;
+}
+
+/* ==========================================================================
+   POPUP CONTENT - Dynamic viewport content
+   ========================================================================== */
+.popup-content {
+    position: relative !important;
+    
+    /* Use dynamic viewport dimensions */
+    width: var(--viewport-width) !important;
+    height: var(--viewport-height) !important;
+    
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    
+    /* Ensure no scroll */
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+}
+
+/* ==========================================================================
+   VIDEO CONTAINER - Main player container
+   ========================================================================== */
+.video-container {
+    position: relative !important;
+    
+    /* Use dynamic viewport dimensions */
+    width: var(--viewport-width) !important;
+    height: var(--player-height) !important;
+    
+    background: #000000;
+    overflow: hidden !important;
+    
+    /* Ensure no scroll */
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    
+    /* Handle resize smoothly */
+    transition: height 0.1s ease-out;
+}
+
+/* ==========================================================================
+   IFRAME - YouTube player
+   ========================================================================== */
+.video-container iframe,
+.popup-content iframe {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    
+    /* Use dynamic viewport dimensions */
+    width: var(--viewport-width) !important;
+    height: var(--player-height) !important;
+    
+    border: none !important;
+    display: block;
+    
+    /* Ensure no overflow */
+    overflow: hidden !important;
+}
+
+/* ==========================================================================
+   CUSTOM OVERLAY - Controls container
+   ========================================================================== */
+.custom-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    
+    /* Use dynamic viewport dimensions */
+    width: var(--viewport-width) !important;
+    height: var(--player-height) !important;
+    
+    z-index: 2147483647 !important;
+    background: linear-gradient(
+        to bottom, 
+        rgba(0,0,0,0.65) 0%, 
+        rgba(0,0,0,0) 15%, 
+        rgba(0,0,0,0) 80%, 
+        rgba(0,0,0,0.7) 100%
+    );
+    
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    
+    /* Use safe area insets for padding */
+    padding: calc(24px + var(--safe-area-inset-top)) 
+             24px 
+             calc(24px + var(--safe-area-inset-bottom)) 
+             24px !important;
+    
+    box-sizing: border-box !important;
+    transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 1;
+    pointer-events: auto !important;
+    
+    /* Ensure no overflow */
+    overflow: hidden !important;
+}
+
+.custom-overlay.hide-controls {
+    opacity: 0 !important;
+}
+
+.custom-overlay.hide-controls * {
+    pointer-events: none !important;
+}
+
+/* ==========================================================================
+   PLAYER TOP BAR - Safe area aware
+   ========================================================================== */
+.player-top-bar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    
+    /* Account for safe area top */
+    padding-top: var(--safe-area-inset-top);
+}
+
+/* ==========================================================================
+   PLAYER BOTTOM CONTROLS - Safe area aware
+   ========================================================================== */
+.player-bottom-controls {
+    width: 100%;
+    
+    /* Account for safe area bottom */
+    padding-bottom: calc(6px + var(--safe-area-inset-bottom)) !important;
+    
+    box-sizing: border-box !important;
+    
+    /* Ensure controls stay visible */
+    position: relative;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   PROGRESS CONTAINER - Safe area aware
+   ========================================================================== */
+.progress-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.24);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    position: relative;
+    cursor: pointer;
+    
+    /* Ensure it doesn't overflow */
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   CONTROLS ROW - Safe area aware
+   ========================================================================== */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 4px;
+    
+    /* Ensure no overflow */
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   MIDDLE SKIP CONTROLS - Center positioning
+   ========================================================================== */
+.middle-skip-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 45px;
+    box-sizing: border-box;
+    pointer-events: none;
+    
+    /* Ensure no overflow */
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   FULLSCREEN MODE - Dynamic viewport support
+   ========================================================================== */
+.video-container:fullscreen,
+.video-container:-webkit-full-screen {
+    width: 100vw !important;
+    height: 100dvh !important;
+    height: 100vh !important; /* Fallback */
+}
+
+.video-container:fullscreen .custom-overlay,
+.video-container:-webkit-full-screen .custom-overlay {
+    width: 100vw !important;
+    height: 100dvh !important;
+    height: 100vh !important; /* Fallback */
+    
+    /* Use fullscreen safe areas */
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 
+             24px 
+             calc(24px + env(safe-area-inset-bottom, 0px)) 
+             24px !important;
+}
+
+/* ==========================================================================
+   MOBILE OPTIMIZATIONS
+   ========================================================================== */
+@media (max-width: 480px) {
+    .custom-overlay {
+        padding: calc(20px + var(--safe-area-inset-top)) 
+                 16px 
+                 calc(20px + var(--safe-area-inset-bottom)) 
+                 16px !important;
+    }
+    
+    .player-bottom-controls {
+        padding-bottom: calc(8px + var(--safe-area-inset-bottom)) !important;
+    }
+    
+    .middle-skip-controls {
+        padding: 0 24px;
+    }
+}
+
+/* ==========================================================================
+   KEYBOARD STATE - When virtual keyboard is open
+   ========================================================================== */
+body.keyboard-open .video-popup,
+body.keyboard-open .popup-content,
+body.keyboard-open .video-container {
+    /* Allow some height adjustment when keyboard is open */
+    height: var(--viewport-height-with-keyboard, var(--viewport-height)) !important;
+}
+
+/* ==========================================================================
+   ORIENTATION TRANSITIONS
+   ========================================================================== */
+@media (orientation: portrait) {
+    .video-popup,
+    .popup-content,
+    .video-container,
+    .custom-overlay {
+        /* Smooth transition for orientation change */
+        transition: width 0.2s ease, height 0.2s ease;
+    }
+}
+
+@media (orientation: landscape) {
+    .video-popup,
+    .popup-content,
+    .video-container,
+    .custom-overlay {
+        /* Smooth transition for orientation change */
+        transition: width 0.2s ease, height 0.2s ease;
+    }
+}
+
+/* ==========================================================================
+   NOTCHED DEVICES - Extra safe area handling
+   ========================================================================== */
+@supports (padding: max(0px)) {
+    .custom-overlay {
+        /* Use max() for better safe area support */
+        padding: max(24px, var(--safe-area-inset-top)) 
+                 24px 
+                 max(24px, var(--safe-area-inset-bottom)) 
+                 24px !important;
+    }
+    
+    .player-bottom-controls {
+        padding-bottom: max(6px, var(--safe-area-inset-bottom)) !important;
+    }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY - Reduced motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .video-popup,
+    .popup-content,
+    .video-container,
+    .custom-overlay {
+        transition: none !important;
+    }
+}
