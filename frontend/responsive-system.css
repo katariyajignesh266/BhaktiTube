@@ -1,0 +1,593 @@
+/* ==========================================================================
+   ⚡ BHAKTITUBE UNIFIED RESPONSIVE DESIGN SYSTEM
+   ==========================================================================
+   This file provides a comprehensive responsive design system used across
+   the entire BhaktiTube application. All responsive behavior should use
+   these variables and utilities for consistency.
+   
+   KEY FEATURES:
+   - Fluid typography using clamp()
+   - Dynamic viewport units (dvh) for mobile browsers
+   - Consistent breakpoints
+   - Safe area insets for notched devices
+   - Container queries where appropriate
+   - Performance-optimized transitions
+   ========================================================================== */
+
+/* ==========================================================================
+   1. RESPONSIVE BREAKPOINTS SYSTEM
+   ========================================================================== */
+:root {
+    /* Mobile-first breakpoints */
+    --bp-xs: 320px;   /* Small phones */
+    --bp-sm: 375px;   /* iPhone SE, standard phones */
+    --bp-md: 428px;   /* Large phones, iPhone Pro Max */
+    --bp-lg: 600px;   /* Phablets, small tablets */
+    --bp-xl: 768px;   /* Tablets portrait */
+    --bp-2xl: 1024px; /* Tablets landscape, small laptops */
+    --bp-3xl: 1280px; /* Laptops, desktops */
+    --bp-4xl: 1440px; /* Large desktops */
+    --bp-5xl: 1920px; /* Ultrawide monitors */
+    
+    /* Container max-widths */
+    --container-xs: 100%;
+    --container-sm: 540px;
+    --container-md: 720px;
+    --container-lg: 960px;
+    --container-xl: 1140px;
+    --container-2xl: 1320px;
+    
+    /* Safe area insets for notched devices */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+}
+
+/* ==========================================================================
+   2. DYNAMIC VIEWPORT UNITS (Chrome Mobile Fix)
+   ========================================================================== */
+:root {
+    /* Use dvh for mobile browsers with dynamic toolbars */
+    --vh: 100dvh;
+    --vw: 100vw;
+    
+    /* Fallback for browsers that don't support dvh */
+    @supports not (height: 100dvh) {
+        --vh: 100vh;
+    }
+}
+
+/* ==========================================================================
+   3. FLUID TYPOGRAPHY SYSTEM
+   ========================================================================== */
+:root {
+    /* Base font size that scales with viewport */
+    --font-base: clamp(14px, 0.875rem + 0.25vw, 16px);
+    
+    /* Heading sizes - fluid scaling */
+    --font-xs: clamp(12px, 0.75rem + 0.2vw, 14px);
+    --font-sm: clamp(14px, 0.875rem + 0.25vw, 16px);
+    --font-base: clamp(16px, 1rem + 0.3vw, 18px);
+    --font-lg: clamp(18px, 1.125rem + 0.4vw, 24px);
+    --font-xl: clamp(24px, 1.5rem + 0.6vw, 32px);
+    --font-2xl: clamp(32px, 2rem + 0.8vw, 48px);
+    --font-3xl: clamp(48px, 3rem + 1.2vw, 64px);
+    
+    /* Line heights */
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+    
+    /* Font weights */
+    --font-light: 300;
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
+}
+
+/* ==========================================================================
+   4. FLUID SPACING SYSTEM
+   ========================================================================== */
+:root {
+    /* Base spacing unit that scales with viewport */
+    --space-0: 0;
+    --space-1: clamp(4px, 0.25rem + 0.1vw, 8px);
+    --space-2: clamp(8px, 0.5rem + 0.15vw, 12px);
+    --space-3: clamp(12px, 0.75rem + 0.2vw, 16px);
+    --space-4: clamp(16px, 1rem + 0.25vw, 24px);
+    --space-5: clamp(20px, 1.25rem + 0.3vw, 32px);
+    --space-6: clamp(24px, 1.5rem + 0.4vw, 40px);
+    --space-8: clamp(32px, 2rem + 0.5vw, 48px);
+    --space-10: clamp(40px, 2.5rem + 0.6vw, 64px);
+    --space-12: clamp(48px, 3rem + 0.8vw, 80px);
+    --space-16: clamp(64px, 4rem + 1vw, 96px);
+    --space-20: clamp(80px, 5rem + 1.2vw, 128px);
+    --space-24: clamp(96px, 6rem + 1.5vw, 160px);
+}
+
+/* ==========================================================================
+   5. RESPONSIVE CONTAINER UTILITIES
+   ========================================================================== */
+.responsive-container {
+    width: 100%;
+    max-width: var(--container-xl);
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+}
+
+@media (min-width: var(--bp-xl)) {
+    .responsive-container {
+        padding: 0 var(--space-6);
+    }
+}
+
+@media (min-width: var(--bp-3xl)) {
+    .responsive-container {
+        max-width: var(--container-2xl);
+    }
+}
+
+/* ==========================================================================
+   6. GRID SYSTEM UTILITIES
+   ========================================================================== */
+.responsive-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+}
+
+/* 2 columns on tablet */
+@media (min-width: var(--bp-xl)) {
+    .responsive-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 3 columns on desktop */
+@media (min-width: var(--bp-2xl)) {
+    .responsive-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 4 columns on large desktop */
+@media (min-width: var(--bp-4xl)) {
+    .responsive-grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Auto-fit responsive grid */
+.responsive-grid-auto {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+
+/* ==========================================================================
+   7. MOBILE-FIRST VIDEO CARD SYSTEM
+   ========================================================================== */
+.video-card-responsive {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* Thumbnail aspect ratio */
+.video-thumbnail-responsive {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: clamp(8px, 0.5rem + 0.2vw, 12px);
+}
+
+/* Video info layout */
+.video-info-responsive {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+}
+
+.channel-avatar-responsive {
+    width: clamp(32px, 2rem + 0.5vw, 40px);
+    height: clamp(32px, 2rem + 0.5vw, 40px);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.video-details-responsive {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-title-responsive {
+    font-size: var(--font-base);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-1);
+    
+    /* Line clamping */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   8. PLAYER PAGE RESPONSIVE SYSTEM (Chrome Mobile Fix)
+   ========================================================================== */
+.player-page-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: var(--vh);
+    background: #000;
+    z-index: 99999;
+    overflow: hidden;
+}
+
+.player-video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-iframe-responsive {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Player controls - safe area aware */
+.player-controls-responsive {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-4) + var(--safe-area-inset-bottom));
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    z-index: 10;
+}
+
+/* Player close button - safe area aware */
+.player-close-btn-responsive {
+    position: absolute;
+    top: calc(var(--space-4) + var(--safe-area-inset-top));
+    left: calc(var(--space-4) + var(--safe-area-inset-left));
+    width: clamp(44px, 2.75rem + 1vw, 56px);
+    height: clamp(44px, 2.75rem + 1vw, 56px);
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 20;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   9. HEADER RESPONSIVE SYSTEM
+   ========================================================================== */
+.header-responsive {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #0f0f0f;
+    padding: var(--space-3) var(--space-4);
+    padding-top: calc(var(--space-3) + var(--safe-area-inset-top));
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+
+.header-left-responsive,
+.header-right-responsive {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.logo-responsive {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.logo-text-responsive {
+    font-size: var(--font-lg);
+    font-weight: var(--font-bold);
+}
+
+.logo-icon-responsive {
+    width: clamp(32px, 2rem + 0.5vw, 40px);
+    height: clamp(32px, 2rem + 0.5vw, 40px);
+}
+
+/* Search responsive */
+.search-responsive {
+    display: none;
+}
+
+@media (min-width: var(--bp-lg)) {
+    .search-responsive {
+        display: flex;
+        flex: 1;
+        max-width: 600px;
+    }
+}
+
+/* Mobile menu button */
+.mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(40px, 2.5rem + 0.5vw, 48px);
+    height: clamp(40px, 2.5rem + 0.5vw, 48px);
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: var(--font-lg);
+    cursor: pointer;
+}
+
+@media (min-width: var(--bp-lg)) {
+    .mobile-menu-btn {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   10. SIDEBAR RESPONSIVE SYSTEM
+   ========================================================================== */
+.sidebar-responsive {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: clamp(250px, 15.625rem + 3vw, 320px);
+    height: var(--vh);
+    background: #0f0f0f;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    overflow-y: auto;
+    padding-top: calc(var(--space-4) + var(--safe-area-inset-top));
+}
+
+.sidebar-responsive.open {
+    transform: translateX(0);
+}
+
+@media (min-width: var(--bp-lg)) {
+    .sidebar-responsive {
+        position: sticky;
+        top: 0;
+        transform: none;
+        height: calc(var(--vh) - var(--space-8));
+    }
+}
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay-responsive {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: var(--vh);
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+}
+
+.sidebar-overlay-responsive.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (min-width: var(--bp-lg)) {
+    .sidebar-overlay-responsive {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   11. UTILITY CLASSES
+    ========================================================================== */
+
+/* Hide on mobile, show on desktop */
+.hide-mobile {
+    display: none;
+}
+
+@media (min-width: var(--bp-lg)) {
+    .hide-mobile {
+        display: flex;
+    }
+}
+
+/* Show on mobile, hide on desktop */
+.show-mobile {
+    display: flex;
+}
+
+@media (min-width: var(--bp-lg)) {
+    .show-mobile {
+        display: none;
+    }
+}
+
+/* Text truncation */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive aspect ratios */
+.aspect-16-9 {
+    aspect-ratio: 16/9;
+}
+
+.aspect-1-1 {
+    aspect-ratio: 1/1;
+}
+
+.aspect-4-3 {
+    aspect-ratio: 4/3;
+}
+
+/* Safe area padding utilities */
+.safe-top {
+    padding-top: var(--safe-area-inset-top);
+}
+
+.safe-bottom {
+    padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-left {
+    padding-left: var(--safe-area-inset-left);
+}
+
+.safe-right {
+    padding-right: var(--safe-area-inset-right);
+}
+
+.safe-all {
+    padding: var(--safe-area-inset-top) var(--safe-area-inset-right) 
+             var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+}
+
+/* ==========================================================================
+   12. PERFORMANCE OPTIMIZATIONS
+    ========================================================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Hardware acceleration for smooth animations */
+.gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* ==========================================================================
+   13. BREAKPOINT-SPECIFIC OVERRIDES
+    ========================================================================== */
+
+/* Extra small devices (320px and up) */
+@media (min-width: var(--bp-xs)) {
+    :root {
+        --font-base: 14px;
+    }
+}
+
+/* Small devices (375px and up) */
+@media (min-width: var(--bp-sm)) {
+    :root {
+        --font-base: 15px;
+    }
+}
+
+/* Medium devices (428px and up) */
+@media (min-width: var(--bp-md)) {
+    :root {
+        --font-base: 16px;
+    }
+}
+
+/* Large devices (600px and up) */
+@media (min-width: var(--bp-lg)) {
+    :root {
+        --font-base: 16px;
+    }
+}
+
+/* Extra large devices (768px and up) */
+@media (min-width: var(--bp-xl)) {
+    :root {
+        --font-base: 16px;
+    }
+}
+
+/* 2XL devices (1024px and up) */
+@media (min-width: var(--bp-2xl)) {
+    :root {
+        --font-base: 16px;
+    }
+}
+
+/* 3XL devices (1280px and up) */
+@media (min-width: var(--bp-3xl)) {
+    :root {
+        --font-base: 17px;
+    }
+}
+
+/* 4XL devices (1440px and up) */
+@media (min-width: var(--bp-4xl)) {
+    :root {
+        --font-base: 18px;
+    }
+}
+
+/* 5XL devices (1920px and up) */
+@media (min-width: var(--bp-5xl)) {
+    :root {
+        --font-base: 18px;
+    }
+}

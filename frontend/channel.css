@@ -1,8 +1,8 @@
-/* CHANNEL HEADER */
+/* CHANNEL HEADER - Using responsive system variables */
 
 .channel-header{
 
-padding:25px 15px;
+padding: var(--space-6) var(--space-4);
 
 text-align:center;
 
@@ -13,69 +13,69 @@ border-bottom:1px solid #333;
 
 #channelLogo{
 
-width:90px;
-height:90px;
+width: clamp(72px, 4.5rem + 1vw, 90px);
+height: clamp(72px, 4.5rem + 1vw, 90px);
 
 border-radius:50%;
 
 object-fit:cover;
 
-margin-bottom:12px;
+margin-bottom: var(--space-3);
 }
 
 /* Channel Name */
 
 #channelName{
 
-font-size:28px;
+font-size: clamp(22px, 1.375rem + 0.4vw, 28px);
 
 font-weight:700;
 
 color:white;
 
-margin-bottom:10px;
+margin-bottom: var(--space-2);
 }
 
 /* Subscribers */
 
 #channelSubscribers{
 
-font-size:18px;
+font-size: clamp(16px, 1rem + 0.2vw, 18px);
 
 color:#cfcfcf;
 
-margin-bottom:6px;
+margin-bottom: var(--space-2);
 }
 
 /* Total Videos */
 
 #channelVideos{
 
-font-size:18px;
+font-size: clamp(16px, 1rem + 0.2vw, 18px);
 
 color:#cfcfcf;
 }
 
-/* VIDEO GRID */
+/* VIDEO GRID - Using responsive system variables */
 
 #channelVideosContainer{
 
-padding:15px;
+padding: var(--space-4);
 
 display:flex;
 
 flex-direction:column;
 
-gap:20px;
+gap: var(--space-5);
 }
 
-/* VIDEO CARD */
+/* VIDEO CARD - Using responsive system variables */
 
 .video-card{
 
 background:#1c1c1c;
 
-border-radius:16px;
+border-radius: clamp(12px, 0.75rem + 0.3vw, 16px);
 
 overflow:hidden;
 
@@ -91,7 +91,7 @@ display:block;
 
 .video-card h3{
 
-font-size:20px;
+font-size: clamp(16px, 1rem + 0.3vw, 20px);
 
 line-height:1.5;
 
@@ -99,7 +99,7 @@ font-weight:600;
 
 color:white;
 
-padding:12px;
+padding: var(--space-3);
 
 word-break:break-word;
 }
@@ -140,11 +140,11 @@ margin-bottom:15px;
 
 position:fixed;
 
-top:15px;
-left:15px;
+top: calc(var(--space-4) + var(--safe-area-inset-top));
+left: var(--space-4);
 
-width:40px;
-height:40px;
+width: clamp(36px, 2.25rem + 0.5vw, 40px);
+height: clamp(36px, 2.25rem + 0.5vw, 40px);
 
 display:flex;
 align-items:center;
@@ -156,7 +156,7 @@ border-radius:50%;
 
 color:#0f0f0f;
 
-font-size:18px;
+font-size: clamp(16px, 1rem + 0.2vw, 18px);
 
 cursor:pointer;
 
@@ -253,13 +253,14 @@ cursor:pointer;
 
 }
 
-/* ૧. વિડિયો પોપઅપ કન્ટેનર (આખી સ્ક્રીન કવર કરશે અને બ્લેક બેકગ્રાઉન્ડ આપશે) */
+/* ૧. વિડિયો પોપઅપ કન્ટેનર (આખી સ્ક્રીન કવર કરશે અને બ્લેક બેકગ્રાઉન્ડ આપશે) - Chrome Mobile Fix */
 .video-popup {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
+    height: 100dvh !important; /* Dynamic viewport height for Chrome mobile */
+    height: 100vh !important; /* Fallback for older browsers */
     background-color: #000000 !important;
     z-index: 99999 !important; /* સૌથી ઉપર દેખાય તે માટે */
     display: none; /* JS થી flex થશે */
@@ -268,18 +269,19 @@ cursor:pointer;
     overflow: hidden !important;
 }
 
-/* પોપઅપની અંદરનું મેઈન કન્ટેન્ટ બોક્સ */
+/* પોપઅપની અંદરનું મેઈન કન્ટેન્ટ બોક્સ - Chrome Mobile Fix */
 .popup-content {
     position: relative !important;
     width: 100% !important;
-    height: 100% !important;
+    height: 100dvh !important; /* Dynamic viewport height for Chrome mobile */
+    height: 100vh !important; /* Fallback for older browsers */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     overflow: hidden !important;
 }
 
-/* ૨. આઇફ્રેમ પ્લેયર - ૪ થી ૫ ગણું મેજિક સ્કેલિંગ સેટિંગ */
+/* ૨. આઇફ્રેમ પ્લેયર - ૪ થી ૫ ગણું મેજિક સ્કેલિંગ સેટિંગ - Chrome Mobile Fix */
 .popup-content iframe {
     position: absolute !important;
     top: 50% !important;
@@ -287,7 +289,8 @@ cursor:pointer;
     
     /* 100vw/vh રાખવાથી સ્કેલિંગ વખતે વિડિયો કપાશે નહીં અને બધું મોટું દેખાશે */
     width: 100vw !important; 
-    height: 100vh !important;
+    height: 100dvh !important; /* Dynamic viewport height for Chrome mobile */
+    height: 100vh !important; /* Fallback for older browsers */
 
     /* સેન્ટર કરવા માટે અને બધું ૪.૫ ગણું (4.5x) મોટું કરવા માટે scale નો ઉપયોગ કર્યો */
     transform: translate(-50%, -50%) scale(1) !important; 
@@ -383,16 +386,17 @@ cursor:pointer;
 }
 
 
-/* ૧. આખી સ્ક્રીનમાં ફિટ કરવા માટેનું મેઈન વિડિયો કન્ટેનર */
+/* ૧. આખી સ્ક્રીનમાં ફિટ કરવા માટેનું મેઈન વિડિયો કન્ટેનર - Chrome Mobile Fix */
 .video-container {
     position: relative;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for Chrome mobile */
+    height: 100vh; /* Fallback for older browsers */
     background: #000000;
     overflow: hidden;
 }
 
-/* ૨. આઈફ્રેમ (YouTube પ્લેયર) નું સેટિંગ */
+/* ૨. આઈફ્રેમ (YouTube પ્લેયર) નું સેટિંગ - Chrome Mobile Fix */
 .video-container iframe {
     position: absolute;
     top: 0;
@@ -404,17 +408,17 @@ cursor:pointer;
     pointer-events: auto; /* જેથી કસ્ટમ બટન સિવાયની જગ્યાએ ક્લિક કરવાથી વિડિયો પોઝ ન થાય */
 }
 
-/* ૩. કસ્ટમ કંટ્રોલ્સ પેનલ (બટનોનું મેઈન બોક્સ જે વીડિયોની ઉપર દેખાશે) */
+/* ૩. કસ્ટમ કંટ્રોલ્સ પેનલ (બટનોનું મેઈન બોક્સ જે વીડિયોની ઉપર દેખાશે) - Chrome Mobile Fix */
 .custom-controls {
     position: absolute;
-    bottom: 30px; /* મોબાઈલ સ્ક્રીનથી થોડું ઉપર રાખવા માટે */
+    bottom: calc(30px + var(--safe-area-inset-bottom)); /* Safe area for notched devices */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 25px; /* બટનો વચ્ચે પરફેક્ટ જગ્યા */
+    gap: clamp(16px, 1rem + 0.5vw, 25px); /* Fluid spacing for buttons */
     z-index: 2147483647; /* ફૂલસ્ક્રીન મોડમાં પણ કંટ્રોલ્સ ઉપર રાખવા માટે સૌથી હાઈએસ્ટ વેલ્યુ */
     background: rgba(0, 0, 0, 0.5); /* કંટ્રોલ્સની પાછળ ટ્રાન્સપરન્ટ કાળો શેડ */
-    padding: 12px 28px;
+    padding: clamp(10px, 0.625rem + 0.3vw, 12px) clamp(20px, 1.25rem + 0.5vw, 28px);
     border-radius: 50px; /* આખું બોક્સ કેપ્સ્યુલ જેવું રાઉન્ડ દેખાશે */
     backdrop-filter: blur(8px); /* પ્રીમિયમ લુક માટે બેકગ્રાઉન્ડ બ્લર ઈફેક્ટ */
     -webkit-backdrop-filter: blur(8px);
@@ -497,41 +501,41 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 30px 20px 20px 20px; /* ઉપરથી 60px જગ્યા મૂકી જેથી બેક બટન ન નડે */
+    padding: var(--space-8) var(--space-4) var(--space-5) var(--space-4); /* Responsive padding */
     border-bottom: 1px solid #e5e5e5;
     background-color: #ffffff;
 }
 
-/* ચેનલ લોગો ગોળ અને યોગ્ય સાઈઝનો કરવા */
+/* ચેનલ લોગો ગોળ અને યોગ્ય સાઈઝનો કરવા - Responsive */
 #channelLogo {
-    width: 45px;  /* લોગોની પરફેક્ટ સાઈઝ */
-    height: 45px;
+    width: clamp(36px, 2.25rem + 0.5vw, 45px);  /* Responsive logo size */
+    height: clamp(36px, 2.25rem + 0.5vw, 45px);
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ff0000; /* લોગોની આજુબાજુ રેડ બોર્ડર */
-    margin-bottom: 10px;
+    margin-bottom: var(--space-2);
 }
 
-/* ચેનલનું નામ */
+/* ચેનલનું નામ - Responsive */
 #channelName {
-    font-size: 30px !important;
+    font-size: clamp(20px, 1.25rem + 0.5vw, 30px) !important;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: var(--space-1);
     color: #0f0f0f;
 }
 
-/* સબસ્ક્રાઈબર્સ અને વિડિયો કાઉન્ટની ટેક્સ્ટ */
+/* સબસ્ક્રાઈબર્સ અને વિડિયો કાઉન્ટની ટેક્સ્ટ - Responsive */
 #channelSubscribers, #channelVideos {
-    font-size: 14px; /* અક્ષરો નાના અને ડિસેન્ટ કર્યા */
+    font-size: clamp(12px, 0.75rem + 0.2vw, 14px); /* Responsive font size */
     color: #606060; /* આછો ગ્રે કલર */
-    margin-bottom: 2px;
+    margin-bottom: var(--space-1);
 }
 
-/* --- ૪. વિડિયો ગ્રીડ લેઆઉટ (મોબાઈલમાં એક લાઈનમાં બે અથવા સરસ કાર્ડ દેખાય તે માટે) --- */
+/* --- ૪. વિડિયો ગ્રીડ લેઆઉટ (મોબાઈલમાં એક લાઈનમાં બે અથવા સરસ કાર્ડ દેખાય તે માટે) - Responsive */
 #channelVideosContainer {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: var(--space-10);
     padding: 0;
     background-color: #ffffff;
 }

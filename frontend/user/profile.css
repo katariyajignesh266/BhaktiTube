@@ -36,7 +36,8 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
     font-family: var(--font-main);
-    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for Chrome mobile */
+    min-height: 100vh; /* Fallback for older browsers */
     overflow-x: hidden;
     position: relative;
     display: flex;
@@ -1121,18 +1122,21 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    padding: 16px;
+    padding: var(--space-4);
+    /* Chrome mobile fix */
+    height: 100dvh;
+    height: 100vh;
 }
 
 .modal-content {
     background: rgba(22, 24, 31, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 28px;
-    padding: 24px;
+    border-radius: clamp(20px, 1.25rem + 0.4vw, 28px);
+    padding: var(--space-6);
     width: 100%;
     box-shadow: 0 20px 50px rgba(0,0,0,0.6);
     position: relative;
-    max-width: 480px;
+    max-width: clamp(360px, 22.5rem + 4vw, 480px);
 }
 
 .crop-modal-content {

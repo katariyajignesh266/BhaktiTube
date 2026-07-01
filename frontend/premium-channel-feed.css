@@ -45,10 +45,10 @@ body.premium-dashboard-mode {
     --premium-bottom-nav-height: 50px;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for Chrome mobile */
+    height: 100vh; /* Fallback for older browsers */
     min-height: 100dvh;
+    min-height: 100vh;
     overflow: hidden;
     padding-bottom: var(--premium-bottom-nav-height);
 }
