@@ -1,4 +1,4 @@
-import { auth }
+import { auth, db }
 from "../firebase-config.js";
 
 import {
@@ -9,11 +9,54 @@ onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
+import {
+collection,
+getDocs,
+query,
+orderBy,
+doc,
+getDoc,
+setDoc
+}
+from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+// Mark all existing channels as seen for first-time users
+async function markAllExistingChannelsAsSeen(user) {
+    try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        
+        if (!userDoc.exists() || !userDoc.data().announcementsSeen) {
+            const q = query(collection(db, "channels"), orderBy("announcementCreatedAt", "desc"));
+            const snapshot = await getDocs(q);
+            
+            const seenChannels = {};
+            
+            snapshot.forEach((docSnap) => {
+                const channel = docSnap.data();
+                if (channel.enabled === true && channel.announcementEnabled === true) {
+                    seenChannels[channel.channelId] = true;
+                }
+            });
+            
+            if (Object.keys(seenChannels).length > 0) {
+                await setDoc(doc(db, "users", user.uid), { 
+                    announcementsSeen: seenChannels 
+                }, { merge: true });
+                console.log(`✅ Marked ${Object.keys(seenChannels).length} existing channels as seen for new user`);
+            }
+        }
+    } catch (e) {
+        console.error("Error marking existing channels as seen:", e);
+    }
+}
+
 onAuthStateChanged(
 auth,
-(user)=>{
+async (user)=>{
 
 if(user){
+// Mark existing channels as seen for first-time login
+await markAllExistingChannelsAsSeen(user);
 
 window.location.replace(
 "profile.html");
@@ -40,11 +83,14 @@ document
 
     try{
 
-        await signInWithEmailAndPassword(
+        const result = await signInWithEmailAndPassword(
             auth,
             email,
             password
         );
+
+        // Mark existing channels as seen for first-time login
+        await markAllExistingChannelsAsSeen(result.user);
 
         window.location.href =
         "../index.html";
@@ -69,10 +115,13 @@ async ()=>{
 
     try{
 
-        await signInWithPopup(
+        const result = await signInWithPopup(
             auth,
             provider
         );
+
+        // Mark existing channels as seen for first-time login
+        await markAllExistingChannelsAsSeen(result.user);
 
         window.location.href =
         "profile.html";

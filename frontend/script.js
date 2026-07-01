@@ -41,23 +41,69 @@ import { renderDashboard } from "./dashboard-renderer.js";
 import { getChannelCardMarkup } from "./channel-card-renderer.js";
 
 /* ==========================================================================
-   ⚡ NEW CHANNEL ANNOUNCEMENT SYSTEM - CLEAN ARCHITECTURE
+   ⚡ NEW CHANNEL ANNOUNCEMENT SYSTEM - IMPROVED ARCHITECTURE
    ========================================================================== */
 
 const ANNOUNCEMENT_SEEN_KEY = "bt_announcement_seen_channels";
-let announcementQueue = [];
+const GUEST_LAST_SEEN_KEY = "bt_guest_last_seen_channel";
 let currentAnnouncementChannel = null;
 let currentUser = null;
-let queueInitialized = false;
+let isFirstTimeLogin = false;
 
 // Track current user for Firebase-based seen state
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+    const previousUser = currentUser;
     currentUser = user;
     
-    // Initialize queue after user state is set
-    // This ensures we check for new announcements on every page load
-    initializeAnnouncementQueue();
+    // Check if this is a first-time login (user just signed up)
+    if (user && !previousUser) {
+        await checkAndHandleFirstTimeLogin(user);
+    }
+    
+    // Initialize popup after user state is set
+    initializeAnnouncementPopup();
 });
+
+// Check if this is a first-time login and mark all existing channels as seen
+async function checkAndHandleFirstTimeLogin(user) {
+    try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        
+        if (!userDoc.exists() || !userDoc.data().announcementsSeen) {
+            // First-time user - mark all existing channels as seen
+            isFirstTimeLogin = true;
+            await markAllExistingChannelsAsSeen();
+        }
+    } catch (e) {
+        console.error("Error checking first-time login:", e);
+    }
+}
+
+// Mark all existing enabled channels as seen for first-time users
+async function markAllExistingChannelsAsSeen() {
+    try {
+        const q = query(collection(db, "channels"), orderBy("announcementCreatedAt", "desc"));
+        const snapshot = await getDocs(q);
+        
+        const seenChannels = {};
+        
+        snapshot.forEach((docSnap) => {
+            const channel = docSnap.data();
+            if (channel.enabled === true && channel.announcementEnabled === true) {
+                seenChannels[channel.channelId] = true;
+            }
+        });
+        
+        if (Object.keys(seenChannels).length > 0) {
+            await setDoc(doc(db, "users", currentUser.uid), { 
+                announcementsSeen: seenChannels 
+            }, { merge: true });
+            console.log(`✅ Marked ${Object.keys(seenChannels).length} existing channels as seen for new user`);
+        }
+    } catch (e) {
+        console.error("Error marking existing channels as seen:", e);
+    }
+}
 
 // Get seen channels from appropriate storage
 async function getSeenAnnouncementChannels() {
@@ -80,6 +126,17 @@ async function getSeenAnnouncementChannels() {
     } catch (e) {
         console.error("Error reading localStorage seen state:", e);
         return {};
+    }
+}
+
+// Get last seen channel for guest users
+function getGuestLastSeenChannel() {
+    try {
+        const lastSeen = localStorage.getItem(GUEST_LAST_SEEN_KEY);
+        return lastSeen ? JSON.parse(lastSeen) : null;
+    } catch (e) {
+        console.error("Error reading guest last seen:", e);
+        return null;
     }
 }
 
@@ -109,13 +166,19 @@ async function markAnnouncementAsSeen(channelId) {
         const seenObj = seen ? JSON.parse(seen) : {};
         seenObj[channelId] = true;
         localStorage.setItem(ANNOUNCEMENT_SEEN_KEY, JSON.stringify(seenObj));
+        
+        // Also update last seen channel for guests
+        localStorage.setItem(GUEST_LAST_SEEN_KEY, JSON.stringify({
+            channelId: channelId,
+            timestamp: Date.now()
+        }));
     } catch (e) {
         console.error("Error saving localStorage seen state:", e);
     }
 }
 
-// Initialize announcement queue - called on page load and auth changes
-async function initializeAnnouncementQueue() {
+// Initialize announcement popup - called on page load and auth changes
+async function initializeAnnouncementPopup() {
     try {
         const seenChannels = await getSeenAnnouncementChannels();
         
@@ -123,37 +186,57 @@ async function initializeAnnouncementQueue() {
         const q = query(collection(db, "channels"), orderBy("announcementCreatedAt", "desc"));
         const snapshot = await getDocs(q);
 
-        announcementQueue = [];
+        let latestUnseenChannel = null;
 
-        snapshot.forEach((docSnap) => {
-            const channel = docSnap.data();
-            // Only include channels that are enabled AND have announcementEnabled === true
-            if (channel.enabled !== true || channel.announcementEnabled !== true) return;
-            // Exclude channels already seen by this user
-            if (!seenChannels[channel.channelId]) {
-                // Prevent duplicates in queue
-                if (!announcementQueue.some(c => c.channelId === channel.channelId)) {
-                    announcementQueue.push({ id: docSnap.id, ...channel });
+        if (currentUser) {
+            // LOGGED-IN USER: Show only the latest unseen channel
+            for (const docSnap of snapshot.docs) {
+                const channel = docSnap.data();
+                if (channel.enabled !== true || channel.announcementEnabled !== true) continue;
+                
+                if (!seenChannels[channel.channelId]) {
+                    latestUnseenChannel = { id: docSnap.id, ...channel };
+                    break; // Only take the latest one
                 }
             }
-        });
+        } else {
+            // GUEST USER: Show only the latest channel if it's newer than last seen
+            const guestLastSeen = getGuestLastSeenChannel();
+            
+            for (const docSnap of snapshot.docs) {
+                const channel = docSnap.data();
+                if (channel.enabled !== true || channel.announcementEnabled !== true) continue;
+                
+                // If guest has never seen any channel, show the latest
+                if (!guestLastSeen) {
+                    latestUnseenChannel = { id: docSnap.id, ...channel };
+                    break;
+                }
+                
+                // Only show if this channel is different from last seen
+                // Since channels are sorted by announcementCreatedAt desc, the first different channel is the newest
+                if (channel.channelId !== guestLastSeen.channelId) {
+                    latestUnseenChannel = { id: docSnap.id, ...channel };
+                    break;
+                }
+                
+                // If the latest channel matches last seen, don't show any popup
+                break;
+            }
+        }
 
-        queueInitialized = true;
-        
-        // Show first announcement if queue is not empty
-        if (announcementQueue.length > 0) {
-            showNextChannelAnnouncement();
+        // Show popup only if there's a latest unseen channel
+        if (latestUnseenChannel) {
+            showChannelAnnouncement(latestUnseenChannel);
         }
     } catch (e) {
-        console.error("Error initializing announcement queue:", e);
+        console.error("Error initializing announcement popup:", e);
     }
 }
 
-// Show next announcement in queue
-function showNextChannelAnnouncement() {
-    if (announcementQueue.length === 0) return;
-
-    currentAnnouncementChannel = announcementQueue.shift();
+// Show channel announcement popup
+function showChannelAnnouncement(channel) {
+    currentAnnouncementChannel = channel;
     const modal = document.getElementById("channelAnnouncementModal");
     const channelCardContainer = document.getElementById("announcementChannelCard");
     const bannerContainer = document.getElementById("announcementBannerContainer");
