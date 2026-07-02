@@ -1,0 +1,483 @@
+/* ==========================================================================
+   ⚡ BHAKTITUBE PREMIUM THEME SYSTEM - CENTRALIZED THEME ARCHITECTURE
+   ==========================================================================
+   This is the single source of truth for all theming across the BhaktiTube
+   application. All color, spacing, typography, and component variables are
+   defined here to ensure consistency and enable seamless theme switching.
+   
+   USAGE:
+   - Add data-theme="dark" or data-theme="light" to <html> or <body> element
+   - All components should use CSS custom properties from this file
+   - Never hardcode colors - always use theme variables
+   - This file must be loaded before all other CSS files
+   ========================================================================== */
+
+/* ==========================================================================
+   1. THEME DEFINITION - ROOT LEVEL VARIABLES
+   ========================================================================== */
+
+/* Default theme (Dark Mode) */
+:root {
+    --theme-mode: dark;
+}
+
+/* Dark Theme Configuration */
+:root[data-theme="dark"] {
+    /* === Primary Colors === */
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #181818;
+    --bg-tertiary: #1f1f1f;
+    --bg-elevated: #272727;
+    --bg-surface: #1c1c1c;
+    --bg-surface-hover: #2d2d2d;
+    --bg-overlay: rgba(0, 0, 0, 0.85);
+    --bg-glass: rgba(31, 31, 31, 0.85);
+    
+    /* === Text Colors === */
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --text-tertiary: #888888;
+    --text-muted: #666666;
+    --text-inverse: #000000;
+    
+    /* === Border Colors === */
+    --border-primary: rgba(255, 255, 255, 0.1);
+    --border-secondary: rgba(255, 255, 255, 0.08);
+    --border-tertiary: rgba(255, 255, 255, 0.05);
+    --border-focus: rgba(255, 0, 0, 0.5);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    
+    /* === Brand Colors === */
+    --brand-primary: #ff0000;
+    --brand-primary-hover: #cc0000;
+    --brand-secondary: #ff6600;
+    --brand-accent: #3b82f6;
+    
+    /* === Semantic Colors === */
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.1);
+    --error: #ef4444;
+    --error-bg: rgba(239, 68, 68, 0.1);
+    --info: #3b82f6;
+    --info-bg: rgba(59, 130, 246, 0.1);
+    
+    /* === Shadows === */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.6);
+    --shadow-2xl: 0 20px 40px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 20px rgba(255, 0, 0, 0.3);
+    
+    /* === Elevation === */
+    --elevation-1: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --elevation-2: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --elevation-3: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --elevation-4: 0 12px 32px rgba(0, 0, 0, 0.35);
+    
+    /* === Gradients === */
+    --gradient-primary: linear-gradient(135deg, #ff0000, #cc0000);
+    --gradient-secondary: linear-gradient(135deg, #ff6600, #ff3300);
+    --gradient-dark: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.95));
+    --gradient-glass: linear-gradient(145deg, rgba(31, 31, 31, 0.9), rgba(15, 15, 15, 0.95));
+    
+    /* === Component Specific === */
+    --header-bg: #0f0f0f;
+    --sidebar-bg: #0f0f0f;
+    --card-bg: #1c1c1c;
+    --card-hover-bg: #2d2d2d;
+    --input-bg: #252525;
+    --input-focus-bg: #2a2a2a;
+    --button-primary-bg: #ff0000;
+    --button-primary-hover: #cc0000;
+    --button-secondary-bg: #272727;
+    --button-secondary-hover: #3a3a3a;
+    
+    /* === Icon Colors === */
+    --icon-primary: #ffffff;
+    --icon-secondary: #aaaaaa;
+    --icon-muted: #666666;
+    --icon-brand: #ff0000;
+    
+    /* === Scrollbar === */
+    --scrollbar-track: #1f1f1f;
+    --scrollbar-thumb: #444444;
+    --scrollbar-thumb-hover: #666666;
+    
+    /* === Specialized === */
+    --video-time-bg: rgba(0, 0, 0, 0.8);
+    --overlay-bg: rgba(0, 0, 0, 0.75);
+    --backdrop-blur: blur(10px);
+    
+    /* === Premium Dark Mode Enhancements === */
+    --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-header: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-modal: 0 16px 48px rgba(0, 0, 0, 0.6);
+    --shadow-floating: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Light Theme Configuration */
+:root[data-theme="light"] {
+    /* === Primary Colors === */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #f1f3f4;
+    --bg-elevated: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-surface-hover: #f8f9fa;
+    --bg-overlay: rgba(0, 0, 0, 0.5);
+    --bg-glass: rgba(255, 255, 255, 0.85);
+    
+    /* === Text Colors === */
+    --text-primary: #0f0f0f;
+    --text-secondary: #5f6368;
+    --text-tertiary: #80868b;
+    --text-muted: #9aa0a6;
+    --text-inverse: #ffffff;
+    
+    /* === Border Colors === */
+    --border-primary: rgba(0, 0, 0, 0.08);
+    --border-secondary: rgba(0, 0, 0, 0.06);
+    --border-tertiary: rgba(0, 0, 0, 0.04);
+    --border-focus: rgba(255, 0, 0, 0.4);
+    --border-hover: rgba(0, 0, 0, 0.12);
+    
+    /* === Brand Colors === */
+    --brand-primary: #ff0000;
+    --brand-primary-hover: #cc0000;
+    --brand-secondary: #ff6600;
+    --brand-accent: #1a73e8;
+    
+    /* === Semantic Colors === */
+    --success: #1e8e3e;
+    --success-bg: rgba(30, 142, 62, 0.1);
+    --warning: #f9ab00;
+    --warning-bg: rgba(249, 171, 0, 0.1);
+    --error: #d93025;
+    --error-bg: rgba(217, 48, 37, 0.1);
+    --info: #1a73e8;
+    --info-bg: rgba(26, 115, 232, 0.1);
+    
+    /* === Shadows === */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.15);
+    --shadow-2xl: 0 12px 30px rgba(0, 0, 0, 0.18);
+    --shadow-glow: 0 0 20px rgba(255, 0, 0, 0.2);
+    
+    /* === Elevation === */
+    --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --elevation-2: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --elevation-3: 0 4px 12px rgba(0, 0, 0, 0.12);
+    --elevation-4: 0 8px 20px rgba(0, 0, 0, 0.15);
+    
+    /* === Gradients === */
+    --gradient-primary: linear-gradient(135deg, #ff0000, #cc0000);
+    --gradient-secondary: linear-gradient(135deg, #ff6600, #ff3300);
+    --gradient-dark: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.8));
+    --gradient-glass: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9));
+    
+    /* === Component Specific === */
+    --header-bg: #ffffff;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --card-hover-bg: #f8f9fa;
+    --input-bg: #f8f9fa;
+    --input-focus-bg: #ffffff;
+    --button-primary-bg: #ff0000;
+    --button-primary-hover: #cc0000;
+    --button-secondary-bg: #f1f3f4;
+    --button-secondary-hover: #e8eaed;
+    
+    /* === Icon Colors === */
+    --icon-primary: #0f0f0f;
+    --icon-secondary: #5f6368;
+    --icon-muted: #9aa0a6;
+    --icon-brand: #ff0000;
+    
+    /* === Scrollbar === */
+    --scrollbar-track: #f1f3f4;
+    --scrollbar-thumb: #dadce0;
+    --scrollbar-thumb-hover: #bdc1c6;
+    
+    /* === Specialized === */
+    --video-time-bg: rgba(0, 0, 0, 0.75);
+    --overlay-bg: rgba(0, 0, 0, 0.5);
+    --backdrop-blur: blur(20px);
+    
+    /* === Premium Light Mode Enhancements === */
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+    --shadow-header: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-modal: 0 12px 48px rgba(0, 0, 0, 0.15);
+    --shadow-floating: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   2. TYPOGRAPHY SYSTEM
+   ========================================================================== */
+
+:root {
+    /* Font Families */
+    --font-primary: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    --font-secondary: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Courier New', monospace;
+    
+    /* Font Sizes (Fluid) */
+    --font-xs: clamp(12px, 0.75rem + 0.2vw, 14px);
+    --font-sm: clamp(14px, 0.875rem + 0.25vw, 16px);
+    --font-base: clamp(16px, 1rem + 0.3vw, 18px);
+    --font-lg: clamp(18px, 1.125rem + 0.4vw, 24px);
+    --font-xl: clamp(24px, 1.5rem + 0.6vw, 32px);
+    --font-2xl: clamp(32px, 2rem + 0.8vw, 48px);
+    --font-3xl: clamp(48px, 3rem + 1.2vw, 64px);
+    
+    /* Font Weights */
+    --font-light: 300;
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
+    
+    /* Line Heights */
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+    
+    /* Letter Spacing */
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+}
+
+/* ==========================================================================
+   3. SPACING SYSTEM (Compatible with responsive-system.css)
+   ========================================================================== */
+
+:root {
+    --space-0: 0;
+    --space-1: clamp(4px, 0.25rem + 0.1vw, 8px);
+    --space-2: clamp(8px, 0.5rem + 0.15vw, 12px);
+    --space-3: clamp(12px, 0.75rem + 0.2vw, 16px);
+    --space-4: clamp(16px, 1rem + 0.25vw, 24px);
+    --space-5: clamp(20px, 1.25rem + 0.3vw, 32px);
+    --space-6: clamp(24px, 1.5rem + 0.4vw, 40px);
+    --space-8: clamp(32px, 2rem + 0.5vw, 48px);
+    --space-10: clamp(40px, 2.5rem + 0.6vw, 64px);
+    --space-12: clamp(48px, 3rem + 0.8vw, 80px);
+    --space-16: clamp(64px, 4rem + 1vw, 96px);
+    --space-20: clamp(80px, 5rem + 1.2vw, 128px);
+    --space-24: clamp(96px, 6rem + 1.5vw, 160px);
+}
+
+/* ==========================================================================
+   4. BORDER RADIUS SYSTEM
+   ========================================================================== */
+
+:root {
+    --radius-none: 0;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-3xl: 24px;
+    --radius-full: 9999px;
+}
+
+/* ==========================================================================
+   5. TRANSITION SYSTEM
+   ========================================================================== */
+
+:root {
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ==========================================================================
+   6. Z-INDEX SCALE
+   ========================================================================== */
+
+:root {
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-player: 9999;
+    --z-notification: 99999;
+}
+
+/* ==========================================================================
+   7. COMPONENT-SPECIFIC THEME VARIABLES
+   ========================================================================== */
+
+:root {
+    /* Button Variables */
+    --button-sm-padding: 8px 16px;
+    --button-md-padding: 12px 20px;
+    --button-lg-padding: 16px 24px;
+    --button-sm-radius: 8px;
+    --button-md-radius: 12px;
+    --button-lg-radius: 16px;
+    
+    /* Input Variables */
+    --input-sm-padding: 8px 12px;
+    --input-md-padding: 12px 16px;
+    --input-lg-padding: 16px 20px;
+    --input-sm-radius: 8px;
+    --input-md-radius: 12px;
+    --input-lg-radius: 16px;
+    
+    /* Card Variables */
+    --card-sm-radius: 12px;
+    --card-md-radius: 16px;
+    --card-lg-radius: 20px;
+    --card-padding: 20px;
+    
+    /* Modal Variables */
+    --modal-radius: 20px;
+    --modal-padding: 32px;
+    --modal-max-width: 500px;
+    
+    /* Avatar Variables */
+    --avatar-sm: 32px;
+    --avatar-md: 40px;
+    --avatar-lg: 48px;
+    --avatar-xl: 64px;
+}
+
+/* ==========================================================================
+   8. DYNAMIC VIEWPORT UNITS (Chrome Mobile Fix)
+   ========================================================================== */
+
+:root {
+    --vh: 100dvh;
+    --vw: 100vw;
+    
+    @supports not (height: 100dvh) {
+        --vh: 100vh;
+    }
+}
+
+/* ==========================================================================
+   9. SAFE AREA INSETS (Notched Devices)
+   ========================================================================== */
+
+:root {
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+}
+
+/* ==========================================================================
+   10. THEME TRANSITION SUPPORT
+   ========================================================================== */
+
+* {
+    transition: background-color var(--transition-normal),
+                color var(--transition-normal),
+                border-color var(--transition-normal),
+                box-shadow var(--transition-normal);
+}
+
+/* Disable transitions for performance-critical elements */
+.video-player,
+iframe,
+canvas {
+    transition: none !important;
+}
+
+/* ==========================================================================
+   11. UTILITY CLASSES FOR THEME TESTING
+   ========================================================================== */
+
+.theme-debug {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text-primary);
+    z-index: 99999;
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-debug::before {
+    content: "Current Theme: ";
+    font-weight: 600;
+}
+
+.theme-debug::after {
+    content: attr(data-current-theme);
+    font-weight: 700;
+    color: var(--brand-primary);
+}
+
+/* ==========================================================================
+   12. FALLBACK SUPPORT FOR BROWSERS WITHOUT CSS CUSTOM PROPERTIES
+   ========================================================================== */
+
+@supports not (--css: variables) {
+    /* Fallback to dark theme hardcoded values */
+    body {
+        background-color: #0f0f0f;
+        color: #ffffff;
+    }
+}
+
+/* ==========================================================================
+   13. PRINT STYLES
+   ========================================================================== */
+
+@media print {
+    :root {
+        --bg-primary: #ffffff;
+        --text-primary: #000000;
+        --shadow-sm: none;
+        --shadow-md: none;
+        --shadow-lg: none;
+    }
+}
+
+/* ==========================================================================
+   14. REDUCED MOTION SUPPORT
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* ==========================================================================
+   15. HIGH CONTRAST MODE SUPPORT
+   ========================================================================== */
+
+@media (prefers-contrast: high) {
+    :root[data-theme="dark"] {
+        --border-primary: rgba(255, 255, 255, 0.3);
+        --text-secondary: #cccccc;
+    }
+    
+    :root[data-theme="light"] {
+        --border-primary: rgba(0, 0, 0, 0.2);
+        --text-secondary: #333333;
+    }
+}

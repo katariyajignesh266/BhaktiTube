@@ -9,7 +9,7 @@
 
 body{
 
-background:#000;
+background: var(--bg-primary);
 overflow:hidden;
 
 font-family:
@@ -41,7 +41,7 @@ height: 100vh;
 
 scroll-snap-align:start;
 
-background:#000;
+background: var(--bg-primary);
 }
 
 .short-card iframe{
@@ -96,7 +96,7 @@ z-index:999;
 
 body{
 margin:0;
-background:#000;
+background: var(--bg-primary);
 overflow-y:scroll;
 scroll-snap-type:y mandatory;
 /* Use dynamic viewport height for mobile browsers */
@@ -124,7 +124,7 @@ scroll-snap-align:start;
 
 position:relative;
 
-background:black;
+background: var(--bg-primary);
 
 display:flex;
 align-items:center;

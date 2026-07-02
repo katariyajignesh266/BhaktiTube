@@ -41,6 +41,67 @@ import { renderDashboard } from "./dashboard-renderer.js";
 import { getChannelCardMarkup } from "./channel-card-renderer.js";
 
 /* ==========================================================================
+   ⚡ THEME SYSTEM - LIGHT/DARK MODE TOGGLE
+   ========================================================================== */
+
+const THEME_KEY = "bt_theme_preference";
+const THEME_ATTR = "data-theme";
+
+// Initialize theme on page load
+function initializeTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    
+    // Set theme based on saved preference or system preference
+    const theme = savedTheme || (prefersDark ? "dark" : "light");
+    setTheme(theme);
+}
+
+// Set theme and update UI
+function setTheme(theme) {
+    document.documentElement.setAttribute(THEME_ATTR, theme);
+    localStorage.setItem(THEME_KEY, theme);
+    
+    // Update theme icon
+    const themeIcon = document.getElementById("themeIcon");
+    if (themeIcon) {
+        themeIcon.className = theme === "dark" ? "fa-solid fa-moon" : "fa-solid fa-sun";
+    }
+    
+    // Update channel card theme for light mode
+    if (theme === "light") {
+        document.body.setAttribute("data-cc-theme", "light");
+    } else {
+        document.body.removeAttribute("data-cc-theme");
+    }
+}
+
+// Toggle between light and dark theme
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute(THEME_ATTR) || "dark";
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+}
+
+// Initialize theme on DOM load
+document.addEventListener("DOMContentLoaded", () => {
+    initializeTheme();
+    
+    // Set up theme toggle button
+    const themeToggle = document.getElementById("themeToggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", toggleTheme);
+    }
+});
+
+// Listen for system theme changes
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    if (!localStorage.getItem(THEME_KEY)) {
+        setTheme(e.matches ? "dark" : "light");
+    }
+});
+
+/* ==========================================================================
    ⚡ NEW CHANNEL ANNOUNCEMENT SYSTEM - IMPROVED ARCHITECTURE
    ========================================================================== */
 

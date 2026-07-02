@@ -6,9 +6,9 @@ padding: var(--space-6) var(--space-4);
 
 text-align:center;
 
-background:#181818;
+background: var(--bg-secondary);
 
-border-bottom:1px solid #333;
+border-bottom: 1px solid var(--border-primary);
 }
 
 #channelLogo{
@@ -31,7 +31,7 @@ font-size: clamp(22px, 1.375rem + 0.4vw, 28px);
 
 font-weight:700;
 
-color:white;
+color: var(--text-primary);
 
 margin-bottom: var(--space-2);
 }
@@ -42,7 +42,7 @@ margin-bottom: var(--space-2);
 
 font-size: clamp(16px, 1rem + 0.2vw, 18px);
 
-color:#cfcfcf;
+color: var(--text-secondary);
 
 margin-bottom: var(--space-2);
 }
@@ -53,7 +53,7 @@ margin-bottom: var(--space-2);
 
 font-size: clamp(16px, 1rem + 0.2vw, 18px);
 
-color:#cfcfcf;
+color: var(--text-secondary);
 }
 
 /* VIDEO GRID - Using responsive system variables */
@@ -73,7 +73,7 @@ gap: var(--space-5);
 
 .video-card{
 
-background:#1c1c1c;
+background: var(--bg-surface);
 
 border-radius: clamp(12px, 0.75rem + 0.3vw, 16px);
 
@@ -97,7 +97,7 @@ line-height:1.5;
 
 font-weight:600;
 
-color:white;
+color: var(--text-primary);
 
 padding: var(--space-3);
 
