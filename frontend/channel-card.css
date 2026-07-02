@@ -82,21 +82,7 @@
     box-shadow: var(--cc-btn-hover-shadow, 0 12px 28px rgba(139, 92, 246, 0.45)) !important;
 }
 
-/* Light mode defaults if no customized card variables are specified */
-body.light-mode [data-cc-theme="dark-glass"] .channel-card,
-body.light-mode:not([data-cc-theme]) .channel-card {
-    background: #ffffff !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
-}
-body.light-mode [data-cc-theme="dark-glass"] .channel-card h3,
-body.light-mode:not([data-cc-theme]) .channel-card h3 {
-    color: #111111 !important;
-}
-body.light-mode [data-cc-theme="dark-glass"] .channel-card p,
-body.light-mode:not([data-cc-theme]) .channel-card p {
-    color: #555555 !important;
-}
+/* REMOVED: Old body.light-mode theme system - replaced with centralized :root[data-theme] system */
 
 /* Global light mode channel card enhancement */
 :root[data-theme="light"] .channel-card {

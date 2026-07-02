@@ -1258,12 +1258,7 @@ document.getElementById("darkModeBtn");
 
 darkModeBtn.addEventListener("click",()=>{
 
-document.body.classList.remove("light-mode");
-
-localStorage.setItem(
-"theme",
-"dark"
-);
+setTheme("dark");
 
 });
 
@@ -1272,12 +1267,7 @@ document.getElementById("lightModeBtn");
 
 lightModeBtn.addEventListener("click",()=>{
 
-document.body.classList.add("light-mode");
-
-localStorage.setItem(
-"theme",
-"light"
-);
+setTheme("light");
 
 });
 
