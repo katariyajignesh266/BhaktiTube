@@ -52,8 +52,8 @@ function initializeTheme() {
     const savedTheme = localStorage.getItem(THEME_KEY);
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    // Set theme based on saved preference or system preference
-    const theme = savedTheme || (prefersDark ? "dark" : "light");
+    // Set theme based on saved preference or default to dark mode
+    const theme = savedTheme || "dark";
     setTheme(theme);
 }
 

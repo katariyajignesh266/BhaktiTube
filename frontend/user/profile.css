@@ -25,6 +25,21 @@
     --shadow-soft: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
 
+/* Light theme support for profile page */
+:root[data-theme="light"] {
+    --bg-dark: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-hover: rgba(248, 249, 250, 0.95);
+    --border-color: rgba(0, 0, 0, 0.08);
+    --border-color-focus: rgba(255, 107, 61, 0.4);
+    
+    --text-primary: #0f0f0f;
+    --text-secondary: #5f6368;
+    --text-muted: #9aa0a6;
+    
+    --shadow-soft: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+}
+
 * {
     margin: 0;
     padding: 0;
