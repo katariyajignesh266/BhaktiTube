@@ -515,9 +515,6 @@ async function applyDashboardLayoutMode(mode) {
         if (allChannelsFeed) allChannelsFeed.style.display = "block";
         if (categorySection) categorySection.style.display = "flex"; // Keep category visible
         if (continueWatchingSection) continueWatchingSection.style.display = "none";
-        
-        // Initialize the all channels feed
-        await initAllChannelsFeed();
     } else if (mode === "premium") {
         // Premium Channel Feed Mode - Content area only
         setPremiumDashboardMode(true);
@@ -807,6 +804,14 @@ if (showDashboard) {
     if (allChannelsFeed) allChannelsFeed.style.display = "none";
     continueWatchingSection.style.display = "none";
     categorySection.style.display = "none"; // Hide category in non-dashboard views
+    
+    // Load data when switching to videos or channels view
+    if (showVideos) {
+        await loadVideos();
+    }
+    if (showChannels) {
+        await loadChannels(false); // Load channels without re-applying dashboard mode
+    }
 }
 
 journeySection.classList.toggle(
@@ -971,99 +976,53 @@ async function loadVideos(){
     videosContainer.innerHTML +=
     getVideoCardMarkup(video);
 
-    return;
-
-    videosContainer.innerHTML += `
-
-    <div
-      class="video-card"
-      onclick="openVideo('${video.videoId}')"
-    >
-
-      <div class="thumbnail">
-
-        <img
-          src="https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg"
-        >
-
-        <span class="video-time">
-          Video
-        </span>
-
-      </div>
-
-      <div class="video-info">
-
-        <div class="channel-logo">
-          ${video.logo}
-        </div>
-
-        <div class="video-details">
-
-          <h3>
-            ${video.title}
-          </h3>
-
-          <p class="channel-name">
-            ${video.channel}
-          </p>
-
-          <p class="video-stats">
-            ${video.views} • ${video.date}
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    `;
-
   });
 
   refreshPersonalSections();
 
 }
 
-async function loadChannels(){
+async function loadChannels(shouldRender = true) {
 
-const channelsContainer =
-document.getElementById(
-"channelsContainer"
-);
+  const channelsContainer =
+    document.getElementById(
+      "channelsContainer"
+    );
 
-channelsContainer.innerHTML = "";
+  channelsContainer.innerHTML = "";
 
-const q = query(
-collection(db,"channels"),
-orderBy("createdAt","desc")
-);
+  const q = query(
+    collection(db, "channels"),
+    orderBy("createdAt", "desc")
+  );
 
-const snapshot =
-await getDocs(q);
+  const snapshot =
+    await getDocs(q);
 
-snapshot.forEach((docSnap)=>{
+  snapshot.forEach((docSnap) => {
 
-const channel =
-docSnap.data();
+    const channel =
+      docSnap.data();
 
-if(channel.enabled !== true){
-return;
-}
+    if (channel.enabled !== true) {
+      return;
+    }
 
-channelsContainer.innerHTML += getChannelCardMarkup(channel);
+    channelsContainer.innerHTML += getChannelCardMarkup(channel);
 
-});
+  });
 
-// Check dashboard layout mode and apply it
-const layoutMode = await checkDashboardLayoutMode();
-await applyDashboardLayoutMode(layoutMode);
+  // Only check dashboard layout mode if we're rendering
+  // Otherwise, this is called just to fetch data
+  if (shouldRender) {
+    const layoutMode = await checkDashboardLayoutMode();
+    await applyDashboardLayoutMode(layoutMode);
 
-// If premium mode, render premium channel feed
-if (layoutMode === "premium") {
-    await renderPremiumChannelFeed();
-}
+    // If premium mode, render premium channel feed
+    if (layoutMode === "premium") {
+      await renderPremiumChannelFeed();
+    }
+  }
 }
 
 
@@ -1076,53 +1035,6 @@ function renderVideos(videos){
 
         videosContainer.innerHTML +=
         getVideoCardMarkup(video);
-
-        return;
-
-        videosContainer.innerHTML += `
-
-        <div
-          class="video-card"
-          onclick="openVideo('${video.videoId}')"
-        >
-
-          <div class="thumbnail">
-
-            <img
-              src="https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg"
-            >
-
-            <span class="video-time">
-              Video
-            </span>
-
-          </div>
-
-          <div class="video-info">
-
-            <div class="channel-logo">
-              ${video.logo}
-            </div>
-
-            <div class="video-details">
-
-              <h3>${video.title}</h3>
-
-              <p class="channel-name">
-                ${video.channel}
-              </p>
-
-              <p class="video-stats">
-                ${video.views} • ${video.date}
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        `;
 
     });
 
@@ -1142,9 +1054,42 @@ document.body.classList.add(
 
 }
 
-loadVideos();
-loadChannels();
-loadNotifications();
+// Initialize dashboard based on Firebase setting BEFORE any rendering
+async function initializeDashboard() {
+    try {
+        // First, check dashboard layout mode from Firebase
+        const layoutMode = await checkDashboardLayoutMode();
+        
+        // Apply the layout mode immediately to hide/show correct sections
+        await applyDashboardLayoutMode(layoutMode);
+        
+        // Now load only the data needed for the selected dashboard
+        if (layoutMode === "all-channels") {
+            // All Channels Feed mode - only initialize the feed
+            await initAllChannelsFeed();
+        } else if (layoutMode === "premium") {
+            // Premium mode - render premium channel feed
+            await renderPremiumChannelFeed();
+        } else {
+            // Classic mode - load videos and channels
+            await loadVideos();
+            await loadChannels(false); // Load data but don't re-apply dashboard mode
+        }
+        
+        // Load notifications regardless of dashboard mode
+        await loadNotifications();
+        
+    } catch (error) {
+        console.error("Error initializing dashboard:", error);
+        // Fallback to classic mode on error
+        await loadVideos();
+        await loadChannels(false);
+        await loadNotifications();
+    }
+}
+
+// Start dashboard initialization
+initializeDashboard();
 // Announcement queue is initialized by onAuthStateChanged handler
 
 const menuBtn =
