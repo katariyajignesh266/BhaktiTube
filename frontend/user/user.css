@@ -56,41 +56,9 @@ h1{
     margin-bottom:30px;
 }
 
-input{
+input{width:100%;padding:15px;margin-bottom:15px;border:1px solid var(--border-primary);border-radius:var(--radius-lg);background:var(--input-bg);color:var(--text-primary);font-size:16px;transition:var(--transition-normal);outline:none;}
 
-    width:100%;
-
-    padding:15px;
-
-    margin-bottom:15px;
-
-    border:none;
-
-    border-radius: var(--radius-lg);
-
-    background: var(--input-bg);
-
-    color: var(--text-primary);
-
-    font-size:16px;
-}
-
-button{
-
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:12px;
-
-    cursor:pointer;
-
-    font-size:16px;
-
-    font-weight:bold;
-}
+button{width:100%;padding:15px;border:none;border-radius:var(--radius-lg);cursor:pointer;font-size:16px;font-weight:bold;transition:var(--transition-normal);}
 
 #signupBtn{
 
@@ -138,13 +106,7 @@ body{
     justify-content:center;
     align-items:center;
 
-    background:
-    linear-gradient(
-        135deg,
-        #000000,
-        #111111,
-        #1a1a1a
-    );
+    background: var(--bg-primary);
 }
 
 .auth-container{
@@ -157,10 +119,9 @@ body{
 
     border-radius: var(--radius-3xl);
 
-    border: 1px solid rgba(255,0,0,.2);
+    border: 1px solid var(--border-primary);
 
-    box-shadow:
-    0 0 35px rgba(255,0,0,.15);
+    box-shadow: var(--shadow-modal);
 
 }
 
@@ -186,33 +147,9 @@ h1{
 
 }
 
-input{
+input{width:100%;padding:15px;margin-bottom:15px;border:1px solid var(--border-primary);border-radius:var(--radius-lg);background:var(--input-bg);color:var(--text-primary);font-size:16px;transition:var(--transition-normal);outline:none;}
 
-    width:100%;
-
-    padding:18px;
-
-    margin-bottom:15px;
-
-    border:none;
-
-    border-radius: var(--radius-xl);
-
-    background: var(--input-bg);
-
-    color: var(--text-primary);
-
-    font-size:16px;
-
-}
-
-input:focus{
-
-    outline:none;
-
-    border: 1px solid var(--brand-primary);
-
-}
+input:focus{border-color:var(--brand-primary);box-shadow:0 0 0 3px rgba(255,0,0,0.1);}
 
 input::placeholder{
 
@@ -220,23 +157,7 @@ input::placeholder{
 
 }
 
-button{
-
-    width:100%;
-
-    padding:18px;
-
-    border:none;
-
-    border-radius:16px;
-
-    cursor:pointer;
-
-    font-size:18px;
-
-    font-weight:700;
-
-}
+button{width:100%;padding:15px;border:none;border-radius:var(--radius-lg);cursor:pointer;font-size:16px;font-weight:bold;transition:var(--transition-normal);}
 
 #loginBtn,
 #signupBtn{
@@ -345,18 +266,9 @@ button{
         margin-bottom:25px;
     }
 
-    input{
-        height:58px;
-        font-size:17px;
-        padding:0 18px;
-        margin-bottom:15px;
-    }
+    input{width:100%;padding:15px;margin-bottom:15px;border:1px solid var(--border-primary);border-radius:var(--radius-lg);background:var(--input-bg);color:var(--text-primary);font-size:16px;transition:var(--transition-normal);outline:none;}
 
-    button{
-        height:58px;
-        font-size:18px;
-        margin-top:5px;
-    }
+    button{width:100%;padding:15px;border:none;border-radius:var(--radius-lg);cursor:pointer;font-size:16px;font-weight:bold;transition:var(--transition-normal);}
 
     .google-btn{
         margin-top:12px;
@@ -457,7 +369,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 
-background:#1f1f1f;
+background: var(--bg-tertiary);
 
 border-radius:50%;
 
@@ -466,9 +378,7 @@ cursor:pointer;
 z-index:999;
 }
 
-.auth-close a{
-
-color:white;
+.auth-close a{color: var(--text-primary);
 
 font-size:24px;
 
@@ -478,8 +388,17 @@ font-weight:bold;
 
 }
 
-.auth-close:hover{
+.auth-close:hover{background:var(--brand-primary-hover);transform:scale(1.1);}
 
-background:#ff0000;
 
-}
+
+
+
+
+
+
+
+
+
+
+
