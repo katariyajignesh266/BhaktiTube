@@ -26,11 +26,9 @@ import {
 } from "../analytics-engine.js";
 import { renderDashboard } from "../dashboard-renderer.js";
 import { getChannelCardMarkup } from "../channel-card-renderer.js";
+import { YOUTUBE_API_KEY } from "../config.js";
 
 console.log("⚡ PREMIUM BHAKTITUBE CORE ENGINE ACTIVE");
-
-// YOUTUBE API CREDENTIAL MATRIX KEY
-const YOUTUBE_API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
 
 // VARIABLE FOR API FETCH CONTAINER POINTER
 let fetchedChannel = null;

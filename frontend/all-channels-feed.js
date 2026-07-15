@@ -9,13 +9,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import { watchProgressEngine } from "./analytics-engine.js";
 import { playVideo } from "./player-core.js";
+import { smartFeedScheduler } from "./smart-feed-scheduler.js";
+import { YOUTUBE_API_KEY, APP_CONFIG } from "./config.js";
 
-const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
-const MIN_DURATION_SECONDS = 300; // 5 minutes
-const COMPLETION_THRESHOLD = 95; // 95%
-const INITIAL_CHANNELS_TO_PROCESS = 3; // Process first 3 channels immediately (reduced from 5)
-const INITIAL_VIDEOS_PER_CHANNEL = 5; // Fetch only 5 videos per channel initially (reduced from 10)
-const PARALLEL_BATCH_SIZE = 2; // Process 2 channels in parallel (reduced from 3 for faster initial load)
+const API_KEY = YOUTUBE_API_KEY;
+const MIN_DURATION_SECONDS = APP_CONFIG.MIN_DURATION_SECONDS;
+const COMPLETION_THRESHOLD = APP_CONFIG.COMPLETION_THRESHOLD;
+const INITIAL_CHANNELS_TO_PROCESS = APP_CONFIG.INITIAL_CHANNELS_TO_PROCESS;
+const INITIAL_VIDEOS_PER_CHANNEL = APP_CONFIG.INITIAL_VIDEOS_PER_CHANNEL;
+const PARALLEL_BATCH_SIZE = APP_CONFIG.PARALLEL_BATCH_SIZE;
 
 // Feed State
 let allChannels = [];
@@ -32,7 +34,7 @@ let channelFetchStatus = new Map(); // channelId -> 'pending', 'fetching', 'comp
 let videoCache = new Map(); // videoId -> video object (for deduplication)
 
 // Initialize the All Channels Feed
-export async function initAllChannelsFeed() {
+async function initAllChannelsFeed() {
   // Prevent duplicate initialization
   if (isInitialized) {
     console.log("All Channels Feed already initialized");
@@ -50,6 +52,13 @@ export async function initAllChannelsFeed() {
   // Initialize watch progress engine
   watchProgressEngine.init({ source: "all-channels-feed" });
 
+  // Initialize smart feed scheduler
+  await smartFeedScheduler.init();
+
+  // Set up global integration function
+  window.handleFeedVideoProgress = handleVideoProgress;
+  window.handleFeedVideoCompletion = handleVideoCompletion;
+
   // Start completed videos loading in background (don't block)
   const completedVideosPromise = watchProgressEngine.getCompletedVideoIds()
     .then(ids => { completedVideoIds = ids; })
@@ -61,8 +70,8 @@ export async function initAllChannelsFeed() {
   // Set up infinite scroll
   setupInfiniteScroll();
 
-  // Start progressive loading immediately without waiting for completed videos
-  loadInitialProgressiveContent();
+  // Start smart feed loading
+  loadSmartFeed();
 
   // Complete completed videos loading in background
   await completedVideosPromise;
@@ -100,47 +109,180 @@ async function fetchAllChannels() {
   }
 }
 
-// Load initial content progressively for fast first render
-async function loadInitialProgressiveContent() {
+// Load smart feed using the new scheduler
+async function loadSmartFeed() {
   showLoader();
   
   try {
-    // Process first batch of channels in parallel for fast initial load
-    const initialChannels = allChannels.slice(0, INITIAL_CHANNELS_TO_PROCESS);
-    const firstRoundVideos = [];
+    // Check if we need to generate a new daily feed (checks day changes)
+    const hasExistingFeed = await smartFeedScheduler.loadDailyFeed();
     
-    // Pre-fetch video data for initial channels in parallel
-    const prefetchPromises = initialChannels.map(channel => 
-      prefetchChannelVideos(channel, INITIAL_VIDEOS_PER_CHANNEL)
+    if (hasExistingFeed && smartFeedScheduler.todayFeed.length > 0) {
+      console.log(`[Fast Load] Regenerating feed from cached videos (${smartFeedScheduler.todayFeed.length} videos) to vary order...`);
+      
+      // Populate allAvailableVideos with cached feed so scheduler can regenerate from it
+      smartFeedScheduler.setAvailableVideos(smartFeedScheduler.todayFeed);
+      
+      // Regenerate the feed using the cached videos (this filters completed/cooldown and re-ranks/re-shuffles)
+      await smartFeedScheduler.regenerateFeed();
+      
+      // Render first batch immediately from the newly regenerated cache
+      smartFeedScheduler.resetBatchIndex();
+      const firstBatch = smartFeedScheduler.getNextBatch();
+      
+      if (firstBatch.length > 0) {
+        renderVideos(firstBatch);
+        
+        // Mark videos as shown
+        firstBatch.forEach(video => {
+          smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.SHOWN);
+          smartFeedScheduler.addToChannelHistory(video.channelId);
+        });
+      }
+      hideLoader();
+      
+      // Fetch all channels in background to update available pool in scheduler
+      fetchAndRefreshFeedInBackground();
+      return;
+    }
+    
+    console.log("[Fast Load] No existing feed, performing progressive load...");
+    
+    // Fetch only priority channels first for rapid initial render (takes ~500ms)
+    const priorityChannels = allChannels.slice(0, INITIAL_CHANNELS_TO_PROCESS);
+    const backgroundChannels = allChannels.slice(INITIAL_CHANNELS_TO_PROCESS);
+    
+    // Fetch priority channels in parallel (limit = 20 for faster startup)
+    const priorityPromises = priorityChannels.map(channel => 
+      prefetchChannelVideos(channel, 20)
+    );
+    await Promise.all(priorityPromises);
+    
+    // Collect videos from priority channels
+    const priorityVideos = [];
+    priorityChannels.forEach(channel => {
+      const videos = channelVideoMaps.get(channel.channelId) || [];
+      priorityVideos.push(...videos);
+    });
+    
+    const eligiblePriorityVideos = priorityVideos.filter(isVideoEligible);
+    console.log(`[Fast Load] Priority channels loaded: ${eligiblePriorityVideos.length} videos`);
+    
+    if (eligiblePriorityVideos.length > 0) {
+      // Set in scheduler and generate initial feed
+      smartFeedScheduler.setAvailableVideos(eligiblePriorityVideos);
+      await smartFeedScheduler.generateDailyFeed(eligiblePriorityVideos);
+      
+      // Render first batch immediately
+      smartFeedScheduler.resetBatchIndex();
+      const firstBatch = smartFeedScheduler.getNextBatch();
+      
+      if (firstBatch.length > 0) {
+        renderVideos(firstBatch);
+        
+        // Mark videos as shown
+        firstBatch.forEach(video => {
+          smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.SHOWN);
+          smartFeedScheduler.addToChannelHistory(video.channelId);
+        });
+      }
+      hideLoader();
+    } else {
+      // Fallback if priority channels returned nothing (e.g. empty or offline)
+      console.log("[Fast Load] Priority channels empty, fallback to full loader");
+    }
+    
+    // Fetch all channels (including background ones) in background to build complete feed
+    fetchRemainingChannelsInBackground(backgroundChannels);
+    
+  } catch (error) {
+    console.error("Error loading smart feed:", error);
+    showEmptyState("Error loading feed");
+    hideLoader();
+  }
+}
+
+// Background fetch helper to restore available pool for cached feeds
+async function fetchAndRefreshFeedInBackground() {
+  try {
+    console.log("[Fast Load] Fetching all channels in the background...");
+    const allVideos = await fetchAllVideosFromChannels();
+    console.log(`[Fast Load] Background fetch completed: ${allVideos.length} videos`);
+    
+    const eligibleVideos = allVideos.filter(isVideoEligible);
+    smartFeedScheduler.setAvailableVideos(eligibleVideos);
+    
+    // Always regenerate feed with fresh API videos in the background
+    console.log("[Fast Load] Regenerating feed in background with fresh API videos...");
+    await smartFeedScheduler.generateDailyFeed(eligibleVideos);
+    smartFeedScheduler.resetBatchIndex();
+  } catch (error) {
+    console.error("[Fast Load] Error in background feed refresh:", error);
+  }
+}
+
+// Background fetch helper to finish progressive loading
+async function fetchRemainingChannelsInBackground(backgroundChannels) {
+  try {
+    console.log(`[Fast Load] Fetching remaining ${backgroundChannels.length} channels in the background...`);
+    
+    // Fetch background channels in parallel batches
+    const PARALLEL_BATCH_SIZE_BG = 4;
+    for (let i = 0; i < backgroundChannels.length; i += PARALLEL_BATCH_SIZE_BG) {
+      const batch = backgroundChannels.slice(i, i + PARALLEL_BATCH_SIZE_BG);
+      const prefetchPromises = batch.map(channel => 
+        prefetchChannelVideos(channel, 50)
+      );
+      await Promise.all(prefetchPromises);
+    }
+    
+    // Collect all videos from all channels
+    const allVideos = [];
+    allChannels.forEach(channel => {
+      const videos = channelVideoMaps.get(channel.channelId) || [];
+      allVideos.push(...videos);
+    });
+    
+    const eligibleVideos = allVideos.filter(isVideoEligible);
+    console.log(`[Fast Load] Background loading completed. Total eligible videos: ${eligibleVideos.length}`);
+    
+    // Update available pool in scheduler
+    smartFeedScheduler.setAvailableVideos(eligibleVideos);
+    
+    // Regenerate daily feed using all eligible videos
+    await smartFeedScheduler.generateDailyFeed(eligibleVideos);
+    
+    // Reset the batch index so that new scrolling batches skip session-shown videos and pull from the full feed
+    smartFeedScheduler.resetBatchIndex();
+    
+    console.log(`[Fast Load] Smart Feed fully loaded and balanced with ${eligibleVideos.length} videos`);
+  } catch (error) {
+    console.error("[Fast Load] Error fetching background channels:", error);
+  }
+}
+
+// Fetch all videos from all channels
+async function fetchAllVideosFromChannels() {
+  const allVideos = [];
+  
+  // Pre-fetch all channels in parallel batches
+  for (let i = 0; i < allChannels.length; i += PARALLEL_BATCH_SIZE) {
+    const batch = allChannels.slice(i, i + PARALLEL_BATCH_SIZE);
+    
+    const prefetchPromises = batch.map(channel => 
+      prefetchChannelVideos(channel, 50) // Fetch more videos for better feed generation
     );
     
     await Promise.all(prefetchPromises);
     
-    // Now get one video from each channel in round-robin order
-    for (const channel of initialChannels) {
-      const video = await getNextEligibleVideo(channel);
-      if (video) {
-        firstRoundVideos.push(video);
-        const currentIndex = channelCurrentIndexes.get(channel.channelId) || 0;
-        channelCurrentIndexes.set(channel.channelId, currentIndex + 1);
-      }
-    }
-    
-    // Render first batch immediately
-    if (firstRoundVideos.length > 0) {
-      renderVideos(firstRoundVideos);
-      feedRound++;
-    }
-    
-    hideLoader();
-    
-    // Continue loading remaining channels in background
-    setTimeout(() => loadRemainingChannelsInBackground(), 100);
-    
-  } catch (error) {
-    console.error("Error loading initial progressive content:", error);
-    hideLoader();
+    // Collect videos from these channels
+    batch.forEach(channel => {
+      const videos = channelVideoMaps.get(channel.channelId) || [];
+      allVideos.push(...videos);
+    });
   }
+  
+  return allVideos;
 }
 
 // Pre-fetch channel videos without processing
@@ -179,180 +321,75 @@ async function prefetchChannelVideos(channel, limit) {
   }
 }
 
-// Load remaining channels in background after initial render
-async function loadRemainingChannelsInBackground() {
-  const remainingChannels = allChannels.slice(INITIAL_CHANNELS_TO_PROCESS);
-  
-  // Pre-fetch all remaining channels in parallel batches
-  for (let i = 0; i < remainingChannels.length; i += PARALLEL_BATCH_SIZE) {
-    const batch = remainingChannels.slice(i, i + PARALLEL_BATCH_SIZE);
-    
-    // Pre-fetch without blocking
-    Promise.all(
-      batch.map(channel => prefetchChannelVideos(channel, INITIAL_VIDEOS_PER_CHANNEL))
-    ).then(() => {
-      // After prefetch, get one video from each channel
-      const roundVideos = [];
-      batch.forEach(channel => {
-        const video = getNextEligibleVideoSync(channel);
-        if (video) {
-          roundVideos.push(video);
-          const currentIndex = channelCurrentIndexes.get(channel.channelId) || 0;
-          channelCurrentIndexes.set(channel.channelId, currentIndex + 1);
-        }
-      });
-      
-      if (roundVideos.length > 0) {
-        renderVideos(roundVideos);
-        feedRound++;
-      }
-    }).catch(error => {
-      console.error("Error loading background channel batch:", error);
-    });
-  }
-}
 
-// Synchronous version of getNextEligibleVideo for background processing
-function getNextEligibleVideoSync(channel) {
-  const channelId = channel.channelId;
-  const videos = channelVideoMaps.get(channelId) || [];
-  const currentIndex = channelCurrentIndexes.get(channelId) || 0;
-
-  // Get updated videos array
-  const updatedVideos = channelVideoMaps.get(channelId) || [];
-  const updatedIndex = channelCurrentIndexes.get(channelId) || 0;
-
-  // Find next eligible video starting from current index
-  for (let i = updatedIndex; i < updatedVideos.length; i++) {
-    const video = updatedVideos[i];
-    
-    // Apply filters
-    if (isVideoEligible(video)) {
-      // Update index to this position
-      channelCurrentIndexes.set(channelId, i);
-      return video;
-    }
-  }
-
-  // No eligible video found in current batch
-  return null;
-}
-
-// Load next round of videos using round-robin algorithm
-async function loadNextRound() {
+// Load next batch using smart feed scheduler
+async function loadNextBatch() {
   if (isLoading) return;
   isLoading = true;
 
-  // Only show loader for first round
-  if (feedRound === 0) {
-    showLoader();
-  }
-
   try {
-    const roundVideos = [];
+    // Get next batch from smart feed scheduler
+    const nextBatch = smartFeedScheduler.getNextBatch();
     
-    // Round-robin: fetch one video from each channel (use optimized fetching)
-    for (const channel of allChannels) {
-      const video = await getNextEligibleVideo(channel);
-      if (video) {
-        roundVideos.push(video);
-        // Increment index for this channel
-        const currentIndex = channelCurrentIndexes.get(channel.channelId) || 0;
-        channelCurrentIndexes.set(channel.channelId, currentIndex + 1);
+    if (nextBatch.length === 0) {
+      // No more videos in current feed
+      if (!smartFeedScheduler.hasMoreBatches()) {
+        console.log('Feed exhausted, regenerating with remaining videos...');
+        
+        // Use scheduler's built-in regeneration
+        const regeneratedFeed = await smartFeedScheduler.regenerateFeed();
+        
+        if (regeneratedFeed.length > 0) {
+          smartFeedScheduler.resetBatchIndex();
+          
+          // Try to get the first batch from regenerated feed
+          const regeneratedBatch = smartFeedScheduler.getNextBatch();
+          if (regeneratedBatch.length > 0) {
+            renderVideos(regeneratedBatch);
+            
+            // Mark videos as shown
+            regeneratedBatch.forEach(video => {
+              smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.SHOWN);
+              smartFeedScheduler.addToChannelHistory(video.channelId);
+            });
+            
+            hideLoader();
+            isLoading = false;
+            return;
+          }
+        }
+        
+        console.log('No more videos available');
+        if (intersectionObserver) {
+          intersectionObserver.disconnect();
+        }
+        showEmptyState("No more videos in feed");
       }
-    }
-
-    if (roundVideos.length === 0 && feedRound === 0) {
-      showEmptyState("No videos available");
       hideLoader();
       isLoading = false;
       return;
     }
 
     // Render videos
-    renderVideos(roundVideos);
-    feedRound++;
+    renderVideos(nextBatch);
+    
+    // Mark videos as shown
+    nextBatch.forEach(video => {
+      smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.SHOWN);
+      smartFeedScheduler.addToChannelHistory(video.channelId);
+    });
+
+    // Preload next batch in background
+    smartFeedScheduler.preloadNextBatch();
 
   } catch (error) {
-    console.error("Error loading next round:", error);
+    console.error("Error loading next batch:", error);
   } finally {
     hideLoader();
     isLoading = false;
   }
 }
 
-// Get next eligible video from a channel (with filtering)
-async function getNextEligibleVideo(channel) {
-  const channelId = channel.channelId;
-  const videos = channelVideoMaps.get(channelId) || [];
-  const currentIndex = channelCurrentIndexes.get(channelId) || 0;
-
-  // If we don't have videos loaded for this channel yet, fetch them
-  if (videos.length === 0 || currentIndex >= videos.length) {
-    await fetchChannelVideos(channel);
-  }
-
-  // Get updated videos array
-  const updatedVideos = channelVideoMaps.get(channelId) || [];
-  const updatedIndex = channelCurrentIndexes.get(channelId) || 0;
-
-  // Find next eligible video starting from current index
-  for (let i = updatedIndex; i < updatedVideos.length; i++) {
-    const video = updatedVideos[i];
-    
-    // Apply filters
-    if (isVideoEligible(video)) {
-      // Update index to this position
-      channelCurrentIndexes.set(channelId, i);
-      return video;
-    }
-  }
-
-  // No eligible video found in current batch
-  return null;
-}
-
-// Get next eligible video with initial limit for progressive loading
-async function getNextEligibleVideoWithLimit(channel, limit) {
-  const channelId = channel.channelId;
-  const videos = channelVideoMaps.get(channelId) || [];
-  const currentIndex = channelCurrentIndexes.get(channelId) || 0;
-  const status = channelFetchStatus.get(channelId) || 'pending';
-
-  // If prefetch is in progress, wait for it
-  if (status === 'fetching') {
-    await new Promise(resolve => setTimeout(resolve, 50));
-    return getNextEligibleVideoWithLimit(channel, limit);
-  }
-
-  // If we don't have videos loaded for this channel yet, fetch limited batch
-  if (videos.length === 0 || currentIndex >= videos.length) {
-    if (status === 'pending') {
-      channelFetchStatus.set(channelId, 'fetching');
-      await fetchChannelVideosWithLimit(channel, limit);
-      channelFetchStatus.set(channelId, 'complete');
-    }
-  }
-
-  // Get updated videos array
-  const updatedVideos = channelVideoMaps.get(channelId) || [];
-  const updatedIndex = channelCurrentIndexes.get(channelId) || 0;
-
-  // Find next eligible video starting from current index
-  for (let i = updatedIndex; i < updatedVideos.length; i++) {
-    const video = updatedVideos[i];
-    
-    // Apply filters
-    if (isVideoEligible(video)) {
-      // Update index to this position
-      channelCurrentIndexes.set(channelId, i);
-      return video;
-    }
-  }
-
-  // No eligible video found in current batch
-  return null;
-}
 
 // Fetch videos for a specific channel (reusing channel.js logic)
 async function fetchChannelVideos(channel) {
@@ -459,9 +496,16 @@ async function fetchPlaylistVideos(channel, playlistId) {
       );
       const detailsData = await detailsResponse.json();
       
+      const detailsMap = new Map();
+      if (detailsData.items) {
+        detailsData.items.forEach(d => detailsMap.set(d.id, d));
+      }
+      
       for (let j = 0; j < batch.length; j++) {
         const item = batch[j];
-        const details = detailsData.items?.[j];
+        const videoId = item.snippet?.resourceId?.videoId;
+        if (!videoId) continue;
+        const details = detailsMap.get(videoId);
         
         if (!details || !details.contentDetails) continue;
         
@@ -515,9 +559,16 @@ async function fetchPlaylistVideosWithLimit(channel, playlistId, limit) {
       );
       const detailsData = await detailsResponse.json();
       
+      const detailsMap = new Map();
+      if (detailsData.items) {
+        detailsData.items.forEach(d => detailsMap.set(d.id, d));
+      }
+      
       for (let j = 0; j < batch.length; j++) {
         const item = batch[j];
-        const details = detailsData.items?.[j];
+        const videoId = item.snippet?.resourceId?.videoId;
+        if (!videoId) continue;
+        const details = detailsMap.get(videoId);
         
         if (!details || !details.contentDetails) continue;
         
@@ -555,10 +606,17 @@ async function fetchChannelVideosFromAPI(channel, playlistId) {
     );
     const detailsData = await detailsResponse.json();
 
+    const detailsMap = new Map();
+    if (detailsData.items) {
+      detailsData.items.forEach(d => detailsMap.set(d.id, d));
+    }
+
     const videos = [];
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      const details = detailsData.items?.[i];
+      const videoId = item.snippet?.resourceId?.videoId;
+      if (!videoId) continue;
+      const details = detailsMap.get(videoId);
 
       if (!details || !details.contentDetails) continue;
 
@@ -595,10 +653,17 @@ async function fetchChannelVideosFromAPIWithLimit(channel, playlistId, limit) {
     );
     const detailsData = await detailsResponse.json();
 
+    const detailsMap = new Map();
+    if (detailsData.items) {
+      detailsData.items.forEach(d => detailsMap.set(d.id, d));
+    }
+
     const videos = [];
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      const details = detailsData.items?.[i];
+      const videoId = item.snippet?.resourceId?.videoId;
+      if (!videoId) continue;
+      const details = detailsMap.get(videoId);
 
       if (!details || !details.contentDetails) continue;
 
@@ -741,13 +806,19 @@ function createVideoCard(video) {
   const viewCount = escapeHtml(video.viewCount);
   const publishedAt = escapeHtml(video.publishedAt);
 
+  // Get video state for badges
+  const videoState = smartFeedScheduler.getVideoState(video.videoId);
+  const badges = generateVideoBadges(video, videoState);
+
   const card = document.createElement('div');
   card.className = 'video-card';
+  card.setAttribute('data-video-id', videoId);
   card.onclick = () => openVideoFromFeed(video);
 
   card.innerHTML = `
     <div class="video-thumbnail-wrapper">
       <img src="${thumbnailUrl}" class="video-thumbnail" loading="lazy" alt="${title}">
+      ${badges}
     </div>
     <div class="video-metadata-row">
       <div class="channel-avatar">
@@ -772,6 +843,35 @@ function createVideoCard(video) {
   return card;
 }
 
+// Generate video badges based on state and metadata
+function generateVideoBadges(video, videoState) {
+  const badges = [];
+  
+  // Fresh upload badge (7 days)
+  if (video.publishedAt) {
+    const publishDate = new Date(video.publishedAt);
+    const ageMs = Date.now() - publishDate.getTime();
+    const FRESH_UPLOAD_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+    if (ageMs < FRESH_UPLOAD_DURATION_MS) {
+      badges.push('<span class="video-badge badge-fresh">FRESH TODAY</span>');
+    }
+  }
+  
+  // Continue watching badge
+  if (videoState === smartFeedScheduler.VideoState.CONTINUE_WATCHING) {
+    const progress = video.progress || 0;
+    const progressPercent = Math.round(progress * 100);
+    badges.push(`<span class="video-badge badge-continue">CONTINUE WATCHING ${progressPercent}%</span>`);
+  }
+  
+  // New badge
+  if (videoState === smartFeedScheduler.VideoState.NEW) {
+    badges.push('<span class="video-badge badge-new">NEW</span>');
+  }
+  
+  return badges.length > 0 ? `<div class="video-badges">${badges.join('')}</div>` : '';
+}
+
 // Open video from feed (reusing player-core.js)
 function openVideoFromFeed(video) {
   const videoMeta = {
@@ -784,8 +884,45 @@ function openVideoFromFeed(video) {
     duration: video.duration
   };
 
+  // Mark video as watching
+  smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.WATCHING, videoMeta);
+
   playVideo(video.videoId, videoMeta, false);
 }
+
+// Handle video completion
+async function handleVideoCompletion(videoId) {
+  // Mark video as completed in smart feed scheduler
+  await smartFeedScheduler.setVideoState(videoId, smartFeedScheduler.VideoState.COMPLETED);
+  
+  // Remove from feed if visible
+  const videoCard = document.querySelector(`[data-video-id="${videoId}"]`);
+  if (videoCard) {
+    videoCard.style.opacity = '0.5';
+    videoCard.style.pointerEvents = 'none';
+  }
+  
+  console.log(`Video ${videoId} marked as completed`);
+}
+
+// Handle video progress for continue watching (called from analytics engine)
+async function handleVideoProgress(videoId, currentPosition, duration) {
+  const progress = currentPosition / duration;
+  
+  if (progress >= 0.1 && progress < 0.95) {
+    // Video is in continue watching state
+    await smartFeedScheduler.setVideoState(videoId, smartFeedScheduler.VideoState.CONTINUE_WATCHING, {
+      videoId,
+      currentPosition,
+      duration,
+      progress: progress
+    });
+  } else if (progress >= 0.95) {
+    // Video is completed
+    await smartFeedScheduler.setVideoState(videoId, smartFeedScheduler.VideoState.COMPLETED);
+  }
+}
+
 
 // Setup infinite scroll using IntersectionObserver
 function setupInfiniteScroll() {
@@ -793,7 +930,7 @@ function setupInfiniteScroll() {
 
   intersectionObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading) {
-      loadNextRound();
+      loadNextBatch();
     }
   }, { threshold: 0.1, rootMargin: '500px' }); // Increased margin for earlier preloading
 
@@ -802,6 +939,8 @@ function setupInfiniteScroll() {
 
 // Helper functions (reusing from channel.js)
 function convertDurationToSeconds(duration) {
+  if (!duration || typeof duration !== 'string') return 0;
+  
   const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return 0;
 
@@ -882,4 +1021,4 @@ function showEmptyState(message) {
 }
 
 // Export for use in script.js
-export { openVideoFromFeed };
+export { openVideoFromFeed, handleVideoCompletion, handleVideoProgress, initAllChannelsFeed };

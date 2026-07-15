@@ -1,5 +1,6 @@
 import { db, auth } from "./firebase-config.js";
 import { collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { YOUTUBE_API_KEY } from "./config.js";
 
 // DOM Elements
 const shortsContainer = document.getElementById("shortsContainer");
@@ -34,7 +35,7 @@ const globalPlayerContainer = document.createElement("div");
 globalPlayerContainer.id = "global-player-container";
 document.body.appendChild(globalPlayerContainer);
 
-const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
+const API_KEY = YOUTUBE_API_KEY;
 
 // 1. LocalStorage અને Firebase માંથી Watched Videos લોડ કરવા
 const localWatchedVideos = JSON.parse(localStorage.getItem("watchedVideos") || "[]");

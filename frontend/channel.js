@@ -16,8 +16,9 @@ watchProgressEngine
 from "./analytics-engine.js";
 
 import { playVideo } from "./player-core.js";
+import { YOUTUBE_API_KEY } from "./config.js";
 
-const API_KEY = "AIzaSyCZove9iRB6XnbIjHqA-fOWBR99kr3ocsE";
+const API_KEY = YOUTUBE_API_KEY;
 
 const watchedVideos =
 new Set(

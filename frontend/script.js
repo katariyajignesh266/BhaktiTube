@@ -92,6 +92,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (themeToggle) {
         themeToggle.addEventListener("click", toggleTheme);
     }
+    
+    // Initialize dashboard after DOM is ready
+    initializeDashboard().catch(error => {
+        console.error("Error during dashboard initialization:", error);
+        // Ensure spinner is hidden even if initialization fails
+        const loaders = document.querySelectorAll('.section-loader, .all-channels-feed-loader');
+        loaders.forEach(loader => {
+            if (loader) loader.style.display = 'none';
+        });
+    });
 });
 
 // Listen for system theme changes
@@ -434,7 +444,7 @@ async function loadAllChannelsFeedModule() {
   return allChannelsFeedModule;
 }
 
-async function initAllChannelsFeed() {
+async function initAllChannelsFeedDynamic() {
   const module = await loadAllChannelsFeedModule();
   return module.initAllChannelsFeed();
 }
@@ -1127,7 +1137,7 @@ async function initializeDashboard() {
         // Now load only the data needed for the selected dashboard
         if (layoutMode === "all-channels") {
             // All Channels Feed mode - only initialize the feed
-            await initAllChannelsFeed();
+            await initAllChannelsFeedDynamic();
         } else if (layoutMode === "premium") {
             // Premium mode - render premium channel feed
             await renderPremiumChannelFeed();
@@ -1143,14 +1153,21 @@ async function initializeDashboard() {
     } catch (error) {
         console.error("Error initializing dashboard:", error);
         // Fallback to classic mode on error
-        await loadVideos();
-        await loadChannels(false);
-        await loadNotifications();
+        try {
+            await loadVideos();
+            await loadChannels(false);
+            await loadNotifications();
+        } catch (fallbackError) {
+            console.error("Error in fallback initialization:", fallbackError);
+            // Hide all loaders as a last resort
+            const loaders = document.querySelectorAll('.section-loader, .all-channels-feed-loader');
+            loaders.forEach(loader => {
+                if (loader) loader.style.display = 'none';
+            });
+        }
     }
 }
 
-// Start dashboard initialization
-initializeDashboard();
 // Announcement queue is initialized by onAuthStateChanged handler
 
 const menuBtn =

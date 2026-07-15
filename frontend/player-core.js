@@ -357,6 +357,13 @@ function startTimeTracking() {
       if (curTimeEl) curTimeEl.textContent = formatTime(current);
       if (totTimeEl) totTimeEl.textContent = formatTime(total);
 
+      // Handle video progress for smart feed scheduler
+      if (currentVideoId && typeof window.handleFeedVideoProgress === 'function') {
+        window.handleFeedVideoProgress(currentVideoId, current, total).catch(err => {
+          console.error('Error handling video progress:', err);
+        });
+      }
+
       // Mark channel videos completed
       if (!watchedSaved && (current / total) >= 0.95) {
         watchedSaved = true;
@@ -407,6 +414,13 @@ function handleVideoCompleted() {
   if (!watchedSaved) {
     watchedSaved = true;
     saveWatchedChannelVideo(currentVideoId);
+  }
+
+  // Handle video completion in smart feed scheduler via global function
+  if (currentVideoId && typeof window.handleFeedVideoCompletion === 'function') {
+    window.handleFeedVideoCompletion(currentVideoId).catch(err => {
+      console.error('Error handling video completion:', err);
+    });
   }
 
   // Refresh homepage watch dashboard continue-watching block if defined

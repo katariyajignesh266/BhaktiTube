@@ -279,6 +279,45 @@ body.all-channels-dashboard-mode .all-channels-feed {
     font-size: 18px;
 }
 
+/* Video Badges */
+.video-badges {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 10;
+}
+
+.video-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.video-badge.badge-new {
+    background-color: rgba(0, 149, 246, 0.9);
+    color: #ffffff;
+}
+
+.video-badge.badge-continue {
+    background-color: rgba(255, 149, 0, 0.9);
+    color: #ffffff;
+}
+
+.video-badge.badge-fresh {
+    background-color: rgba(76, 175, 80, 0.9);
+    color: #ffffff;
+}
+
 /* Responsive Design */
 @media (min-width: 769px) and (max-width: 1024px) {
     .all-channels-videos-container {
