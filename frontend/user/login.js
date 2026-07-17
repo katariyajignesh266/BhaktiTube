@@ -1,5 +1,5 @@
-import { auth, db }
-from "../firebase-config.js";
+import { auth, db } from "../firebase-config.js";
+import { watchProgressEngine } from "../analytics-engine.js";
 
 import {
 signInWithEmailAndPassword,
@@ -55,8 +55,9 @@ auth,
 async (user)=>{
 
 if(user){
-// Mark existing channels as seen for first-time login
-await markAllExistingChannelsAsSeen(user);
+        // Mark existing channels as seen for first-time login
+        await markAllExistingChannelsAsSeen(user);
+        await watchProgressEngine.ensureUserProfile(user);
 
 window.location.replace(
 "profile.html");
@@ -91,6 +92,7 @@ document
 
         // Mark existing channels as seen for first-time login
         await markAllExistingChannelsAsSeen(result.user);
+        await watchProgressEngine.ensureUserProfile(result.user);
 
         window.location.href =
         "../index.html";
@@ -122,6 +124,7 @@ async ()=>{
 
         // Mark existing channels as seen for first-time login
         await markAllExistingChannelsAsSeen(result.user);
+        await watchProgressEngine.ensureUserProfile(result.user);
 
         window.location.href =
         "profile.html";

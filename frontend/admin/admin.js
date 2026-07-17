@@ -17,7 +17,9 @@ import {
     updateDoc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    onSnapshot,
+    limit
 } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import {
     watchProgressEngine,
@@ -148,7 +150,7 @@ onAuthStateChanged(auth, async (user) => {
     // Core Platform Initialization Routines
     initSidebarNavigation();
     initThemeEngine();
-    calculateGlobalAnalyticsCounters();
+    setupRealTimeAnalytics();
     
     // Render Datastream buffers onto layout grids
     loadVideos();
@@ -182,29 +184,66 @@ setInterval(async () => {
 }, 1000);
 
 /* 7. REVOLUTIONARY REAL-TIME ANALYTICS REPOSITORY COUNTERS */
-async function calculateGlobalAnalyticsCounters() {
-    try {
-        const videosSnap = await getDocs(collection(db, "videos"));
-        const adsSnap = await getDocs(collection(db, "advertisements"));
-        const channelsSnap = await getDocs(collection(db, "channels"));
-        const analyticsUsers = await watchProgressEngine.listAnalyticsUsers(50);
+let unsubscribeVideos = null;
+let unsubscribeAds = null;
+let unsubscribeChannels = null;
+let unsubscribeUsers = null;
 
+function setupRealTimeAnalytics() {
+    // Unsubscribe from any previous listeners to avoid duplicates
+    if (unsubscribeVideos) unsubscribeVideos();
+    if (unsubscribeAds) unsubscribeAds();
+    if (unsubscribeChannels) unsubscribeChannels();
+    if (unsubscribeUsers) unsubscribeUsers();
+
+    // 1. Videos Listener
+    unsubscribeVideos = onSnapshot(collection(db, "videos"), (snapshot) => {
+        const el = document.getElementById("statTotalVideos");
+        if (el) el.textContent = snapshot.size.toLocaleString();
+        
         let accumulatedViews = 0;
-        videosSnap.forEach(v => {
+        snapshot.forEach(v => {
             const rawViews = v.data().views || "0";
             const sanitized = parseInt(rawViews.replace(/[^0-9]/g, '')) || 0;
             accumulatedViews += sanitized;
         });
+        const viewsEl = document.getElementById("statTotalViews");
+        if (viewsEl) viewsEl.textContent = accumulatedViews.toLocaleString() + " Core hits";
+    }, (e) => console.error("Videos snapshot telemetry error:", e));
 
-        // Set Values Into Dynamic UI Counter Targets
-        document.getElementById("statTotalVideos").textContent = videosSnap.size.toLocaleString();
-        document.getElementById("statTotalAds").textContent = adsSnap.size.toLocaleString();
-        document.getElementById("statTotalChannels").textContent = channelsSnap.size.toLocaleString();
-        document.getElementById("statTotalViews").textContent = accumulatedViews.toLocaleString() + " Core hits";
-        renderAudienceAnalyticsPanel(analyticsUsers);
-    } catch (e) {
-        console.error("Telemetry Error Matrix:", e);
-    }
+    // 2. Ads Listener
+    unsubscribeAds = onSnapshot(collection(db, "advertisements"), (snapshot) => {
+        const el = document.getElementById("statTotalAds");
+        if (el) el.textContent = snapshot.size.toLocaleString();
+    }, (e) => console.error("Ads snapshot telemetry error:", e));
+
+    // 3. Channels Listener
+    unsubscribeChannels = onSnapshot(collection(db, "channels"), (snapshot) => {
+        const el = document.getElementById("statTotalChannels");
+        if (el) el.textContent = snapshot.size.toLocaleString();
+    }, (e) => console.error("Channels snapshot telemetry error:", e));
+
+    // 4. Users Listener (for real-time Audience Analytics)
+    unsubscribeUsers = onSnapshot(
+        query(collection(db, "users"), orderBy("lastActiveMs", "desc"), limit(100)),
+        (snapshot) => {
+            const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAudienceAnalyticsPanel(users);
+        },
+        async (error) => {
+            console.warn("Real-time users snapshot query failed (index might be missing), falling back to client-side sort:", error);
+            if (unsubscribeUsers) unsubscribeUsers();
+            unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
+                const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                users.sort((a, b) => Number(b.lastActiveMs || b.createdAt?.seconds * 1000 || 0) - Number(a.lastActiveMs || a.createdAt?.seconds * 1000 || 0));
+                renderAudienceAnalyticsPanel(users.slice(0, 100));
+            }, (e) => console.error("Fallback users snapshot telemetry error:", e));
+        }
+    );
+}
+
+function calculateGlobalAnalyticsCounters() {
+    // Deprecated: Now handled automatically via setupRealTimeAnalytics() onSnapshot listeners.
 }
 
 function renderAudienceAnalyticsPanel(users = []) {
@@ -219,13 +258,12 @@ function renderAudienceAnalyticsPanel(users = []) {
         dashboardPage.appendChild(panel);
     }
 
-    const activeUsers = users.filter(user => Number(user.lastActiveMs || 0) > 0);
+    const activeUsers = users; // Show all users immediately, regardless of watch history
     const totalWatchSeconds = users.reduce((sum, user) => sum + Number(user.totalWatchTime || 0), 0);
     const completedVideos = users.reduce((sum, user) => sum + Number(user.completedVideos || 0), 0);
     const topUsers = activeUsers
         .slice()
-        .sort((a, b) => Number(b.totalWatchTime || 0) - Number(a.totalWatchTime || 0))
-        .slice(0, 5);
+        .sort((a, b) => Number(b.totalWatchTime || 0) - Number(a.totalWatchTime || 0)); // Show all sorted by watch time
 
     panel.innerHTML = `
         <div class="panel-header">
@@ -294,7 +332,7 @@ window.viewUserHistory = async function (uid, displayName) {
     modal.classList.add("fullscreen");
 
     try {
-        const analytics = await watchProgressEngine.getUserAnalytics(uid);
+        const analytics = await watchProgressEngine.getUserAnalytics(uid, 1000);
         const profile = analytics.profile || {};
         const totals = analytics.totals || {};
 
@@ -308,17 +346,26 @@ window.viewUserHistory = async function (uid, displayName) {
         
         const watchTimeStr = formatWatchTime(totals.lifetimeSeconds || 0);
 
+        // Consistency audit validation check
+        const channelSum = (analytics.channelStats || []).reduce((sum, item) => sum + item.seconds, 0);
+        const categorySum = (analytics.categoryStats || []).reduce((sum, item) => sum + item.seconds, 0);
+        const auditPassed = totals.lifetimeSeconds === channelSum && totals.lifetimeSeconds === categorySum;
+        const auditStatusStr = auditPassed 
+            ? `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem;"><i class="fa-solid fa-circle-check"></i> Audit: Passed</span>` 
+            : `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 700; padding: 2px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem;"><i class="fa-solid fa-triangle-exclamation"></i> Audit: Mismatch</span>`;
+
         const metaContainer = document.getElementById("adminUserHeaderMetadata");
         if (metaContainer) {
             metaContainer.innerHTML = `
                 ${emailStr}
                 <span><i class="fa-solid fa-calendar-days"></i> Joined: ${joinDate}</span>
                 <span><i class="fa-solid fa-clock"></i> Watch Time: ${watchTimeStr}</span>
+                ${auditStatusStr}
             `;
         }
 
-        // Render the complete analytics dashboard
-        renderDashboard(bodyEl, analytics);
+        // Render the complete analytics dashboard with no lists limits
+        renderDashboard(bodyEl, analytics, null, { historyLimit: null, breakdownLimit: null });
     } catch (error) {
         console.error("Error loading user analytics dashboard:", error);
         bodyEl.innerHTML = `<div class="admin-history-empty text-brand"><i class="fa-solid fa-triangle-exclamation"></i> Error loading analytics dashboard. Please try again.</div>`;
@@ -799,6 +846,21 @@ async function loadDashboardLayoutSetting() {
     }
 }
 
+// Load shorts first mode setting on page load
+async function loadShortsFirstModeSetting() {
+    try {
+        const settingDoc = await getDoc(doc(db, "settings", "shortsFirstMode"));
+        if (settingDoc.exists()) {
+            const enabled = settingDoc.data().enabled === true;
+            document.getElementById("shortsFirstToggle").checked = enabled;
+        } else {
+            document.getElementById("shortsFirstToggle").checked = false;
+        }
+    } catch (e) {
+        console.error("Error loading shorts-first mode setting:", e);
+    }
+}
+
 // Save dashboard layout setting
 document.getElementById("saveDashboardLayoutBtn").addEventListener("click", async () => {
     const selectedLayout = document.querySelector('input[name="dashboardLayout"]:checked');
@@ -826,10 +888,25 @@ document.getElementById("saveDashboardLayoutBtn").addEventListener("click", asyn
     }
 });
 
-// Load dashboard layout setting when admin panel initializes
+// Save shorts first mode setting
+document.getElementById("saveShortsFirstModeBtn").addEventListener("click", async () => {
+    const enabled = document.getElementById("shortsFirstToggle").checked;
+    try {
+        await setDoc(doc(db, "settings", "shortsFirstMode"), {
+            enabled,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+        showToast(`Shorts-First mode ${enabled ? "enabled" : "disabled"}`, "success");
+    } catch (e) {
+        showToast(e.message, "error");
+    }
+});
+
+// Load settings when admin panel initializes
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         await loadDashboardLayoutSetting();
+        await loadShortsFirstModeSetting();
     }
 });
 

@@ -879,6 +879,7 @@ initApp();
 document.addEventListener("click", (e) => {
     const backBtn = e.target.closest(".back-arrow-btn") || e.target.closest(".fa-arrow-left") || e.target.closest(".back-btn");
     if (backBtn) {
+        sessionStorage.setItem("bt_skip_shorts_redirect", "1");
         window.location.href = "index.html";
     }
 });

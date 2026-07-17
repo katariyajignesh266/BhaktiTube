@@ -540,6 +540,30 @@ async function syncGlobalChannelCardTheme() {
 }
 syncGlobalChannelCardTheme();
 
+async function syncShortsFirstMode() {
+    try {
+        const settingDoc = await getDoc(doc(db, "settings", "shortsFirstMode"));
+        const enabled = settingDoc.exists() && settingDoc.data().enabled === true;
+        const cached = localStorage.getItem("bt_shorts_first_mode");
+
+        // First-ever visit (no cache yet) and the setting is ON:
+        // the head script above couldn't have known this, so redirect now.
+        if (cached === null && enabled && !sessionStorage.getItem("bt_skip_shorts_redirect")) {
+            localStorage.setItem("bt_shorts_first_mode", "true");
+            window.location.replace("shorts.html");
+            return;
+        }
+
+        // Keep the cache correct for the *next* load. Do NOT force-navigate
+        // an already-rendered dashboard mid-session — that would be jarring
+        // if the user is already browsing/watching something.
+        localStorage.setItem("bt_shorts_first_mode", enabled ? "true" : "false");
+    } catch (e) {
+        console.error("Error syncing shorts-first mode:", e);
+    }
+}
+syncShortsFirstMode();
+
 /* ==========================================================================
    ⚡ DASHBOARD LAYOUT MODE CONTROLLER
    ========================================================================== */

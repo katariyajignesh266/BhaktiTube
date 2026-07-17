@@ -1,4 +1,5 @@
 import { auth, db } from "../firebase-config.js";
+import { watchProgressEngine } from "../analytics-engine.js";
 
 import {
 createUserWithEmailAndPassword,
@@ -63,6 +64,7 @@ document
 
         // Mark existing channels as seen for first-time signup
         await markAllExistingChannelsAsSeen(result.user);
+        await watchProgressEngine.ensureUserProfile(result.user);
 
         alert("Google Sign In Successful");
 
@@ -99,6 +101,7 @@ document
 
         // Mark existing channels as seen for first-time signup
         await markAllExistingChannelsAsSeen(result.user);
+        await watchProgressEngine.ensureUserProfile(result.user);
 
         alert("Account Created Successfully");
 

@@ -561,18 +561,35 @@ async function getCompletedVideoIds() {
   return ids;
 }
 
-async function getUserAnalytics(uid = getUid()) {
+async function getUserAnalytics(uid = getUid(), limitCount = 250) {
   if (!uid) {
     return emptyAnalytics();
   }
 
   const [profile, progressItems, sessions] = await Promise.all([
     readUserProfile(uid),
-    readProgressItems(uid),
-    readSessions(uid)
+    readProgressItems(uid, limitCount),
+    readSessions(uid, limitCount * 2)
   ]);
 
-  return buildAnalytics(profile, progressItems, sessions);
+  const analytics = buildAnalytics(profile, progressItems, sessions);
+
+  // Auto-healing: If the root-level totalWatchTime counter is out of sync with actual progress,
+  // reconcile it in Firestore so the admin list and global statistics remain accurate.
+  const recalculatedWatchTime = analytics.totals.lifetimeSeconds || 0;
+  if (auth.currentUser && profile && Number(profile.totalWatchTime || 0) !== recalculatedWatchTime) {
+    try {
+      await setDoc(doc(db, "users", uid), {
+        totalWatchTime: recalculatedWatchTime,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      console.log(`[Auto-Healing] Reconciled totalWatchTime for user ${uid}: ${recalculatedWatchTime}s`);
+    } catch (e) {
+      console.error("[Auto-Healing] Failed to sync totalWatchTime:", e);
+    }
+  }
+
+  return analytics;
 }
 
 async function listAnalyticsUsers(limitCount = 50) {
@@ -589,10 +606,9 @@ async function listAnalyticsUsers(limitCount = 50) {
     }));
   } catch (error) {
     const snapshot = await getDocs(collection(db, "users"));
-    return snapshot.docs.slice(0, limitCount).map((item) => ({
-      id: item.id,
-      ...item.data()
-    }));
+    const all = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+    all.sort((a, b) => Number(b.lastActiveMs || b.createdAt?.seconds * 1000 || 0) - Number(a.lastActiveMs || a.createdAt?.seconds * 1000 || 0));
+    return all.slice(0, limitCount);
   }
 }
 
@@ -637,7 +653,7 @@ async function readUserProfile(uid) {
   }
 }
 
-async function readProgressItems(uid) {
+async function readProgressItems(uid, limitCount = 250) {
   const cached = Object.values(readCache()[uid]?.progress || {});
 
   if (!auth.currentUser && uid === "guest") return cached;
@@ -646,7 +662,7 @@ async function readProgressItems(uid) {
     const snapshot = await getDocs(query(
       collection(db, "users", uid, "watchProgress"),
       orderBy("lastViewedMs", "desc"),
-      limit(250)
+      limit(limitCount)
     ));
     const items = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
     items.forEach((item) => cacheProgress(uid, item));
@@ -656,12 +672,12 @@ async function readProgressItems(uid) {
   }
 }
 
-async function readSessions(uid) {
+async function readSessions(uid, limitCount = 500) {
   try {
     const snapshot = await getDocs(query(
       collection(db, "users", uid, "watchSessions"),
       orderBy("startedAtMs", "desc"),
-      limit(500)
+      limit(limitCount)
     ));
     return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
   } catch (error) {
@@ -689,7 +705,6 @@ function buildAnalytics(profile, progressItems, sessions) {
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => ({ day, seconds: 0 }));
   const activeDates = new Set();
 
-  let sessionTotal = 0;
   let todaySeconds = 0;
   let weeklySeconds = 0;
   let monthlySeconds = 0;
@@ -697,30 +712,10 @@ function buildAnalytics(profile, progressItems, sessions) {
   let longestSession = 0;
 
   sessions.forEach((session) => {
-    const startedAt = Number(session.startedAtMs || session.updatedAtMs || 0);
     const seconds = Math.round(Number(session.activeWatchTime || session.watchSeconds || 0));
-    if (!startedAt || seconds <= 0) return;
-
-    sessionTotal += seconds;
-    longestSession = Math.max(longestSession, seconds);
-
-    if (startedAt >= todayStart) todaySeconds += seconds;
-    if (startedAt >= weekStart) weeklySeconds += seconds;
-    if (startedAt >= monthStart) monthlySeconds += seconds;
-    if (startedAt >= yearStart) yearlySeconds += seconds;
-
-    const date = new Date(startedAt);
-    const dateKey = getDateKey(startedAt);
-    activeDates.add(dateKey);
-
-    const seriesItem = timeSeries.find((item) => item.dateKey === dateKey);
-    if (seriesItem) seriesItem.seconds += seconds;
-
-    hourly[date.getHours()].seconds += seconds;
-    weekdays[date.getDay()].seconds += seconds;
-
-    addMapSeconds(categories, session.category || "Other", seconds);
-    addMapSeconds(channels, session.channelName || "Unknown Channel", seconds);
+    if (seconds > 0) {
+      longestSession = Math.max(longestSession, seconds);
+    }
   });
 
   progressItems.forEach((progress) => {
@@ -733,12 +728,38 @@ function buildAnalytics(profile, progressItems, sessions) {
       addMapSeconds(channels, progress.channelName || "Unknown Channel", fallbackSeconds);
     }
     if (progress.lastViewedMs) {
-      activeDates.add(getDateKey(progress.lastViewedMs));
+      const lastViewed = Number(progress.lastViewedMs);
+      activeDates.add(getDateKey(lastViewed));
+
+      if (lastViewed >= todayStart) todaySeconds += fallbackSeconds;
+      if (lastViewed >= weekStart) weeklySeconds += fallbackSeconds;
+      if (lastViewed >= monthStart) monthlySeconds += fallbackSeconds;
+      if (lastViewed >= yearStart) yearlySeconds += fallbackSeconds;
+
+      // Rebuild the 7-day Watch Time Trend so it always matches Recent History
+      if (fallbackSeconds > 0) {
+        const dateKey = getDateKey(lastViewed);
+        const seriesItem = timeSeries.find((item) => item.dateKey === dateKey);
+        if (seriesItem) seriesItem.seconds += fallbackSeconds;
+      }
+
+      // Add to hourly and weekdays
+      if (fallbackSeconds > 0) {
+        const d = new Date(lastViewed);
+        hourly[d.getHours()].seconds += fallbackSeconds;
+        weekdays[d.getDay()].seconds += fallbackSeconds;
+      }
     }
   });
 
-  const progressTotal = progressItems.reduce((sum, item) => sum + Number(item.totalWatchTime || 0), 0);
-  const lifetimeSeconds = Math.max(sessionTotal, progressTotal, Number(profile?.totalWatchTime || 0));
+  const progressTotal = progressItems.reduce((sum, item) => {
+    const fallbackSeconds = Math.max(
+      Number(item.totalWatchTime || 0),
+      Math.min(Number(item.currentPosition || 0), Number(item.duration || 0))
+    );
+    return sum + fallbackSeconds;
+  }, 0);
+  const lifetimeSeconds = progressTotal;
   const completedVideos = progressItems.filter((item) => item.completed || Number(item.completionPercentage || 0) >= 95);
   const startedVideos = progressItems.filter((item) => Number(item.currentPosition || 0) > 0 || Number(item.totalWatchTime || 0) > 0);
   const continueWatching = progressItems
@@ -754,6 +775,15 @@ function buildAnalytics(profile, progressItems, sessions) {
 
   const categoryStats = mapToSortedStats(categories);
   const channelStats = mapToSortedStats(channels);
+
+  // Consistency audit verification logging
+  const channelSum = channelStats.reduce((sum, item) => sum + item.seconds, 0);
+  const categorySum = categoryStats.reduce((sum, item) => sum + item.seconds, 0);
+  console.log(`[Consistency Audit] User Profile UID: ${profile?.uid || "guest"}`);
+  console.log(`  - Lifetime Watch Time: ${lifetimeSeconds}s (${formatWatchTime(lifetimeSeconds)})`);
+  console.log(`  - Sum of Channel Breakdowns: ${channelSum}s (${formatWatchTime(channelSum)})`);
+  console.log(`  - Sum of Category Breakdowns: ${categorySum}s (${formatWatchTime(categorySum)})`);
+  console.log(`  - Status: ${lifetimeSeconds === channelSum && lifetimeSeconds === categorySum ? "PASSED" : "FAILED"}`);
 
   return {
     profile: profile || {},
@@ -1220,6 +1250,9 @@ onAuthStateChanged(auth, (user) => {
     unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         currentProfileData = { uid: user.uid, ...docSnap.data() };
+        if (!docSnap.data().lastActiveMs) {
+          ensureUserProfile(user); // backfill legacy/incomplete profile
+        }
       } else {
         currentProfileData = {
           uid: user.uid,
@@ -1227,6 +1260,7 @@ onAuthStateChanged(auth, (user) => {
           displayName: user.displayName || "BhaktiTube User",
           photoURL: user.photoURL || ""
         };
+        ensureUserProfile(user); // create it now
       }
       
       // Save to fast-load cache

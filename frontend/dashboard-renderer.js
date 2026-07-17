@@ -30,7 +30,7 @@ function getProgressPercent(item) {
 }
 
 // Reusable Dashboard Rendering Component
-export function renderDashboard(container, analytics, onVideoClick = null) {
+export function renderDashboard(container, analytics, onVideoClick = null, options = {}) {
   if (!container || !analytics) return;
 
   // If container is empty or does not have the dashboard template, populate it first
@@ -222,8 +222,10 @@ export function renderDashboard(container, analytics, onVideoClick = null) {
     }
 
     const maxSeconds = Math.max(...statsList.map(item => Number(item.seconds || 0)), 1);
+    const limit = options.breakdownLimit !== undefined ? options.breakdownLimit : 5;
+    const visibleStats = limit === null || limit === Infinity ? statsList : statsList.slice(0, limit);
 
-    breakdownContainer.innerHTML = statsList.slice(0, 5).map((item) => `
+    breakdownContainer.innerHTML = visibleStats.map((item) => `
       <div class="breakdown-item">
         <span>${escapeHtml(item.label)}</span>
         <div class="breakdown-track"><div class="breakdown-fill" style="width:${Math.round((Number(item.seconds || 0) / maxSeconds) * 100)}%"></div></div>
@@ -247,7 +249,10 @@ export function renderDashboard(container, analytics, onVideoClick = null) {
       window.dashboardVideoClick = onVideoClick;
     }
 
-    list.innerHTML = historyItems.slice(0, 10).map((item) => {
+    const limit = options.historyLimit !== undefined ? options.historyLimit : 10;
+    const visibleItems = limit === null || limit === Infinity ? historyItems : historyItems.slice(0, limit);
+
+    list.innerHTML = visibleItems.map((item) => {
       const videoId = escapeHtml(item.videoId);
       const progress = getProgressPercent(item);
       const onClickAttr = onVideoClick ? `onclick="window.dashboardVideoClick('${videoId}')"` : "";

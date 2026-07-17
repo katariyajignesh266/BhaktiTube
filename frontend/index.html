@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem("bt_skip_shorts_redirect")) {
+          sessionStorage.removeItem("bt_skip_shorts_redirect");
+          return; // user just came back from Shorts intentionally — show dashboard
+        }
+        if (localStorage.getItem("bt_shorts_first_mode") === "true") {
+          window.location.replace("shorts.html");
+        }
+      } catch (e) { /* localStorage/sessionStorage unavailable — fail open to dashboard */ }
+    })();
+  </script>
   <meta
 name="viewport"
 content="width=device-width,
