@@ -111,7 +111,8 @@ const state = {
   isGeneratingFeed: false,
   pendingVideos: [],
   channelHistory: [], // Track recent channels for diversity
-  videoCache: new Map() // videoId -> video object
+  videoCache: new Map(), // videoId -> video object
+  lastRenderedChannelId: null // Track the last channel actually rendered to screen for consecutive prevention
 };
 
 // Firestore Keys
@@ -586,6 +587,21 @@ async function saveDailyFeed() {
   }
 }
 
+async function clearDailyFeedCache() {
+  try {
+    const uid = auth.currentUser?.uid || 'guest';
+    
+    localStorage.removeItem(`${STORAGE_KEYS.TODAY_FEED}_${uid}`);
+    localStorage.removeItem(`${STORAGE_KEYS.DAILY_FEED_DATE}_${uid}`);
+    localStorage.removeItem(`${STORAGE_KEYS.FEED_VERSION}_${uid}`);
+    localStorage.removeItem(`${STORAGE_KEYS.BATCH_INDEX}_${uid}`);
+    
+    console.log(`[Cache] Cleared daily feed cache for user: ${uid}`);
+  } catch (error) {
+    console.error('Error clearing daily feed cache:', error);
+  }
+}
+
 async function saveBatchIndex() {
   try {
     const uid = auth.currentUser?.uid || 'guest';
@@ -753,7 +769,9 @@ function applyChannelDiversity(videos) {
   let totalVideosProcessed = 0;
   const totalVideosAvailable = videos.length;
   const maxRounds = 1000; // Safety limit to prevent infinite loops
-  let lastChannelId = null;
+  let lastChannelId = state.lastRenderedChannelId; // Start from the last rendered channel
+  
+  console.log(`[Diversity] Starting diversity pass with lastRenderedChannelId: ${lastChannelId}, ${channelIds.length} channels, ${totalVideosAvailable} videos`);
   
   while (totalVideosProcessed < totalVideosAvailable && round < maxRounds) {
     let anyChannelAdded = false;
@@ -785,7 +803,11 @@ function applyChannelDiversity(videos) {
   }
   
   const contributedChannels = new Set(diverseFeed.map(v => v.channelId));
-  console.log(`Applied channel diversity: ${diverseFeed.length} videos from ${channelIds.length} channels in ${round} rounds. Coverage: ${contributedChannels.size}/${channelIds.length} channels contributed.`);
+  console.log(`[Diversity] Applied channel diversity: ${diverseFeed.length} videos from ${channelIds.length} channels in ${round} rounds. Coverage: ${contributedChannels.size}/${channelIds.length} channels contributed.`);
+  
+  // Log first 20 channels in the diverse feed for debugging
+  const first20Channels = diverseFeed.slice(0, 20).map(v => v.channelName);
+  console.log(`[Diversity] First 20 video channels in order:`, first20Channels);
   
   return diverseFeed;
 }
@@ -818,6 +840,13 @@ function getNextBatch(batchSize = CONFIG.QUEUE_BATCH_SIZE) {
   
   state.currentBatchIndex = index;
   saveBatchIndex();
+  
+  // Log batch channel composition for debugging
+  if (batch.length > 0) {
+    const batchChannels = batch.map(v => v.channelName);
+    const uniqueChannels = new Set(batchChannels);
+    console.log(`[Batch] Returning batch of ${batch.length} videos from index ${index - batch.length}. Channels: ${batchChannels.join(', ')} (${uniqueChannels.size} unique)`);
+  }
   
   return batch;
 }
@@ -925,6 +954,10 @@ function setAvailableVideos(videos) {
   state.allAvailableVideos = videos;
 }
 
+function setLastRenderedChannelId(channelId) {
+  state.lastRenderedChannelId = channelId;
+}
+
 export const smartFeedScheduler = {
   init,
   
@@ -937,6 +970,7 @@ export const smartFeedScheduler = {
   resetBatchIndex,
   preloadNextBatch,
   setAvailableVideos,
+  clearDailyFeedCache,
   
   // Video States
   setVideoState,
@@ -953,6 +987,7 @@ export const smartFeedScheduler = {
   
   // Channel Diversity
   addToChannelHistory,
+  setLastRenderedChannelId,
   
   // State Access
   get todayFeed() { return state.todayFeed; },

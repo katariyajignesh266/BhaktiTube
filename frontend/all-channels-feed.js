@@ -118,60 +118,104 @@ async function loadSmartFeed() {
     const hasExistingFeed = await smartFeedScheduler.loadDailyFeed();
     
     if (hasExistingFeed && smartFeedScheduler.todayFeed.length > 0) {
-      console.log(`[Fast Load] Regenerating feed from cached videos (${smartFeedScheduler.todayFeed.length} videos) to vary order...`);
+      console.log(`[Fast Load] CACHE HIT: Regenerating feed from cached videos (${smartFeedScheduler.todayFeed.length} videos) to vary order...`);
       
-      // Populate allAvailableVideos with cached feed so scheduler can regenerate from it
-      smartFeedScheduler.setAvailableVideos(smartFeedScheduler.todayFeed);
+      // Log cached feed channel distribution
+      const cachedChannelCounts = new Map();
+      smartFeedScheduler.todayFeed.forEach(video => {
+        const count = cachedChannelCounts.get(video.channelName) || 0;
+        cachedChannelCounts.set(video.channelName, count + 1);
+      });
+      console.log(`[Fast Load] Cached feed channel distribution:`, Object.fromEntries(cachedChannelCounts));
       
-      // Regenerate the feed using the cached videos (this filters completed/cooldown and re-ranks/re-shuffles)
-      await smartFeedScheduler.regenerateFeed();
+      // Check if cached feed has poor channel diversity (e.g., from old buggy version)
+      // If fewer than 50% of total channels are represented, invalidate cache
+      const uniqueChannelsInCache = cachedChannelCounts.size;
+      const totalChannels = allChannels.length;
+      const diversityRatio = uniqueChannelsInCache / totalChannels;
       
-      // Render first batch immediately from the newly regenerated cache
-      smartFeedScheduler.resetBatchIndex();
-      const firstBatch = smartFeedScheduler.getNextBatch();
+      console.log(`[Fast Load] Cache diversity: ${uniqueChannelsInCache}/${totalChannels} channels (${(diversityRatio * 100).toFixed(1)}%)`);
       
-      if (firstBatch.length > 0) {
-        renderVideos(firstBatch);
+      // Invalidate cache if diversity is poor (< 50% of channels represented)
+      if (diversityRatio < 0.5) {
+        console.warn(`[Fast Load] CACHE INVALIDATED: Poor channel diversity (${(diversityRatio * 100).toFixed(1)}%). Forcing fresh fetch from all channels.`);
+        // Clear the cached feed from memory and localStorage
+        smartFeedScheduler.todayFeed = [];
+        smartFeedScheduler.dailyFeedDate = null;
+        await smartFeedScheduler.clearDailyFeedCache();
+        // Fall through to progressive load below
+      } else {
+        // Populate allAvailableVideos with cached feed so scheduler can regenerate from it
+        smartFeedScheduler.setAvailableVideos(smartFeedScheduler.todayFeed);
         
-        // Mark videos as shown
-        firstBatch.forEach(video => {
-          smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.SHOWN);
-          smartFeedScheduler.addToChannelHistory(video.channelId);
-        });
+        // Regenerate the feed using the cached videos (this filters completed/cooldown and re-ranks/re-shuffles)
+        await smartFeedScheduler.regenerateFeed();
+        
+        // Render first batch immediately from the newly regenerated cache
+        smartFeedScheduler.resetBatchIndex();
+        const firstBatch = smartFeedScheduler.getNextBatch();
+        
+        if (firstBatch.length > 0) {
+          renderVideos(firstBatch);
+          
+          // Mark videos as shown
+          firstBatch.forEach(video => {
+            smartFeedScheduler.setVideoState(video.videoId, smartFeedScheduler.VideoState.SHOWN);
+            smartFeedScheduler.addToChannelHistory(video.channelId);
+          });
+        }
+        hideLoader();
+        
+        // Fetch all channels in background to update available pool in scheduler
+        fetchAndRefreshFeedInBackground();
+        return;
       }
-      hideLoader();
-      
-      // Fetch all channels in background to update available pool in scheduler
-      fetchAndRefreshFeedInBackground();
-      return;
     }
     
     console.log("[Fast Load] No existing feed, performing progressive load...");
+    console.log(`[Fast Load] Total channels to fetch: ${allChannels.length}`);
     
-    // Fetch only priority channels first for rapid initial render (takes ~500ms)
-    const priorityChannels = allChannels.slice(0, INITIAL_CHANNELS_TO_PROCESS);
-    const backgroundChannels = allChannels.slice(INITIAL_CHANNELS_TO_PROCESS);
+    // Fetch ALL channels with a small number of videos per channel for initial diverse batch
+    // This ensures the first rendered batch contains videos from all channels, not just the newest 3
+    const INITIAL_VIDEOS_PER_CHANNEL_FOR_FIRST_BATCH = 3; // Fewer videos per channel for speed
     
-    // Fetch priority channels in parallel (limit = 20 for faster startup)
-    const priorityPromises = priorityChannels.map(channel => 
-      prefetchChannelVideos(channel, 20)
-    );
-    await Promise.all(priorityPromises);
+    // Fetch all channels in parallel batches for the initial diverse batch
+    const INITIAL_FETCH_BATCH_SIZE = 6; // Process 6 channels at a time for initial load
+    for (let i = 0; i < allChannels.length; i += INITIAL_FETCH_BATCH_SIZE) {
+      const batch = allChannels.slice(i, i + INITIAL_FETCH_BATCH_SIZE);
+      console.log(`[Fast Load] Fetching batch ${Math.floor(i/INITIAL_FETCH_BATCH_SIZE) + 1}: ${batch.length} channels`);
+      const prefetchPromises = batch.map(channel => 
+        prefetchChannelVideos(channel, INITIAL_VIDEOS_PER_CHANNEL_FOR_FIRST_BATCH)
+      );
+      await Promise.all(prefetchPromises);
+    }
     
-    // Collect videos from priority channels
-    const priorityVideos = [];
-    priorityChannels.forEach(channel => {
+    // Collect videos from all channels and log per-channel counts
+    const initialVideos = [];
+    const channelVideoCounts = new Map();
+    allChannels.forEach(channel => {
       const videos = channelVideoMaps.get(channel.channelId) || [];
-      priorityVideos.push(...videos);
+      initialVideos.push(...videos);
+      channelVideoCounts.set(channel.channelName, videos.length);
     });
     
-    const eligiblePriorityVideos = priorityVideos.filter(isVideoEligible);
-    console.log(`[Fast Load] Priority channels loaded: ${eligiblePriorityVideos.length} videos`);
+    console.log(`[Fast Load] Per-channel video counts before filtering:`, Object.fromEntries(channelVideoCounts));
     
-    if (eligiblePriorityVideos.length > 0) {
-      // Set in scheduler and generate initial feed
-      smartFeedScheduler.setAvailableVideos(eligiblePriorityVideos);
-      await smartFeedScheduler.generateDailyFeed(eligiblePriorityVideos);
+    const eligibleInitialVideos = initialVideos.filter(isVideoEligible);
+    
+    // Log eligible videos per channel
+    const eligibleChannelCounts = new Map();
+    eligibleInitialVideos.forEach(video => {
+      const count = eligibleChannelCounts.get(video.channelName) || 0;
+      eligibleChannelCounts.set(video.channelName, count + 1);
+    });
+    console.log(`[Fast Load] Per-channel eligible video counts after filtering:`, Object.fromEntries(eligibleChannelCounts));
+    console.log(`[Fast Load] Initial diverse batch loaded: ${eligibleInitialVideos.length} videos from ${allChannels.length} channels`);
+    
+    if (eligibleInitialVideos.length > 0) {
+      // Set in scheduler and generate initial feed with full channel diversity
+      smartFeedScheduler.setAvailableVideos(eligibleInitialVideos);
+      await smartFeedScheduler.generateDailyFeed(eligibleInitialVideos);
       
       // Render first batch immediately
       smartFeedScheduler.resetBatchIndex();
@@ -188,12 +232,13 @@ async function loadSmartFeed() {
       }
       hideLoader();
     } else {
-      // Fallback if priority channels returned nothing (e.g. empty or offline)
-      console.log("[Fast Load] Priority channels empty, fallback to full loader");
+      // Fallback if all channels returned nothing (e.g. empty or offline)
+      console.log("[Fast Load] All channels empty, showing empty state");
+      showEmptyState("No videos available");
     }
     
-    // Fetch all channels (including background ones) in background to build complete feed
-    fetchRemainingChannelsInBackground(backgroundChannels);
+    // Fetch more videos from all channels in background to enrich the pool for later scrolling
+    fetchRemainingChannelsInBackground(allChannels);
     
   } catch (error) {
     console.error("Error loading smart feed:", error);
@@ -222,16 +267,21 @@ async function fetchAndRefreshFeedInBackground() {
 }
 
 // Background fetch helper to finish progressive loading
-async function fetchRemainingChannelsInBackground(backgroundChannels) {
+async function fetchRemainingChannelsInBackground(channelsToFetch) {
   try {
-    console.log(`[Fast Load] Fetching remaining ${backgroundChannels.length} channels in the background...`);
+    console.log(`[Fast Load] Fetching additional videos from ${channelsToFetch.length} channels in the background...`);
     
-    // Fetch background channels in parallel batches
+    // Reset fetch status to allow fetching additional videos from all channels
+    channelsToFetch.forEach(channel => {
+      channelFetchStatus.set(channel.channelId, 'pending');
+    });
+    
+    // Fetch channels in parallel batches with more videos per channel
     const PARALLEL_BATCH_SIZE_BG = 4;
-    for (let i = 0; i < backgroundChannels.length; i += PARALLEL_BATCH_SIZE_BG) {
-      const batch = backgroundChannels.slice(i, i + PARALLEL_BATCH_SIZE_BG);
+    for (let i = 0; i < channelsToFetch.length; i += PARALLEL_BATCH_SIZE_BG) {
+      const batch = channelsToFetch.slice(i, i + PARALLEL_BATCH_SIZE_BG);
       const prefetchPromises = batch.map(channel => 
-        prefetchChannelVideos(channel, 50)
+        prefetchChannelVideos(channel, 50) // Fetch more videos for background enrichment
       );
       await Promise.all(prefetchPromises);
     }
@@ -784,6 +834,8 @@ function renderVideos(videos) {
   // Use document fragment for better performance
   const fragment = document.createDocumentFragment();
   
+  const renderedChannels = [];
+  
   videos.forEach(video => {
     // Skip duplicates using cache
     if (videoCache.has(video.videoId)) return;
@@ -791,9 +843,16 @@ function renderVideos(videos) {
     
     const videoCard = createVideoCard(video);
     fragment.appendChild(videoCard);
+    
+    renderedChannels.push(video.channelName);
+    
+    // Update last rendered channel ID in scheduler
+    smartFeedScheduler.setLastRenderedChannelId(video.channelId);
   });
   
   container.appendChild(fragment);
+  
+  console.log(`[Render] Rendered ${videos.length} videos. Channel order:`, renderedChannels);
 }
 
 // Create video card element (reusing channel.js exact markup)

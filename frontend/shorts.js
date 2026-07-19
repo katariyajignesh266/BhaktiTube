@@ -583,14 +583,15 @@ async function runTier0Discovery() {
     );
 
     // Safeguard timeout to ensure loading screen goes away if all API requests fail
+    // Increased to 20 seconds for cold starts, but will be cancelled as soon as data is found
     const tier0Timeout = setTimeout(() => {
         if (!appStarted) {
             console.warn("Tier 0 fetch timed out with 0 shorts.");
             if (shortsLoader) {
-                shortsLoader.innerHTML = "No Shorts found or YouTube API limited.";
+                shortsLoader.innerHTML = "No Shorts found. Please try again later.";
             }
         }
-    }, 8000);
+    }, 20000);
 
     // Initialize states for priority channels
     priorityChannels.forEach(channel => {
@@ -615,12 +616,17 @@ async function runTier0Discovery() {
                 // Rebuild interleaving
                 rebuildAllShortsSuffix();
                 
-                // Start playback as soon as 1 short is resolved
-                if (allShorts.length > 0 && !appStarted) {
-                    appStarted = true;
+                // Cancel timeout as soon as data is found (decoupled from player init)
+                if (allShorts.length > 0) {
                     clearTimeout(tier0Timeout);
-                    console.log(`Tier 0 success: Found playable short. Starting application.`);
-                    await startApp();
+                    console.log(`Tier 0 success: Found playable short. Timeout cancelled.`);
+                    
+                    // Start playback as soon as 1 short is resolved
+                    if (!appStarted) {
+                        appStarted = true;
+                        console.log(`Tier 0 success: Starting application.`);
+                        await startApp();
+                    }
                 }
             }
         } catch (e) {
@@ -632,8 +638,8 @@ async function runTier0Discovery() {
 
     // Ensure we start app if Tier 0 completes and we haven't started yet
     if (allShorts.length > 0 && !appStarted) {
-        appStarted = true;
         clearTimeout(tier0Timeout);
+        appStarted = true;
         console.log(`Tier 0 completed. Starting application with ${allShorts.length} initial shorts.`);
         await startApp();
     } else if (!appStarted) {
@@ -688,11 +694,11 @@ async function runBackgroundDiscovery() {
         await startApp();
     } else if (allShorts.length === 0 && !appStarted) {
         console.warn(`All discovery completed but found 0 total shorts across all ${enabledChannels.length} channels.`);
-        let reason = "All channels empty or YouTube API quota exceeded.";
+        let reason = "No Shorts available from enabled channels.";
         if (enabledChannels.length === 0) {
-            reason = "No enabled channels found in Firestore.";
+            reason = "No enabled channels found.";
         } else if (watchedVideoIds.size > 0 && sessionLoadedVideoIds.size === 0) {
-            reason = "All candidate videos already watched.";
+            reason = "All Shorts already watched.";
         }
         console.warn(`Reason for empty state: ${reason}`);
         if (shortsLoader) {
