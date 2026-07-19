@@ -222,7 +222,7 @@ body.all-channels-dashboard-mode .all-channels-feed {
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
-    color: #0f0f0f;
+    color: var(--text-primary);
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;

@@ -2520,7 +2520,7 @@ transform:scale(1.08);
   }
 
   .left-header {
-    gap: 12px !important;
+    gap: 10px !important;
   }
 
   .left-header .fa-bars {
@@ -2538,7 +2538,7 @@ transform:scale(1.08);
   }
 
   .right-header {
-    gap: 16px !important; /* આઇકન્સ વચ્ચે જગ્યા વધારી */
+    gap: 15px !important; /* આઇકન્સ વચ્ચે જગ્યા વધારી */
   }
 
   .right-header i {

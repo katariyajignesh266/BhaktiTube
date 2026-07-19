@@ -211,6 +211,7 @@ border-radius:0;
 
 .video-title{
 font-size:15px;
+color: var(--text-primary);
 }
 
 .channel-avatar{
