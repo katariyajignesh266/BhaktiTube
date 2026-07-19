@@ -19,10 +19,14 @@ const SHORTS_MAX_PAGES_PER_CHANNEL = APP_CONFIG.SHORTS_MAX_PAGES_PER_CHANNEL || 
 const enabledChannels = [];
 const watchedVideoIds = new Set();
 const watchedCache = new Set();
-const allShorts = [];
-const channelShorts = {};
+let allShorts = [];
+let channelShorts = {};
 const sessionLoadedVideoIds = new Set();
-const channelFetchStates = {};
+let channelFetchStates = {};
+
+// Session-level in-memory cache for playlist data (persists across page navigations in same tab)
+const sessionPlaylistCache = new Map(); // Key: `${channelId}_${pageToken}`, Value: { data, timestamp }
+const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
 
 let currentRenderIndex = 0;
 let activeCardIndex = 0;
@@ -316,6 +320,152 @@ function getPlaylistIdForChannel(channel) {
     return channel.uploadsPlaylistId;
 }
 
+// Retry helper with exponential backoff
+async function fetchWithRetry(url, maxRetries = 3, operationName = "API call") {
+    const delays = [300, 800, 1500]; // Exponential backoff delays in ms
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                return { success: true, response };
+            }
+            
+            // If not ok, check if we should retry
+            if (attempt < maxRetries) {
+                const errData = await response.json().catch(() => ({}));
+                const errMsg = errData.error?.message || `HTTP ${response.status}`;
+                console.warn(`${operationName} failed (attempt ${attempt + 1}/${maxRetries + 1}): ${errMsg}. Retrying in ${delays[attempt]}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+            } else {
+                // Final attempt failed
+                const errData = await response.json().catch(() => ({}));
+                const errMsg = errData.error?.message || `HTTP ${response.status}`;
+                console.error(`${operationName} failed after ${maxRetries + 1} attempts: ${errMsg}`);
+                return { success: false, response, error: errMsg };
+            }
+        } catch (error) {
+            if (attempt < maxRetries) {
+                console.warn(`${operationName} network error (attempt ${attempt + 1}/${maxRetries + 1}): ${error.message}. Retrying in ${delays[attempt]}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+            } else {
+                console.error(`${operationName} failed after ${maxRetries + 1} attempts with network error: ${error.message}`);
+                return { success: false, error: error.message };
+            }
+        }
+    }
+    
+    return { success: false, error: "Max retries exceeded" };
+}
+
+// Process playlist items data (reused for both cached and fresh API responses)
+async function processPlaylistItemsData(data, channel, state) {
+    const videoIds = [];
+    const itemsMap = {};
+    let unavailableFiltered = 0;
+
+    data.items.forEach(item => {
+        if (item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId) {
+            const vId = item.snippet.resourceId.videoId;
+            const title = (item.snippet.title || "").toLowerCase();
+            
+            // Filter out private/deleted/unavailable videos early
+            if (title.includes('private video') || 
+                title.includes('deleted video') || 
+                title.includes('unavailable') ||
+                title.includes('this video is unavailable') ||
+                title.includes('this video is private')) {
+                unavailableFiltered++;
+                return;
+            }
+            videoIds.push(vId);
+            itemsMap[vId] = item;
+        }
+    });
+
+    if (videoIds.length === 0) {
+        console.log(`Channel ${channel.channelName}: All ${data.items.length} items on page filtered early as unavailable/private/deleted.`);
+        state.nextPageToken = data.nextPageToken || "";
+        if (!state.nextPageToken) state.isExhausted = true;
+        return [];
+    }
+
+    // Fetch details in batch for the videos
+    const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${videoIds.join(",")}&key=${API_KEY}`;
+    const detailsResult = await fetchWithRetry(detailsUrl, 3, `YouTube API videos details for channel ${channel.channelName}`);
+    
+    if (!detailsResult.success) {
+        console.error(`YouTube API videos details failed for channel ${channel.channelName} after retries: ${detailsResult.error || detailsResult.response?.status}`);
+        // Do NOT mark as exhausted on transient failure
+        return [];
+    }
+
+    const detailsResponse = detailsResult.response;
+
+    const detailsData = await detailsResponse.json();
+    const detailsMap = {};
+    if (detailsData.items) {
+        detailsData.items.forEach(d => {
+            detailsMap[d.id] = d;
+        });
+    }
+
+    let durationFilteredCount = 0;
+    let watchedFilteredCount = 0;
+    let duplicateFilteredCount = 0;
+    const newShorts = [];
+
+    for (const videoId of videoIds) {
+        const item = itemsMap[videoId];
+        const videoDetails = detailsMap[videoId];
+        if (!videoDetails || !videoDetails.contentDetails) {
+            console.log(`Video details missing/unavailable for ID ${videoId} on channel ${channel.channelName}`);
+            continue;
+        }
+
+        const duration = videoDetails.contentDetails.duration;
+        const seconds = convertDurationToSeconds(duration);
+
+        if (seconds > 60) {
+            durationFilteredCount++;
+            continue;
+        }
+
+        if (watchedVideoIds.has(videoId)) {
+            watchedFilteredCount++;
+            continue;
+        }
+
+        if (sessionLoadedVideoIds.has(videoId)) {
+            duplicateFilteredCount++;
+            continue;
+        }
+
+        const short = {
+            videoId: videoId,
+            title: item.snippet.title,
+            thumbnailUrl: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+            channelName: channel.channelName,
+            channelLogo: channel.channelLogo || "",
+            likeCount: videoDetails.statistics?.likeCount || 0,
+            viewCount: videoDetails.statistics?.viewCount || 0
+        };
+
+        newShorts.push(short);
+        sessionLoadedVideoIds.add(videoId);
+        state.unseenFound++;
+    }
+
+    state.nextPageToken = data.nextPageToken || "";
+    if (!state.nextPageToken) {
+        state.isExhausted = true;
+        console.log(`Channel ${channel.channelName}: No more pages (exhausted).`);
+    }
+
+    console.log(`Channel ${channel.channelName}: Fetched ${newShorts.length} shorts (filtered: ${durationFilteredCount} duration, ${watchedFilteredCount} watched, ${duplicateFilteredCount} duplicates, ${unavailableFiltered} unavailable).`);
+    return newShorts;
+}
+
 // Fetch a single page of items and matching video details from Youtube API
 async function fetchChannelShortsPage(channel, limit = 50) {
     const channelId = channel.id;
@@ -336,129 +486,50 @@ async function fetchChannelShortsPage(channel, limit = 50) {
         return [];
     }
 
-    try {
-        const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${limit}&pageToken=${state.nextPageToken}&key=${API_KEY}`;
-        const response = await fetch(url);
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            const errMsg = errData.error?.message || `HTTP ${response.status}`;
-            console.error(`YouTube API playlistItems error for channel ${channel.channelName}: ${errMsg}`);
-            state.isExhausted = true; 
-            return [];
-        }
-
-        const data = await response.json();
+    // Check session cache first
+    const cacheKey = `${playlistId}_${state.nextPageToken}`;
+    const cachedEntry = sessionPlaylistCache.get(cacheKey);
+    const now = Date.now();
+    
+    if (cachedEntry && (now - cachedEntry.timestamp) < SESSION_CACHE_TTL) {
+        console.log(`[Session Cache] HIT for ${channel.channelName} page ${state.nextPageToken || 'first'}`);
+        // Use cached data as if it came from API
+        const data = cachedEntry.data;
         state.pagesFetched++;
 
         if (!data.items || data.items.length === 0) {
-            console.log(`Channel ${channel.channelName}: YouTube playlistItems call returned 0 items.`);
+            console.log(`Channel ${channel.channelName}: Cached playlistItems returned 0 items.`);
             state.isExhausted = true;
             return [];
         }
 
-        const videoIds = [];
-        const itemsMap = {};
-        let unavailableFiltered = 0;
+        // Process the cached data the same way as fresh data
+        return processPlaylistItemsData(data, channel, state);
+    }
 
-        data.items.forEach(item => {
-            if (item.snippet && item.snippet.resourceId && item.snippet.resourceId.videoId) {
-                const vId = item.snippet.resourceId.videoId;
-                const title = (item.snippet.title || "").toLowerCase();
-                
-                // Filter out private/deleted/unavailable videos early
-                if (title.includes('private video') || 
-                    title.includes('deleted video') || 
-                    title.includes('unavailable') ||
-                    title.includes('this video is unavailable') ||
-                    title.includes('this video is private')) {
-                    unavailableFiltered++;
-                    return;
-                }
-                videoIds.push(vId);
-                itemsMap[vId] = item;
-            }
-        });
-
-        if (videoIds.length === 0) {
-            console.log(`Channel ${channel.channelName}: All ${data.items.length} items on page filtered early as unavailable/private/deleted.`);
-            state.nextPageToken = data.nextPageToken || "";
-            if (!state.nextPageToken) state.isExhausted = true;
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${limit}&pageToken=${state.nextPageToken}&key=${API_KEY}`;
+        const result = await fetchWithRetry(url, 3, `YouTube API playlistItems for channel ${channel.channelName}`);
+        
+        if (!result.success) {
+            console.error(`YouTube API playlistItems failed for channel ${channel.channelName} after retries: ${result.error || result.response?.status}`);
+            // Do NOT mark as exhausted on transient failure - let it be retried on next discovery pass
             return [];
         }
 
-        // Fetch details in batch for the videos
-        const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${videoIds.join(",")}&key=${API_KEY}`;
-        const detailsResponse = await fetch(detailsUrl);
-        if (!detailsResponse.ok) {
-            const errData = await detailsResponse.json().catch(() => ({}));
-            const errMsg = errData.error?.message || `HTTP ${detailsResponse.status}`;
-            console.error(`YouTube API videos details error for channel ${channel.channelName}: ${errMsg}`);
-            state.isExhausted = true;
-            return [];
-        }
+        const response = result.response;
 
-        const detailsData = await detailsResponse.json();
-        const detailsMap = {};
-        if (detailsData.items) {
-            detailsData.items.forEach(d => {
-                detailsMap[d.id] = d;
-            });
-        }
+        const data = await response.json();
+        
+        // Cache the successful response
+        sessionPlaylistCache.set(cacheKey, { data, timestamp: now });
+        console.log(`[Session Cache] STORED for ${channel.channelName} page ${state.nextPageToken || 'first'}`);
 
-        let durationFilteredCount = 0;
-        let watchedFilteredCount = 0;
-        let duplicateFilteredCount = 0;
-        const newShorts = [];
-
-        for (const videoId of videoIds) {
-            const item = itemsMap[videoId];
-            const videoDetails = detailsMap[videoId];
-            if (!videoDetails || !videoDetails.contentDetails) {
-                console.log(`Video details missing/unavailable for ID ${videoId} on channel ${channel.channelName}`);
-                continue;
-            }
-
-            const duration = videoDetails.contentDetails.duration;
-            const seconds = convertDurationToSeconds(duration);
-
-            if (seconds > 60) {
-                durationFilteredCount++;
-                continue;
-            }
-
-            if (watchedVideoIds.has(videoId)) {
-                watchedFilteredCount++;
-                continue;
-            }
-
-            if (sessionLoadedVideoIds.has(videoId)) {
-                duplicateFilteredCount++;
-                continue;
-            }
-
-            sessionLoadedVideoIds.add(videoId);
-            const originalLikes = videoDetails.statistics ? videoDetails.statistics.likeCount : 0;
-            newShorts.push({
-                videoId,
-                title: item.snippet.title,
-                channelName: channel.channelName,
-                channelLogo: channel.channelLogo,
-                likeCount: originalLikes
-            });
-            state.unseenFound++;
-        }
-
-        state.nextPageToken = data.nextPageToken || "";
-        if (!state.nextPageToken) {
-            state.isExhausted = true;
-        }
-
-        console.log(`Channel ${channel.channelName} page fetch: Found ${newShorts.length} new shorts. (Candidates: ${videoIds.length}, Unavailable: ${unavailableFiltered}, Long-form (>60s): ${durationFilteredCount}, Watched: ${watchedFilteredCount}, Session duplicate: ${duplicateFilteredCount}).`);
-
-        return newShorts;
+        // Process the data using the shared function
+        return processPlaylistItemsData(data, channel, state);
     } catch (error) {
         console.error(`Error in fetchChannelShortsPage for channel ${channel.channelName}:`, error);
-        state.isExhausted = true; 
+        state.isExhausted = true;
         return [];
     }
 }
@@ -567,7 +638,7 @@ async function startApp() {
 
 // Tier 0 — Instant priority fetching
 async function runTier0Discovery() {
-    const priorityChannels = enabledChannels.slice(0, SHORTS_INITIAL_CHANNELS_TO_PROCESS);
+    let priorityChannels = enabledChannels.slice(0, SHORTS_INITIAL_CHANNELS_TO_PROCESS);
     console.log(`runTier0Discovery: Total enabledChannels is ${enabledChannels.length}. Selecting first ${priorityChannels.length} as priority.`);
     
     if (priorityChannels.length === 0) {
@@ -635,6 +706,53 @@ async function runTier0Discovery() {
     });
 
     await Promise.all(priorityPromises);
+
+    // If first priority channels failed, try widening the set before giving up
+    if (allShorts.length === 0 && !appStarted && enabledChannels.length > SHORTS_INITIAL_CHANNELS_TO_PROCESS) {
+        console.log(`Tier 0: First ${SHORTS_INITIAL_CHANNELS_TO_PROCESS} channels returned 0 shorts. Widening priority set to next 3 channels.`);
+        const additionalChannels = enabledChannels.slice(SHORTS_INITIAL_CHANNELS_TO_PROCESS, SHORTS_INITIAL_CHANNELS_TO_PROCESS + 3);
+        
+        // Initialize states for additional channels
+        additionalChannels.forEach(channel => {
+            if (!channelFetchStates[channel.id]) {
+                channelFetchStates[channel.id] = {
+                    nextPageToken: "",
+                    unseenFound: 0,
+                    isExhausted: false,
+                    pagesFetched: 0
+                };
+            }
+        });
+
+        const additionalPromises = additionalChannels.map(async (channel) => {
+            try {
+                const pageShorts = await fetchChannelShortsPage(channel, SHORTS_INITIAL_ITEMS_PER_CHANNEL);
+                if (pageShorts.length > 0) {
+                    if (!channelShorts[channel.channelName]) {
+                        channelShorts[channel.channelName] = [];
+                    }
+                    channelShorts[channel.channelName].push(...pageShorts);
+                    
+                    rebuildAllShortsSuffix();
+                    
+                    if (allShorts.length > 0) {
+                        clearTimeout(tier0Timeout);
+                        console.log(`Tier 0 expanded: Found playable short from additional channels. Timeout cancelled.`);
+                        
+                        if (!appStarted) {
+                            appStarted = true;
+                            console.log(`Tier 0 expanded: Starting application.`);
+                            await startApp();
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(`Error fetching additional channel ${channel.channelName} in Tier 0:`, e);
+            }
+        });
+
+        await Promise.all(additionalPromises);
+    }
 
     // Ensure we start app if Tier 0 completes and we haven't started yet
     if (allShorts.length > 0 && !appStarted) {
@@ -866,9 +984,47 @@ async function initApp() {
             // Still scan in background to update
             runBackgroundDiscovery().catch(err => console.error("Error in background discovery:", err));
         } else {
-            // Cold start - run Tier 0 priority discovery
-            console.log("[Fast Load] Cold start. Running Tier 0 discovery.");
-            await runTier0Discovery();
+            // Cold start - run Tier 0 priority discovery with automatic retry
+            console.log("[Fast Load] Cold start. Running Tier 0 discovery with retry.");
+            
+            let discoveryAttempts = 0;
+            const maxDiscoveryAttempts = 2; // Try twice before giving up
+            
+            while (discoveryAttempts < maxDiscoveryAttempts && !appStarted) {
+                discoveryAttempts++;
+                console.log(`[Fast Load] Discovery attempt ${discoveryAttempts}/${maxDiscoveryAttempts}`);
+                
+                // Reset state for retry
+                if (discoveryAttempts > 1) {
+                    channelShorts = {};
+                    channelFetchStates = {};
+                    allShorts = [];
+                    rebuildAllShortsSuffix();
+                    console.log("[Fast Load] Reset state for retry attempt");
+                }
+                
+                await runTier0Discovery();
+                
+                // If discovery succeeded, break out of retry loop
+                if (appStarted) {
+                    console.log(`[Fast Load] Discovery succeeded on attempt ${discoveryAttempts}`);
+                    break;
+                }
+                
+                // If this wasn't the last attempt, wait before retrying
+                if (discoveryAttempts < maxDiscoveryAttempts) {
+                    console.log("[Fast Load] Discovery failed, waiting 2 seconds before retry...");
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+            }
+            
+            // If still not started after all retries, show error
+            if (!appStarted) {
+                console.error(`[Fast Load] Discovery failed after ${maxDiscoveryAttempts} attempts. No shorts found.`);
+                if (shortsLoader) {
+                    shortsLoader.innerHTML = "No Shorts found. Please try again later.";
+                }
+            }
         }
     } catch (e) {
         console.error("Failed to initialize Shorts Application:", e);
