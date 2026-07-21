@@ -46,6 +46,24 @@ import { getChannelCardMarkup } from "./channel-card-renderer.js";
 
 const THEME_KEY = "bt_theme_preference";
 const THEME_ATTR = "data-theme";
+const ADMIN_ACCESS_EMAIL = "katariyajignesh266266@gmail.com";
+
+function isAuthorizedAdmin(user) {
+    return !!user && user.email?.toLowerCase() === ADMIN_ACCESS_EMAIL.toLowerCase();
+}
+
+function toggleAdminSidebarVisibility(user) {
+    const adminBtn = document.getElementById("adminBtn");
+    if (!adminBtn) return;
+
+    if (isAuthorizedAdmin(user)) {
+        adminBtn.style.display = "";
+        adminBtn.setAttribute("aria-hidden", "false");
+    } else {
+        adminBtn.style.display = "none";
+        adminBtn.setAttribute("aria-hidden", "true");
+    }
+}
 
 // Initialize theme on page load
 function initializeTheme() {
@@ -125,6 +143,8 @@ let isFirstTimeLogin = false;
 onAuthStateChanged(auth, async (user) => {
     const previousUser = currentUser;
     currentUser = user;
+
+    toggleAdminSidebarVisibility(user);
     
     // Check if this is a first-time login (user just signed up)
     if (user && !previousUser) {
@@ -1231,6 +1251,9 @@ document.getElementById("channelsBtn");
 const journeyBtn =
 document.getElementById("journeyBtn");
 
+const adminBtn =
+document.getElementById("adminBtn");
+
 const categorySection =
 document.getElementById("categorySection");
 
@@ -1266,6 +1289,14 @@ setHomeView("journey");
 
 
 });
+
+if (adminBtn) {
+    adminBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
+
+        window.location.href = "./admin/admin.html";
+    });
+}
 
 
 const settingsBtn =

@@ -32,6 +32,12 @@ import { YOUTUBE_API_KEY } from "../config.js";
 
 console.log("⚡ PREMIUM BHAKTITUBE CORE ENGINE ACTIVE");
 
+const ADMIN_ACCESS_EMAIL = "katariyajignesh266266@gmail.com";
+
+function isAuthorizedAdmin(user) {
+    return !!user && user.email?.toLowerCase() === ADMIN_ACCESS_EMAIL.toLowerCase();
+}
+
 // VARIABLE FOR API FETCH CONTAINER POINTER
 let fetchedChannel = null;
 
@@ -138,7 +144,19 @@ onAuthStateChanged(auth, async (user) => {
     const now = Date.now();
     const tenMinutes = 10 * 60 * 1000; // Hard expiration barrier limit
 
-    if (!user || !loginTime || (now - loginTime) > tenMinutes) {
+    if (!user) {
+        await auth.signOut();
+        localStorage.removeItem("loginTime");
+        window.location.href = "Login.html";
+        return;
+    }
+
+    if (!isAuthorizedAdmin(user)) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    if (!loginTime || (now - loginTime) > tenMinutes) {
         await auth.signOut();
         localStorage.removeItem("loginTime");
         window.location.href = "Login.html";

@@ -1854,6 +1854,11 @@ background: var(--bg-surface-hover);
 
 }
 
+#sidebar a:focus-visible{
+    outline: 2px solid var(--brand-secondary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(255, 180, 0, 0.15);
+}
 
 
 /* SETTINGS - Chrome mobile fix */
