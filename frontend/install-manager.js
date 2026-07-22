@@ -20,6 +20,7 @@ class PWAInstallManager {
     this.createInstallPopup();
     this.setupEventListeners();
     this.checkInstallStatus();
+    this.setupDownloadButton();
   }
 
   /**
@@ -89,6 +90,7 @@ class PWAInstallManager {
       console.log('[Install Manager] App installed');
       this.markAsInstalled();
       this.hideInstallPopup();
+      this.updateDownloadButton(false);
       this.showInstallSuccess();
     });
 
@@ -211,8 +213,18 @@ class PWAInstallManager {
                         window.matchMedia('(display-mode: minimal-ui)').matches ||
                         document.referrer.includes('android-app://');
     
-    // Check localStorage
+    // Check localStorage (only if not in standalone mode)
     const installedFlag = localStorage.getItem('bt_pwa_installed');
+    
+    // For local development, ignore localStorage flag
+    const isLocalDev = window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname === 'localhost' ||
+                       window.location.protocol === 'file:';
+    
+    if (isLocalDev) {
+      console.log('[Install Manager] Local development detected, ignoring localStorage flag');
+      return isStandalone;
+    }
     
     return isStandalone || installedFlag === 'true';
   }
@@ -222,6 +234,20 @@ class PWAInstallManager {
    */
   markAsInstalled() {
     localStorage.setItem('bt_pwa_installed', 'true');
+    this.updateDownloadButton(false);
+  }
+
+  /**
+   * Reset install status (for testing)
+   */
+  resetInstallStatus() {
+    localStorage.removeItem('bt_pwa_installed');
+    localStorage.removeItem('bt_pwa_dismiss_count');
+    localStorage.removeItem('bt_pwa_dismiss_time');
+    this.dismissCount = 0;
+    this.lastDismissTime = 0;
+    this.updateDownloadButton(true);
+    console.log('[Install Manager] Install status reset');
   }
 
   /**
@@ -246,9 +272,16 @@ class PWAInstallManager {
   checkInstallStatus() {
     this.loadDismissState();
     
+    console.log('[Install Manager] isInstalled:', this.isInstalled());
+    console.log('[Install Manager] dismissCount:', this.dismissCount);
+    console.log('[Install Manager] lastDismissTime:', this.lastDismissTime);
+    
     if (this.isInstalled()) {
       console.log('[Install Manager] App is installed');
-      return;
+      this.updateDownloadButton(false);
+    } else {
+      this.updateDownloadButton(true);
+      console.log('[Install Manager] Download button should be visible');
     }
 
     // For iOS, show instructions after delay
@@ -259,6 +292,43 @@ class PWAInstallManager {
           this.showIOSInstructions();
         }
       }, 5000);
+    }
+  }
+
+  /**
+   * Setup download button in sidebar
+   */
+  setupDownloadButton() {
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+      downloadBtn.addEventListener('click', () => {
+        this.handleInstallClick();
+      });
+      console.log('[Install Manager] Download button setup complete');
+    } else {
+      console.log('[Install Manager] Download button not found in DOM');
+    }
+  }
+
+  /**
+   * Update download button visibility
+   */
+  updateDownloadButton(show) {
+    const downloadBtn = document.getElementById('downloadBtn');
+    console.log('[Install Manager] updateDownloadButton called with:', show);
+    console.log('[Install Manager] downloadBtn element:', downloadBtn);
+    if (downloadBtn) {
+      downloadBtn.style.display = show ? 'flex' : 'none';
+      console.log('[Install Manager] Button display set to:', downloadBtn.style.display);
+    } else {
+      console.log('[Install Manager] downloadBtn element not found! Retrying in 100ms...');
+      setTimeout(() => {
+        const retryBtn = document.getElementById('downloadBtn');
+        if (retryBtn) {
+          retryBtn.style.display = show ? 'flex' : 'none';
+          console.log('[Install Manager] Retry successful, button display set to:', retryBtn.style.display);
+        }
+      }, 100);
     }
   }
 
@@ -464,3 +534,9 @@ if (document.readyState === 'loading') {
 } else {
   installManager.init();
 }
+
+// Expose for external use
+window.installManager = installManager;
+
+// Expose reset function for testing
+window.resetPWAInstall = () => installManager.resetInstallStatus();

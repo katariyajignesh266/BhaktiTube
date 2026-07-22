@@ -2,8 +2,8 @@
   "name": "BhaktiTube - Devotional Video Platform",
   "short_name": "BhaktiTube",
   "description": "Your gateway to devotional content. Watch spiritual videos, kathas, bhajans, and motivational content from your favorite channels.",
-  "start_url": "/frontend/index.html",
-  "scope": "/frontend/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
   "orientation": "portrait-primary",
@@ -13,6 +13,12 @@
   "dir": "ltr",
   "categories": ["entertainment", "education", "lifestyle", "music"],
   "icons": [
+    {
+      "src": "icons/icon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "icons/icon-72x72.png",
       "sizes": "72x72",
@@ -79,7 +85,7 @@
       "name": "Watch Shorts",
       "short_name": "Shorts",
       "description": "Watch short devotional videos",
-      "url": "/frontend/shorts.html",
+      "url": "./shorts.html",
       "icons": [
         {
           "src": "icons/shortcut-shorts-96x96.png",
@@ -92,7 +98,7 @@
       "name": "My Journey",
       "short_name": "Journey",
       "description": "View your Bhakti journey progress",
-      "url": "/frontend/index.html?view=journey",
+      "url": "./index.html?view=journey",
       "icons": [
         {
           "src": "icons/shortcut-journey-96x96.png",
@@ -105,7 +111,7 @@
       "name": "Channels",
       "short_name": "Channels",
       "description": "Browse featured channels",
-      "url": "/frontend/index.html?view=channels",
+      "url": "./index.html?view=channels",
       "icons": [
         {
           "src": "icons/shortcut-channels-96x96.png",
@@ -113,22 +119,6 @@
           "type": "image/png"
         }
       ]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/desktop-home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "BhaktiTube Home Screen"
-    },
-    {
-      "src": "screenshots/mobile-home.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "BhaktiTube Mobile Home"
     }
   ],
   "related_applications": [],
@@ -142,7 +132,7 @@
   "protocol_handlers": [],
   "file_handlers": [],
   "share_target": {
-    "action": "/frontend/index.html",
+    "action": "./index.html",
     "method": "GET",
     "params": {
       "title": "title",

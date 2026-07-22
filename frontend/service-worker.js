@@ -9,21 +9,21 @@ const API_CACHE = `${CACHE_NAME}-api`;
 
 // Assets to cache immediately on install
 const STATIC_ASSETS = [
-  '/frontend/index.html',
-  '/frontend/shorts.html',
-  '/frontend/channel.html',
-  '/frontend/offline.html',
-  '/frontend/manifest.json',
-  '/frontend/theme-system.css',
-  '/frontend/responsive-system.css',
-  '/frontend/viewport-fix.css',
-  '/frontend/style.css',
-  '/frontend/channel-card.css',
-  '/frontend/channel-card-themes.css',
-  '/frontend/premium-channel-feed.css',
-  '/frontend/all-channels-feed.css',
-  '/frontend/shorts.css',
-  '/frontend/channel.css',
+  './index.html',
+  './shorts.html',
+  './channel.html',
+  './offline.html',
+  './manifest.json',
+  './theme-system.css',
+  './responsive-system.css',
+  './viewport-fix.css',
+  './style.css',
+  './channel-card.css',
+  './channel-card-themes.css',
+  './premium-channel-feed.css',
+  './all-channels-feed.css',
+  './shorts.css',
+  './channel.css',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://www.youtube.com/iframe_api'
 ];
@@ -164,7 +164,7 @@ async function networkFirst(request, cacheName, maxAge = 24 * 60 * 60 * 1000) {
     
     // Return offline page for HTML requests
     if (request.headers.get('accept')?.includes('text/html')) {
-      return caches.match('/frontend/offline.html');
+      return caches.match('./offline.html');
     }
     
     throw error;
@@ -300,15 +300,15 @@ self.addEventListener('push', (event) => {
     event.waitUntil(
       self.registration.showNotification(options.title || 'BhaktiTube', {
         body: options.body || 'You have a new notification',
-        icon: '/frontend/icons/icon-192x192.png',
-        badge: '/frontend/icons/icon-72x72.png',
+        icon: './icons/icon-192x192.png',
+        badge: './icons/icon-72x72.png',
         vibrate: [200, 100, 200],
         data: options.data || {},
         actions: [
           {
             action: 'open',
             title: 'Open',
-            icon: '/frontend/icons/icon-96x96.png'
+            icon: './icons/icon-96x96.png'
           },
           {
             action: 'close',
@@ -331,13 +331,13 @@ self.addEventListener('notificationclick', (event) => {
       clients.matchAll({ type: 'window' }).then((clientList) => {
         // Focus existing window if available
         for (const client of clientList) {
-          if (client.url === '/frontend/index.html' && 'focus' in client) {
+          if (client.url.includes('index.html') && 'focus' in client) {
             return client.focus();
           }
         }
         // Open new window
         if (clients.openWindow) {
-          return clients.openWindow('/frontend/index.html');
+          return clients.openWindow('./index.html');
         }
       })
     );

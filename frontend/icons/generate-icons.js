@@ -10,7 +10,7 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
-const SOURCE_LOGO = path.join(__dirname, '../Image/v-3.png');
+const SOURCE_LOGO = path.join(__dirname, 'bhaktitube-logo.png');
 const ICONS_DIR = __dirname;
 const BRAND_COLOR = '#FF6B35';
 

@@ -4,7 +4,7 @@
  */
 
 const SW_VERSION = 'v1.0.0';
-const SW_FILE = '/frontend/service-worker.js';
+const SW_FILE = './service-worker.js';
 
 class ServiceWorkerManager {
   constructor() {
@@ -24,7 +24,7 @@ class ServiceWorkerManager {
 
     try {
       this.registration = await navigator.serviceWorker.register(SW_FILE, {
-        scope: '/frontend/'
+        scope: './'
       });
 
       console.log('[SW Manager] Service Worker registered:', this.registration.scope);
