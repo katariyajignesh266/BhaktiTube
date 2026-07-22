@@ -1,0 +1,183 @@
+/**
+ * Network Manager Styles
+ * Elegant toast notifications for network status
+ */
+
+/* Toast Container */
+.network-toast-container {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  width: 90%;
+  max-width: 400px;
+}
+
+/* Toast */
+.network-toast {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.network-toast-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Toast Types */
+.network-toast-offline {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #2d1a1a 0%, #1a1a2e 100%);
+}
+
+.network-toast-online {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #1a2d1a 0%, #1a1a2e 100%);
+}
+
+.network-toast-warning {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, #2d2a1a 0%, #1a1a2e 100%);
+}
+
+/* Toast Icon */
+.network-toast-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.network-toast-offline .network-toast-icon {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.network-toast-online .network-toast-icon {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.network-toast-warning .network-toast-icon {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+/* Toast Content */
+.network-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.network-toast-title {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.network-toast-message {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  line-height: 1.4;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Close Button */
+.network-toast-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.network-toast-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .network-toast-container {
+    top: 70px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    transform: none;
+  }
+
+  .network-toast {
+    padding: 14px;
+  }
+
+  .network-toast-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .network-toast-title {
+    font-size: 13px;
+  }
+
+  .network-toast-message {
+    font-size: 11px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .network-toast {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+  }
+
+  .network-toast-offline {
+    background: linear-gradient(135deg, #1a0f0f 0%, #0f0f1a 100%);
+ 
+
+  }
+
+  .network-toast-online {
+    background: linear-gradient(135deg, #0f1a0f 0%, #0f0f1a 100%);
+  }
+
+  .network-toast-warning {
+    background: linear-gradient(135deg, #1a1a0f 0%, #0f0f1a 100%);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .network-toast {
+    transition: none;
+  }
+}

@@ -3,6 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BhaktiTube">
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="msapplication-TileColor" content="#FF6B35">
+    
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
+    <link rel="dns-prefetch" href="https://www.youtube.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="../icons/icon-128x128.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="512x512" href="../icons/icon-512x512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../icons/icon-192x192.png">
+    <link rel="shortcut icon" href="../icons/icon-192x192.png">
+    
     <title>BhaktiTube Premium Profile</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,6 +43,11 @@
     <link rel="stylesheet" href="../theme-system.css">
     <link rel="stylesheet" href="../responsive-system.css">
     <link rel="stylesheet" href="profile.css">
+    
+    <!-- PWA CSS -->
+    <link rel="stylesheet" href="../install-manager.css">
+    <link rel="stylesheet" href="../update-manager.css">
+    <link rel="stylesheet" href="../network-manager.css">
 </head>
 <body>
 
@@ -603,6 +639,12 @@
             </div>
         </div>
     </div>
+
+    <!-- PWA Scripts -->
+    <script src="../sw-register.js"></script>
+    <script src="../install-manager.js"></script>
+    <script src="../update-manager.js"></script>
+    <script src="../network-manager.js"></script>
 
     <script type="module" src="profile.js"></script>
 </body>
