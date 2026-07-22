@@ -2,6 +2,7 @@ import { db, auth } from "./firebase-config.js";
 import { collection, getDocs, doc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import { YOUTUBE_API_KEY, APP_CONFIG } from "./config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { profileService, generateAvatarDataUrl } from "./analytics-engine.js";
 
 // DOM Elements
 const shortsContainer = document.getElementById("shortsContainer");
@@ -61,7 +62,7 @@ style.innerHTML = `
         align-items: center;
         width: 100%;
         max-width: calc(100vw - 90px); /* એક્શન્સ બટન અને સ્પેસિંગ છોડીને પ્રોપર કન્ટેનર વિડ્થ */
-        gap: 8px;
+        gap: 6px;
         overflow: hidden;
     }
     .channel-logo {
@@ -78,11 +79,13 @@ style.innerHTML = `
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; /* વધારે લાંબુ નામ હોય તો પાછળ ત્રણ ટપકા (...) કરવા માટે */
-        flex-grow: 1;
+        flex: 0 1 auto; /* Auto grow but don't force to take all space */
+        max-width: calc(100vw - 160px); /* Limit max width to keep subscribe button close */
         min-width: 0; /* સીએસએસ ફ્લેક્સ બોક્સમાં એલિપ્સિસ કામ કરવા માટે જરૂરી */
     }
     .subscribe-btn {
         flex-shrink: 0; /* બટન પણ પોતાની સાઈઝમાં ફિક્સ રહેશે */
+        margin-left: auto; /* Push to right but not too far */
     }
 `;
 document.head.appendChild(style);
@@ -96,6 +99,21 @@ function getAuthUser() {
         });
     });
 }
+
+// Update bottom navigation profile photo dynamically
+profileService.subscribe((profile) => {
+    if (profile) {
+        const activePhoto = profile.customPhotoURL || profile.photoURL || "";
+        const bottomNavProfilePhoto = document.getElementById("bottomNavProfilePhoto");
+        if (bottomNavProfilePhoto) {
+            if (activePhoto) {
+                bottomNavProfilePhoto.src = activePhoto;
+            } else {
+                bottomNavProfilePhoto.src = generateAvatarDataUrl(profile.displayName, profile.email, profile.uid);
+            }
+        }
+    }
+});
 
 function convertDurationToSeconds(duration) {
     if (!duration) return 9999;
@@ -275,11 +293,6 @@ function renderNextShorts(count = 1) {
                     <div class="action-item" id="like-btn-${short.videoId}" data-rawlikes="${short.likeCount || 0}">
                         <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
                         <span>${displayLikes}</span>
-                    </div>
-
-                    <div class="action-item">
-                        <svg viewBox="0 0 24 24"><path d="M19 15h4V3h-4v12zm-4 0c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73V4c0-1.1-.9-2-2-2H9c-.83 0-1.54.5-1.84 1.22L4.14 10.27c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L12.83 23l6.58-6.59c.37-.36.59-.86.59-1.41z"/></svg>
-                        <span>Dislike</span>
                     </div>
 
                     <div class="action-item">

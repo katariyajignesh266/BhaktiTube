@@ -1281,6 +1281,24 @@ setHomeView("channels");
 
 });
 
+// Bottom navigation Channels button
+const bottomChannelsBtn = document.getElementById("bottomChannelsBtn");
+if (bottomChannelsBtn) {
+    bottomChannelsBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
+        setHomeView("channels");
+    });
+}
+
+// Bottom navigation Journey button
+const bottomJourneyBtn = document.getElementById("bottomJourneyBtn");
+if (bottomJourneyBtn) {
+    bottomJourneyBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
+        setHomeView("journey");
+    });
+}
+
 journeyBtn.addEventListener("click",(e)=>{
 
 e.preventDefault();
@@ -1499,7 +1517,17 @@ profileService.subscribe((profile) => {
     } else {
       profilePhoto.src = generateAvatarDataUrl(profile.displayName, profile.email, profile.uid);
     }
-    
+
+    // Update bottom navigation profile photo
+    const bottomNavProfilePhoto = document.getElementById("bottomNavProfilePhoto");
+    if (bottomNavProfilePhoto) {
+      if (activePhoto) {
+        bottomNavProfilePhoto.src = activePhoto;
+      } else {
+        bottomNavProfilePhoto.src = generateAvatarDataUrl(profile.displayName, profile.email, profile.uid);
+      }
+    }
+
     const journeyUserName = document.getElementById("journeyUserName");
     if (journeyUserName) {
       journeyUserName.textContent = profile.displayName || "Bhakti Progress";
@@ -1612,6 +1640,33 @@ document.querySelectorAll('.logo,.sidebar-logo')
     });
 
 });
+
+// Check URL parameter for view on page load
+const urlParams = new URLSearchParams(window.location.search);
+const viewParam = urlParams.get('view');
+if (viewParam === 'channels') {
+    // Use sessionStorage to ensure channels view is set after page loads
+    sessionStorage.setItem('bt_show_channels', 'true');
+} else if (viewParam === 'journey') {
+    sessionStorage.setItem('bt_show_journey', 'true');
+}
+
+// Check sessionStorage for channels view flag
+if (sessionStorage.getItem('bt_show_channels') === 'true') {
+    sessionStorage.removeItem('bt_show_channels');
+    // Small delay to ensure page is fully loaded
+    setTimeout(() => {
+        setHomeView('channels');
+    }, 100);
+}
+
+// Check sessionStorage for journey view flag
+if (sessionStorage.getItem('bt_show_journey') === 'true') {
+    sessionStorage.removeItem('bt_show_journey');
+    setTimeout(() => {
+        setHomeView('journey');
+    }, 100);
+}
 
 const openShortsBtn =
 document.getElementById(

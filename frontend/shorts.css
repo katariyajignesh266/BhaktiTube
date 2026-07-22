@@ -10,6 +10,7 @@
 body{
 
 background: var(--bg-primary);
+background-image: var(--gradient-premium-dark);
 overflow:hidden;
 
 font-family:
@@ -18,6 +19,10 @@ sans-serif;
 /* Use dynamic viewport height for mobile browsers */
 min-height: 100dvh;
 min-height: 100vh;
+}
+
+:root[data-theme="light"] body {
+    background-image: var(--gradient-premium-light);
 }
 
 #shortsContainer{
@@ -498,7 +503,7 @@ height:100%;
 /* બોટમ ચેનલ ઓવરલે (ડાબી બાજુ નીચે) */
 .short-card .channel-overlay {
     position: absolute;
-    bottom: 30px;
+    bottom: 80px; /* Adjusted to make room for bottom nav */
     left: 16px;
     right: 80px; /* જમણી બાજુના બટન્સ ન નડે તે માટે */
     z-index: 3;
@@ -514,6 +519,8 @@ height:100%;
     display: flex;
     align-items: center;
     gap: 8px;
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .short-card .channel-logo {
@@ -528,6 +535,7 @@ height:100%;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.2px;
+    text-align: left;
 }
 
 /* ઓરિજિનલ વ્હાઇટ સબસ્ક્રાઇબ બટન */
@@ -546,21 +554,20 @@ height:100%;
 /* શોર્ટ્સનું ટાઇટલ ડિસ્ક્રિપ્શન */
 .short-card .channel-overlay p {
     margin: 0;
+    margin-top: 4px;
     font-size: 14px;
     line-height: 1.3;
     font-weight: 400;
-    max-height: 3.6em;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    max-width: 100%;
 }
 
 /* જમણી બાજુના એક્શન બટન્સનું આખું કન્ટેનર */
 .short-card .actions {
     position: absolute;
-    bottom: 30px;
+    bottom: 80px; /* Adjusted to make room for bottom nav */
     right: 12px;
     z-index: 3;
     display: flex;
@@ -678,12 +685,12 @@ height:100%;
 }
 
 /* યુટ્યુબના ડિફોલ્ટ પ્લે બટન અને ઓવરલેને ફોર્સફુલી ગાયબ કરવા માટે */
-.ytp-large-play-button, 
-.ytp-pause-overlay, 
+.ytp-large-play-button,
+.ytp-pause-overlay,
 .ytp-youtube-button,
 .play-pause-center-btn,
 .center-action-overlay,
-.ytp-chrome-top, 
+.ytp-chrome-top,
 .ytp-gradient-top {
     display: none !important;
     width: 0px !important;
@@ -692,6 +699,120 @@ height:100%;
     visibility: hidden !important;
 }
 
+/* Bottom Navigation Bar Styles */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: var(--gradient-premium-nav);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1000;
+    border-top: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-floating);
+}
 
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 12px;
+    transition: color 0.2s ease;
+    min-width: 60px;
+}
 
+:root[data-theme="light"] .nav-item {
+    color: var(--text-secondary);
+}
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.nav-item span {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.nav-item:hover {
+    color: #ffffff;
+}
+
+:root[data-theme="light"] .nav-item:hover {
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    color: #ffffff;
+}
+
+:root[data-theme="light"] .nav-item.active {
+    color: var(--brand-primary);
+}
+
+.nav-item.active i {
+    color: #ffffff;
+}
+
+:root[data-theme="light"] .nav-item.active i {
+    color: var(--brand-primary);
+}
+
+/* Home icon with circular border when active */
+.nav-item:first-child.active i {
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    padding: 4px;
+}
+
+:root[data-theme="light"] .nav-item:first-child.active i {
+    border: 2px solid var(--brand-primary);
+}
+
+/* Journey button - regular nav item styling */
+.nav-item.journey-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-item.journey-btn i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.nav-item.journey-btn span {
+    display: block;
+}
+
+/* Profile image in You tab */
+.nav-item.profile-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 4px;
+}
+
+.nav-item.profile-item i {
+    display: none;
+}
 
