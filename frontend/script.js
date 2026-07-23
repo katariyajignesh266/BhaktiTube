@@ -111,6 +111,33 @@ document.addEventListener("DOMContentLoaded", () => {
         themeToggle.addEventListener("click", toggleTheme);
     }
     
+    // Bottom navigation Home button
+    const bottomHomeBtn = document.getElementById("bottomHomeBtn");
+    if (bottomHomeBtn) {
+        bottomHomeBtn.addEventListener("click",async (e)=>{
+            e.preventDefault();
+            await setHomeView("dashboard");
+        });
+    }
+    
+    // Bottom navigation Channels button
+    const bottomChannelsBtn = document.getElementById("bottomChannelsBtn");
+    if (bottomChannelsBtn) {
+        bottomChannelsBtn.addEventListener("click",(e)=>{
+            e.preventDefault();
+            setHomeView("channels");
+        });
+    }
+    
+    // Bottom navigation Journey button
+    const bottomJourneyBtn = document.getElementById("bottomJourneyBtn");
+    if (bottomJourneyBtn) {
+        bottomJourneyBtn.addEventListener("click",(e)=>{
+            e.preventDefault();
+            setHomeView("journey");
+        });
+    }
+    
     // Initialize dashboard after DOM is ready
     initializeDashboard().catch(error => {
         console.error("Error during dashboard initialization:", error);
@@ -1281,23 +1308,6 @@ setHomeView("channels");
 
 });
 
-// Bottom navigation Channels button
-const bottomChannelsBtn = document.getElementById("bottomChannelsBtn");
-if (bottomChannelsBtn) {
-    bottomChannelsBtn.addEventListener("click",(e)=>{
-        e.preventDefault();
-        setHomeView("channels");
-    });
-}
-
-// Bottom navigation Journey button
-const bottomJourneyBtn = document.getElementById("bottomJourneyBtn");
-if (bottomJourneyBtn) {
-    bottomJourneyBtn.addEventListener("click",(e)=>{
-        e.preventDefault();
-        setHomeView("journey");
-    });
-}
 
 journeyBtn.addEventListener("click",(e)=>{
 
