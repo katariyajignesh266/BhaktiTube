@@ -209,7 +209,8 @@ function startAdOverlay(ad, onAdFinished) {
 async function startPremiumVideoPlayer(videoId, videoMeta, isChannelVideo) {
   const videoPopup = document.getElementById("videoPopup");
   const playerIframe = document.getElementById("youtubePlayer");
-  const titleEl = document.querySelector(".video-title-mini");
+  const premiumVideoTitle = document.getElementById("premiumVideoTitle");
+  const premiumChannelName = document.getElementById("premiumChannelName");
 
   // Initialize viewport utility for dynamic viewport tracking
   if (!isViewportInitialized) {
@@ -256,8 +257,20 @@ async function startPremiumVideoPlayer(videoId, videoMeta, isChannelVideo) {
     playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&enablejsapi=1&playsinline=1&iv_load_policy=3&origin=${window.location.origin}${startParam}`;
   }
 
-  if (titleEl) {
-    titleEl.textContent = videoMeta.videoTitle || videoMeta.title || "Playing Video...";
+  // Update premium video info
+  if (premiumVideoTitle) {
+    premiumVideoTitle.textContent = videoMeta.videoTitle || videoMeta.title || "Video Title";
+  }
+  if (premiumChannelName) {
+    premiumChannelName.textContent = videoMeta.channelName || videoMeta.channel || "Channel Name";
+  }
+
+  // Update global premium player reference
+  if (window.premiumPlayerFunctions) {
+    window.premiumPlayerFunctions.updateVideoInfo(
+      videoMeta.videoTitle || videoMeta.title || "Video Title",
+      videoMeta.channelName || videoMeta.channel || "Channel Name"
+    );
   }
 
   try {
@@ -273,12 +286,21 @@ async function startPremiumVideoPlayer(videoId, videoMeta, isChannelVideo) {
       updateMuteButtons();
       startTimeTracking();
       startControlsTimer();
+      
+      // Update premium player state
+      if (window.premiumPlayerFunctions) {
+        window.isPremiumPlaying = true;
+        window.premiumPlayerFunctions.updatePlayPauseIcon();
+      }
       return;
     }
 
     ytPlayer = new YT.Player("youtubePlayer", {
       events: {
         onReady: (event) => {
+          // Expose ytPlayer globally for premium player
+          window.ytPlayer = ytPlayer;
+          
           if (resumePosition > 0) {
             event.target.seekTo(resumePosition, true);
           }
@@ -287,6 +309,12 @@ async function startPremiumVideoPlayer(videoId, videoMeta, isChannelVideo) {
           updateMuteButtons();
           startTimeTracking();
           startControlsTimer();
+          
+          // Update premium player state
+          if (window.premiumPlayerFunctions) {
+            window.isPremiumPlaying = true;
+            window.premiumPlayerFunctions.updatePlayPauseIcon();
+          }
         },
         onStateChange: handlePlayerStateChange,
         onError: (event) => {
@@ -313,12 +341,24 @@ function handlePlayerStateChange(event) {
     });
     startTimeTracking();
     startControlsTimer();
+    
+    // Update premium player state
+    if (window.premiumPlayerFunctions) {
+      window.isPremiumPlaying = true;
+      window.premiumPlayerFunctions.updatePlayPauseIcon();
+    }
   } else {
     if (event.data === YT.PlayerState.PAUSED) {
       watchProgressEngine.setPlaybackState("paused", {
         currentPosition: current,
         duration: duration
       });
+      
+      // Update premium player state
+      if (window.premiumPlayerFunctions) {
+        window.isPremiumPlaying = false;
+        window.premiumPlayerFunctions.updatePlayPauseIcon();
+      }
     }
 
     if (event.data === YT.PlayerState.BUFFERING) {
@@ -330,6 +370,12 @@ function handlePlayerStateChange(event) {
 
     if (event.data === YT.PlayerState.ENDED) {
       handleVideoCompleted();
+      
+      // Update premium player state
+      if (window.premiumPlayerFunctions) {
+        window.isPremiumPlaying = false;
+        window.premiumPlayerFunctions.updatePlayPauseIcon();
+      }
     }
 
     clearInterval(timeUpdateInterval);
@@ -346,16 +392,27 @@ function startTimeTracking() {
     if (total > 0) {
       watchProgressEngine.touchPlayback(current, total);
 
-      // Update progress bar
+      // Update progress bar - try premium player first, then fallback
       const pct = (current / total) * 100;
-      const pBar = document.getElementById("progressBar");
-      if (pBar) pBar.style.width = pct + "%";
+      const premiumProgressFill = document.getElementById("progressFill");
+      const oldProgressBar = document.getElementById("progressBar");
+      
+      if (premiumProgressFill) {
+        premiumProgressFill.style.width = pct + "%";
+      } else if (oldProgressBar) {
+        oldProgressBar.style.width = pct + "%";
+      }
 
-      // Update elapsed and total times
+      // Update elapsed and total times - try premium player first, then fallback
       const curTimeEl = document.getElementById("currentTime");
       const totTimeEl = document.getElementById("totalTime");
       if (curTimeEl) curTimeEl.textContent = formatTime(current);
       if (totTimeEl) totTimeEl.textContent = formatTime(total);
+
+      // Update premium player progress if available
+      if (window.premiumPlayerFunctions) {
+        window.premiumPlayerFunctions.updateProgress(current, total);
+      }
 
       // Handle video progress for smart feed scheduler
       if (currentVideoId && typeof window.handleFeedVideoProgress === 'function') {

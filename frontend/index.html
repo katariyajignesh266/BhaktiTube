@@ -451,70 +451,213 @@ viewport-fit=cover">
 
 
 
-  <!-- UNIFIED PREMIUM VIDEO POPUP -->
-  <div class="video-popup" id="videoPopup">
-    <div class="popup-content">
-      <div class="video-container" id="videoContainer" onclick="handleOverlayTouch()">
-        <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen"></iframe>
+  <!-- PREMIUM GLASSMORPHIC VIDEO PLAYER -->
+  <div class="premium-video-popup" id="videoPopup">
+    <div class="premium-popup-content">
+      <div class="premium-video-wrapper" id="videoContainer">
+        <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen" class="premium-iframe"></iframe>
         
-        <div id="customOverlay" class="custom-overlay">
+        <!-- Premium Glassmorphic Overlay -->
+        <div id="premiumOverlay" class="premium-overlay">
           
-          <div class="player-top-bar">
-            <button class="player-btn-round top-back-btn" onclick="event.stopPropagation(); closeVideo();">
-              <i class="fa-solid fa-arrow-left"></i>
+          <!-- Top Bar with Glassic Back Button -->
+          <div class="premium-top-bar">
+            <button class="glassic-back-btn" id="premiumBackBtn" onclick="event.stopPropagation(); handleBackAction();">
+              <div class="glassic-btn-inner">
+                <i class="fa-solid fa-arrow-left"></i>
+              </div>
             </button>
-            <span class="video-title-mini">Playing Video...</span>
+            <div class="video-info-overlay">
+              <h3 class="premium-video-title" id="premiumVideoTitle">Video Title</h3>
+              <p class="premium-channel-name" id="premiumChannelName">Channel Name</p>
+            </div>
+            <div class="top-right-actions">
+              <button class="premium-icon-btn" id="pipBtn" onclick="event.stopPropagation(); togglePictureInPicture();">
+                <i class="fa-solid fa-clone"></i>
+              </button>
+              <button class="premium-icon-btn" id="castBtn" onclick="event.stopPropagation(); toggleCast();">
+                <i class="fa-solid fa-tv"></i>
+              </button>
+            </div>
           </div>
 
-          <div class="middle-skip-controls">
-            <button class="skip-btn-center backward-btn" onclick="event.stopPropagation(); skipTime(-10)">
-              <i class="fa-solid fa-undo"></i>
-              <span class="btn-text">10s</span>
+          <!-- Center Play/Pause Overlay (Tap to play/pause) -->
+          <div class="center-play-overlay" id="centerPlayOverlay" onclick="event.stopPropagation(); togglePlayPause();">
+            <div class="play-icon-large">
+              <i class="fa-solid fa-play"></i>
+            </div>
+          </div>
+
+          <!-- Skip Controls -->
+          <div class="premium-skip-controls">
+            <button class="glassic-skip-btn" onclick="event.stopPropagation(); skipTime(-10)">
+              <div class="skip-btn-inner">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span class="skip-label">10</span>
+              </div>
             </button>
-            <button class="skip-btn-center forward-btn" onclick="event.stopPropagation(); skipTime(10)">
-              <i class="fa-solid fa-redo"></i>
-              <span class="btn-text">10s</span>
+            <button class="glassic-skip-btn" onclick="event.stopPropagation(); skipTime(10)">
+              <div class="skip-btn-inner">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span class="skip-label">10</span>
+              </div>
             </button>
           </div>
 
-          <div class="player-bottom-controls" onclick="event.stopPropagation();">
+          <!-- Bottom Controls with Glassmorphism -->
+          <div class="premium-bottom-controls" onclick="event.stopPropagation();">
             
-            <div class="progress-container">
-              <div class="progress-bar" id="progressBar"></div>
+            <!-- Progress Bar with Buffer -->
+            <div class="premium-progress-container">
+              <div class="progress-buffer" id="progressBuffer"></div>
+              <div class="progress-bar-track" id="progressBarTrack">
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-thumb" id="progressThumb"></div>
+              </div>
             </div>
 
-            <div class="controls-row">
-              <div class="controls-left">
-                <button class="player-btn-round" id="muteBtn" onclick="toggleMute()">
-                  <i class="fa-solid fa-volume-high"></i>
+            <!-- Controls Row -->
+            <div class="premium-controls-row">
+              
+              <!-- Left Controls -->
+              <div class="premium-controls-left">
+                <button class="premium-control-btn" id="playPauseBtn" onclick="togglePlayPause();">
+                  <i class="fa-solid fa-play" id="playPauseIcon"></i>
                 </button>
-              </div>
-
-              <div class="controls-center">
-                <span id="currentTime">00:00</span>
-                <span class="time-separator">/</span>
-                <span id="totalTime">00:00</span>
-              </div>
-
-              <div class="controls-right">
-                <div class="speed-control">
-                  <button class="player-btn-rect" onclick="toggleSpeedMenu()">
-                    <i class="fa-solid fa-gauge-high"></i> <span id="speedTxt">1x</span> <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i>
+                <button class="premium-control-btn" id="prevVideoBtn" onclick="playPreviousVideo();">
+                  <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <button class="premium-control-btn" id="nextVideoBtn" onclick="playNextVideo();">
+                  <i class="fa-solid fa-forward-step"></i>
+                </button>
+                <div class="volume-control-wrapper">
+                  <button class="premium-control-btn" id="volumeBtn" onclick="toggleVolume();">
+                    <i class="fa-solid fa-volume-high" id="volumeIcon"></i>
                   </button>
-                  <div id="speedMenu" class="speed-menu">
-                    <div onclick="changeSpeed(0.5)">0.5x</div>
-                    <div onclick="changeSpeed(1)">Normal</div>
-                    <div onclick="changeSpeed(1.5)">1.5x</div>
-                    <div onclick="changeSpeed(2)">2x</div>
+                  <div class="volume-slider-container" id="volumeSliderContainer">
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value);">
                   </div>
                 </div>
+              </div>
 
-                <button class="player-btn-round fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">
-                  <i class="fa-solid fa-expand"></i>
+              <!-- Center Time Display -->
+              <div class="premium-controls-center">
+                <span class="time-display">
+                  <span id="currentTime">0:00</span>
+                  <span class="time-divider">/</span>
+                  <span id="totalTime">0:00</span>
+                </span>
+              </div>
+
+              <!-- Right Controls -->
+              <div class="premium-controls-right">
+                <button class="premium-control-btn" id="captionsBtn" onclick="toggleCaptions();">
+                  <i class="fa-solid fa-closed-captioning"></i>
+                </button>
+                <button class="premium-control-btn" id="settingsBtn" onclick="toggleSettingsMenu();">
+                  <i class="fa-solid fa-gear"></i>
+                </button>
+                <button class="premium-control-btn" id="theaterBtn" onclick="toggleTheaterMode();">
+                  <i class="fa-solid fa-film"></i>
+                </button>
+                <button class="premium-control-btn" id="miniPlayerBtn" onclick="toggleMiniPlayer();">
+                  <i class="fa-regular fa-square"></i>
+                </button>
+                <button class="premium-control-btn" id="fullscreenBtn" onclick="toggleFullScreen();">
+                  <i class="fa-solid fa-expand" id="fullscreenIcon"></i>
                 </button>
               </div>
             </div>
 
+          </div>
+        </div>
+
+        <!-- Settings Menu -->
+        <div class="premium-settings-menu" id="settingsMenu">
+          <div class="settings-menu-content">
+            <div class="settings-header">
+              <span>Settings</span>
+              <button class="settings-close-btn" onclick="toggleSettingsMenu();">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="settings-body">
+              <div class="settings-item">
+                <span class="settings-label">Playback Speed</span>
+                <div class="settings-value" onclick="toggleSpeedOptions();">
+                  <span id="currentSpeed">Normal</span>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+              </div>
+              <div class="settings-item">
+                <span class="settings-label">Quality</span>
+                <div class="settings-value" onclick="toggleQualityOptions();">
+                  <span id="currentQuality">Auto</span>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+              </div>
+              <div class="settings-item">
+                <span class="settings-label">Autoplay</span>
+                <div class="settings-toggle" onclick="toggleAutoplay();">
+                  <div class="toggle-switch" id="autoplayToggle">
+                    <div class="toggle-slider"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-item">
+                <span class="settings-label">Annotations</span>
+                <div class="settings-toggle" onclick="toggleAnnotations();">
+                  <div class="toggle-switch active" id="annotationsToggle">
+                    <div class="toggle-slider"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speed Options Menu -->
+        <div class="premium-options-menu" id="speedOptionsMenu">
+          <div class="options-menu-content">
+            <div class="options-header">
+              <span>Playback Speed</span>
+              <button class="options-close-btn" onclick="closeSpeedOptions();">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="options-body">
+              <div class="option-item" onclick="setPlaybackSpeed(0.25);">0.25x</div>
+              <div class="option-item" onclick="setPlaybackSpeed(0.5);">0.5x</div>
+              <div class="option-item" onclick="setPlaybackSpeed(0.75);">0.75x</div>
+              <div class="option-item active" onclick="setPlaybackSpeed(1);">Normal</div>
+              <div class="option-item" onclick="setPlaybackSpeed(1.25);">1.25x</div>
+              <div class="option-item" onclick="setPlaybackSpeed(1.5);">1.5x</div>
+              <div class="option-item" onclick="setPlaybackSpeed(1.75);">1.75x</div>
+              <div class="option-item" onclick="setPlaybackSpeed(2);">2x</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quality Options Menu -->
+        <div class="premium-options-menu" id="qualityOptionsMenu">
+          <div class="options-menu-content">
+            <div class="options-header">
+              <span>Quality</span>
+              <button class="options-close-btn" onclick="closeQualityOptions();">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="options-body">
+              <div class="option-item active" onclick="setQuality('auto');">Auto</div>
+              <div class="option-item" onclick="setQuality('144p');">144p</div>
+              <div class="option-item" onclick="setQuality('240p');">240p</div>
+              <div class="option-item" onclick="setQuality('360p');">360p</div>
+              <div class="option-item" onclick="setQuality('480p');">480p</div>
+              <div class="option-item" onclick="setQuality('720p');">720p HD</div>
+              <div class="option-item" onclick="setQuality('1080p');">1080p HD</div>
+              <div class="option-item" onclick="setQuality('1440p');">1440p HD</div>
+              <div class="option-item" onclick="setQuality('2160p');">4K</div>
+            </div>
           </div>
         </div>
 
@@ -536,6 +679,7 @@ viewport-fit=cover">
   <script src="network-manager.js"></script>
 
   <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="premium-player.js"></script>
   <script type="module" src="script.js"></script>
   
 
