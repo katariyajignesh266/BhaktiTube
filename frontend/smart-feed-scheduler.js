@@ -991,6 +991,7 @@ export const smartFeedScheduler = {
   
   // State Access
   get todayFeed() { return state.todayFeed; },
+  set todayFeed(value) { state.todayFeed = value; },
   get continueWatching() { return state.continueWatching; },
   get userFeedQueue() { return state.userFeedQueue; },
   get isInitialized() { return state.initialized; },

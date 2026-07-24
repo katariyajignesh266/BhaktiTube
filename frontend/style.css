@@ -4,7 +4,13 @@
     padding: 0;
     box-sizing: border-box;
     /* 🌟 આ લાઇન ઉમેરવાથી મોબાઈલમાં બ્લૂ કલરનું બ્લિંકિંગ સંપૂર્ણ બંધ થઈ જશે */
-    -webkit-tap-highlight-color: transparent !important; 
+    -webkit-tap-highlight-color: transparent !important;
+    
+    /* Prevent horizontal overflow */
+    max-width: 100%;
+    
+    /* Premium smooth transitions */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 body{
@@ -261,6 +267,7 @@ body{
     /* Line clamping for better UX */
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -896,6 +903,7 @@ height: 100dvh; /* Fallback */
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.4;
@@ -2751,6 +2759,7 @@ body{
     color: var(--text-primary);
     display:-webkit-box;
     -webkit-line-clamp:2;
+    line-clamp:2;
     -webkit-box-orient:vertical;
     overflow:hidden;
     min-height:40px;
@@ -3067,6 +3076,7 @@ body{
     line-height:1.35;
     display:-webkit-box;
     -webkit-line-clamp:2;
+    line-clamp:2;
     -webkit-box-orient:vertical;
     overflow:hidden;
     color: var(--text-primary);
@@ -4295,17 +4305,21 @@ body{
 }
 
 .premium-popup-content {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100dvh;
+    height: 100vh; /* Fallback */
     position: relative;
+    overflow: hidden;
 }
 
 .premium-video-wrapper {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100dvh;
+    height: 100vh; /* Fallback */
     position: relative;
     background: #000000;
     overflow: hidden;
+    transition: width 0.2s ease, height 0.2s ease;
 }
 
 .premium-iframe {
@@ -4313,6 +4327,7 @@ body{
     height: 100%;
     border: none;
     display: block;
+    object-fit: contain;
 }
 
 /* Premium Overlay with Glassmorphism */
@@ -4332,6 +4347,12 @@ body{
     opacity: 1;
     transition: opacity 0.3s ease;
     pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.premium-overlay:not(.hidden) {
+    pointer-events: auto;
 }
 
 .premium-overlay.hidden {
@@ -4343,26 +4364,37 @@ body{
     pointer-events: auto;
 }
 
+/* Ensure controls row allows pointer events */
+.premium-controls-row {
+    pointer-events: auto !important;
+}
+
+.premium-controls-left,
+.premium-controls-center,
+.premium-controls-right {
+    pointer-events: auto !important;
+}
+
 /* Top Bar */
 .premium-top-bar {
     display: flex;
     align-items: center;
     gap: clamp(8px, 1vw, 16px);
     padding: clamp(12px, 2vw, 20px);
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 /* Glassic Back Button */
 .glassic-back-btn {
-    width: clamp(40px, 5vw, 48px);
-    height: clamp(40px, 5vw, 48px);
+    width: clamp(48px, 6vw, 56px);
+    height: clamp(48px, 6vw, 56px);
     border: none;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -4371,10 +4403,8 @@ body{
 }
 
 .glassic-back-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .glassic-back-btn:active {
@@ -4389,7 +4419,7 @@ body{
 
 .glassic-btn-inner i {
     color: #ffffff;
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(18px, 2.5vw, 24px);
 }
 
 /* Video Info Overlay */
@@ -4400,7 +4430,7 @@ body{
 
 .premium-video-title {
     color: #ffffff;
-    font-size: clamp(14px, 2vw, 18px);
+    font-size: clamp(16px, 2.5vw, 22px);
     font-weight: 600;
     margin: 0;
     white-space: nowrap;
@@ -4411,7 +4441,7 @@ body{
 
 .premium-channel-name {
     color: rgba(255, 255, 255, 0.8);
-    font-size: clamp(11px, 1.5vw, 13px);
+    font-size: clamp(13px, 1.8vw, 16px);
     margin: 2px 0 0 0;
     white-space: nowrap;
     overflow: hidden;
@@ -4425,13 +4455,13 @@ body{
 }
 
 .premium-icon-btn {
-    width: clamp(36px, 4.5vw, 42px);
-    height: clamp(36px, 4.5vw, 42px);
+    width: clamp(44px, 5.5vw, 52px);
+    height: clamp(44px, 5.5vw, 52px);
     border: none;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -4440,13 +4470,22 @@ body{
 }
 
 .premium-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     transform: scale(1.1);
 }
 
 .premium-icon-btn i {
     color: #ffffff;
-    font-size: clamp(14px, 1.8vw, 16px);
+    font-size: clamp(16px, 2.2vw, 20px);
+}
+
+/* Exit Fullscreen Button - Only visible in fullscreen mode */
+#exitFullscreenBtn {
+    display: none;
+}
+
+.fullscreen-mode #exitFullscreenBtn {
+    display: flex;
 }
 
 /* Center Play Overlay */
@@ -4507,13 +4546,13 @@ body{
 }
 
 .glassic-skip-btn {
-    width: clamp(50px, 6vw, 60px);
-    height: clamp(50px, 6vw, 60px);
+    width: clamp(56px, 7vw, 68px);
+    height: clamp(56px, 7vw, 68px);
     border: none;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -4542,12 +4581,12 @@ body{
 
 .skip-btn-inner i {
     color: #ffffff;
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(18px, 2.5vw, 24px);
 }
 
 .skip-label {
     color: #ffffff;
-    font-size: clamp(10px, 1.2vw, 12px);
+    font-size: clamp(12px, 1.5vw, 14px);
     font-weight: 600;
 }
 
@@ -4556,8 +4595,10 @@ body{
     background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: clamp(12px, 2vw, 20px);
+    padding: clamp(12px, 1.5vw, 20px) clamp(16px, 2vw, 24px);
+    padding-bottom: calc(clamp(12px, 1.5vw, 20px) + env(safe-area-inset-bottom, 0px));
     transition: opacity 0.3s ease;
+    overflow: hidden;
 }
 
 /* Premium Progress Bar */
@@ -4617,12 +4658,15 @@ body{
     opacity: 1;
 }
 
-/* Premium Controls Row */
+/* Premium Controls Row - Enhanced for perfect alignment */
 .premium-controls-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: clamp(12px, 1.5vw, 20px);
+    gap: clamp(8px, 1vw, 16px);
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .premium-controls-left,
@@ -4630,16 +4674,28 @@ body{
 .premium-controls-right {
     display: flex;
     align-items: center;
-    gap: clamp(8px, 1vw, 12px);
+    gap: clamp(6px, 0.8vw, 10px);
+}
+
+.premium-controls-left {
+    flex: 0 0 auto;
 }
 
 .premium-controls-center {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+}
+
+.premium-controls-right {
     flex: 0 0 auto;
 }
 
 .premium-control-btn {
-    width: clamp(36px, 4.5vw, 44px);
-    height: clamp(36px, 4.5vw, 44px);
+    width: clamp(40px, 5vw, 52px);
+    height: clamp(40px, 5vw, 52px);
+    min-width: clamp(40px, 5vw, 52px);
+    min-height: clamp(40px, 5vw, 52px);
     border: none;
     border-radius: 50%;
     background: transparent;
@@ -4649,6 +4705,9 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
 }
 
 .premium-control-btn:hover {
@@ -4660,7 +4719,7 @@ body{
 }
 
 .premium-control-btn i {
-    font-size: clamp(14px, 1.8vw, 18px);
+    font-size: clamp(16px, 2vw, 20px);
 }
 
 /* Volume Control Wrapper */
@@ -4709,13 +4768,13 @@ body{
     border: none;
 }
 
-/* Time Display */
+/* Time Display - Enhanced fluid scaling */
 .time-display {
     color: #ffffff;
-    font-size: clamp(12px, 1.5vw, 14px);
+    font-size: clamp(14px, 1.8vw, 18px);
     font-weight: 500;
     white-space: nowrap;
-    margin: 0 8px;
+    margin: 0 clamp(4px, 0.5vw, 8px);
 }
 
 .time-divider {
@@ -5011,24 +5070,37 @@ body{
         height: 14px;
     }
     
-    /* Keep controls in one line but make them larger */
+    /* CRITICAL FIX: Proper button alignment for 400-480px screens */
     .premium-controls-row {
         flex-wrap: nowrap;
-        gap: 12px;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* Reset settings button position */
+    .premium-controls-left #settingsBtn {
+        order: 0;
+        display: none;
+    }
+    
+    .premium-controls-right #settingsBtn {
+        display: flex;
     }
     
     .premium-controls-left {
         flex: 0 0 auto;
-        gap: 10px;
+        gap: 8px;
     }
     
     .premium-controls-center {
-        flex: 0 0 auto;
+        flex: 1 1 auto;
+        justify-content: center;
     }
     
     .premium-controls-right {
         flex: 0 0 auto;
-        gap: 10px;
+        gap: 8px;
     }
     
     .premium-control-btn {
@@ -5127,268 +5199,169 @@ body{
     }
 }
 
-/* Responsive Design for Very Small Screens (<400px) */
-@media (max-width: 399px) {
+/* Responsive Design for Ultra Small Screens (<360px) */
+@media (max-width: 360px) {
     .premium-top-bar {
-        padding: 12px;
+        padding: 8px 10px;
     }
     
     .glassic-back-btn {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .glassic-back-btn i {
-        font-size: 18px;
-    }
-    
-    .premium-video-title {
-        font-size: 14px;
-    }
-    
-    .premium-channel-name {
-        font-size: 12px;
-    }
-    
-    .premium-icon-btn {
         width: 36px;
         height: 36px;
     }
     
-    .premium-icon-btn i {
+    .glassic-back-btn i {
         font-size: 16px;
     }
     
+    .premium-video-title {
+        font-size: 12px;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .premium-channel-name {
+        font-size: 10px;
+        display: none;
+    }
+    
+    .premium-icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .premium-icon-btn i {
+        font-size: 14px;
+    }
+    
     .premium-skip-controls {
-        padding: 0 12px;
+        padding: 0 8px;
     }
     
     .glassic-skip-btn {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
     }
     
     .glassic-skip-btn i {
-        font-size: 18px;
+        font-size: 16px;
     }
     
     .skip-label {
-        font-size: 11px;
+        font-size: 10px;
     }
     
     .premium-bottom-controls {
-        padding: 12px;
+        padding: 8px 10px;
     }
     
     .premium-progress-container {
-        height: 6px;
-        margin-bottom: 12px;
+        height: 4px;
+        margin-bottom: 8px;
     }
     
     .progress-fill {
         background: linear-gradient(90deg, #FF6B35, #FF8C42);
-        box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+        box-shadow: 0 0 6px rgba(255, 107, 53, 0.4);
     }
     
     .progress-thumb {
         opacity: 1;
-        width: 14px;
-        height: 14px;
+        width: 12px;
+        height: 12px;
     }
     
-    /* Allow controls to wrap to two lines on very small screens */
+    /* CRITICAL FIX: Proper button alignment for ultra-small screens */
     .premium-controls-row {
-        flex-wrap: wrap;
-        gap: 12px;
+        flex-wrap: nowrap;
+        gap: 6px;
+        justify-content: space-between;
+        align-items: center;
     }
     
     .premium-controls-left {
         flex: 0 0 auto;
-        gap: 10px;
+        gap: 6px;
+    }
+    
+    /* Move settings button to left controls position */
+    .premium-controls-left #settingsBtn {
+        order: -1;
+        margin-right: auto;
+    }
+    
+    /* Ensure settings button is clickable */
+    .premium-controls-left {
+        position: relative;
+        z-index: 100;
+    }
+    
+    /* Position ultra-small settings menu */
+    .premium-bottom-controls {
+        position: relative;
+        z-index: 50;
     }
     
     .premium-controls-center {
-        flex: 0 0 auto;
+        flex: 1 1 auto;
+        justify-content: center;
     }
     
     .premium-controls-right {
-        flex-wrap: wrap;
-        gap: 56px;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        gap: 6px;
     }
     
     .premium-control-btn {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         flex-shrink: 0;
+        min-width: 36px;
     }
     
     .premium-control-btn i {
-        font-size: 18px;
+        font-size: 16px;
     }
     
-    /* Hide CC button in portrait mode */
-    #captionsBtn {
+    /* Hide non-essential buttons on ultra-small screens */
+    #captionsBtn,
+    #theaterBtn,
+    #miniPlayerBtn {
         display: none;
     }
     
-    /* Show CC button only in fullscreen */
-    .premium-video-popup.fullscreen-active #captionsBtn {
-        display: flex;
+    /* Hide play/pause, prev, next buttons - they'll be in settings menu */
+    #playPauseBtn,
+    #prevVideoBtn,
+    #nextVideoBtn {
+        display: none;
     }
     
-    /* Make fullscreen button larger and more prominent */
+    /* Show settings button in place of play/pause */
+    #settingsBtn {
+        display: flex !important;
+        pointer-events: auto !important;
+        z-index: 1000 !important;
+        cursor: pointer !important;
+        position: relative !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* Make fullscreen button prominent */
     #fullscreenBtn {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
         background: rgba(255, 107, 53, 0.2);
         border: 1px solid rgba(255, 107, 53, 0.4);
     }
     
-    #fullscreenBtn:hover {
-        background: rgba(255, 107, 53, 0.3);
-        border-color: rgba(255, 107, 53, 0.6);
-    }
-    
     #fullscreenBtn i {
-        font-size: 20px;
+        font-size: 18px;
         color: #FF6B35;
-    }
-    
-    .volume-control-wrapper {
-        gap: 6px;
-    }
-    
-    .volume-slider-container {
-        width: 0;
-    }
-    
-    .volume-control-wrapper:hover .volume-slider-container {
-        width: 50px;
-    }
-    
-    .volume-slider {
-        width: 50px;
-    }
-    
-    .time-display {
-        font-size: 13px;
-        margin-left: 4px;
-    }
-    
-    .premium-settings-menu,
-    .premium-options-menu {
-        right: 8px;
-        bottom: 70px;
-        min-width: 240px;
-        max-width: 260px;
-    }
-    
-    .settings-menu-content,
-    .options-menu-content {
-        padding: 10px;
-    }
-    
-    .settings-header,
-    .options-header {
-        padding-bottom: 8px;
-    }
-    
-    .settings-item,
-    .option-item {
-        padding: 8px 10px;
-        font-size: 13px;
-    }
-}
-
-/* Extra Small Screens (Very small phones like Galaxy A51/7) */
-@media (max-width: 360px) {
-    .premium-top-bar {
-        padding: 10px;
-    }
-    
-    .glassic-back-btn {
-        width: 38px;
-        height: 38px;
-    }
-    
-    .glassic-back-btn i {
-        font-size: 17px;
-    }
-    
-    .premium-video-title {
-        font-size: 13px;
-    }
-    
-    .premium-channel-name {
-        font-size: 11px;
-    }
-    
-    .premium-icon-btn {
-        width: 34px;
-        height: 34px;
-    }
-    
-    .premium-icon-btn i {
-        font-size: 15px;
-    }
-    
-    .premium-bottom-controls {
-        padding: 10px;
-    }
-    
-    .premium-progress-container {
-        height: 6px;
-        margin-bottom: 12px;
-    }
-    
-    .progress-fill {
-        background: linear-gradient(90deg, #FF6B35, #FF8C42);
-        box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
-    }
-    
-    .progress-thumb {
-        opacity: 1;
-        width: 14px;
-        height: 14px;
-    }
-    
-    .premium-controls-row {
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    
-    .premium-controls-left {
-        flex: 0 0 auto;
-        gap: 10px;
-    }
-    
-    .premium-controls-center {
-        flex: 0 0 auto;
-    }
-    
-    .premium-controls-right {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .premium-control-btn {
-        width: 38px;
-        height: 38px;
-        flex-shrink: 0;
-    }
-    
-    .premium-control-btn i {
-        font-size: 17px;
-    }
-    
-    /* Hide CC button in portrait mode */
-    #captionsBtn {
-        display: none;
-    }
-    
-    /* Show CC button only in fullscreen */
-    .premium-video-popup.fullscreen-active #captionsBtn {
-        display: flex;
     }
     
     /* Make play/pause button more visible */
@@ -5397,34 +5370,565 @@ body{
         border: 1px solid rgba(255, 255, 255, 0.3);
     }
     
-    #playPauseBtn:hover {
-        background: rgba(255, 255, 255, 0.25);
-        border-color: rgba(255, 255, 255, 0.5);
+    .volume-control-wrapper {
+        gap: 4px;
     }
     
-    /* Make fullscreen button prominent on very small screens */
-    #fullscreenBtn {
-        width: 42px;
-        height: 42px;
-        background: rgba(255, 107, 53, 0.25);
-        border: 1.5px solid rgba(255, 107, 53, 0.5);
+    .volume-slider-container {
+        width: 0;
     }
     
-    #fullscreenBtn i {
-        font-size: 19px;
+    .volume-control-wrapper:hover .volume-slider-container {
+        width: 45px;
+    }
+    
+    .volume-slider {
+        width: 45px;
     }
     
     .time-display {
-        font-size: 12px;
-        margin: 0 8px;
+        font-size: 11px;
+        margin: 0 4px;
     }
     
-    /* Hide some less critical controls on very small screens if needed */
+    .time-divider {
+        margin: 0 2px;
+    }
+    
+    .premium-settings-menu,
+    .premium-options-menu {
+        right: 6px;
+        bottom: 65px;
+        min-width: 220px;
+        max-width: 240px;
+    }
+    
+    .settings-menu-content,
+    .options-menu-content {
+        padding: 8px;
+    }
+    
+    .settings-header,
+    .options-header {
+        padding-bottom: 6px;
+    }
+    
+    .settings-item,
+    .option-item {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    /* Ultra-Small Screen Settings Menu */
+    .ultra-small-settings-menu {
+        position: fixed;
+        bottom: 80px;
+        left: 8px;
+        right: 8px;
+        background: rgba(20, 20, 20, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 12px;
+        max-height: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 10000;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+        pointer-events: auto !important;
+    }
+    
+    .ultra-small-settings-menu.active {
+        display: flex;
+        animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .ultra-settings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 8px;
+    }
+    
+    .ultra-settings-header span {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .ultra-settings-close {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        padding: 4px;
+        font-size: 16px;
+    }
+    
+    .ultra-settings-close:hover {
+        color: #ffffff;
+    }
+    
+    .ultra-settings-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    
+    .ultra-settings-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 107, 53, 0.3);
+    }
+    
+    .ultra-settings-item:active {
+        background: rgba(255, 107, 53, 0.15);
+    }
+    
+    .ultra-settings-item i {
+        color: #ffffff;
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .ultra-settings-item span {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    .ultra-settings-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 4px 0;
+    }
+    
+    /* Scrollbar styling for premium look */
+    .ultra-small-settings-menu::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .ultra-small-settings-menu::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 2px;
+    }
+    
+    .ultra-small-settings-menu::-webkit-scrollbar-thumb {
+        background: rgba(255, 107, 53, 0.5);
+        border-radius: 2px;
+    }
+    
+    .ultra-small-settings-menu::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 107, 53, 0.7);
+    }
+}
+
+/* Responsive Design for Very Small Screens (360px-399px) */
+@media (min-width: 359px) and (max-width: 399px) {
+
+    /* ==========================
+       TOP BAR
+    ========================== */
+
+    .premium-top-bar {
+        padding: 10px 12px;
+    }
+
+    .glassic-back-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .glassic-back-btn i {
+        font-size: 17px;
+    }
+
+    .premium-video-title {
+        font-size: 13px;
+        line-height: 1.3;
+    }
+
+    .premium-channel-name {
+        font-size: 11px;
+    }
+
+    .premium-icon-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .premium-icon-btn i {
+        font-size: 15px;
+    }
+
+    /* ==========================
+       SETTINGS BUTTON
+    ========================== */
+
+    /* Hide play/pause button in this media query */
+    #playPauseBtn {
+        display: none !important;
+    }
+
+    /* Hide prev/next buttons - they'll be in settings menu */
+    #prevVideoBtn,
+    #nextVideoBtn {
+        display: none !important;
+    }
+
+    /* Show settings button in left controls (replacing play/pause) */
+    .premium-controls-left #settingsBtn {
+        display: flex !important;
+        order: 1;
+        background: rgba(255, 107, 53, 0.2);
+        border: 1px solid rgba(255, 107, 53, 0.4);
+    }
+
+    .premium-controls-left #settingsBtn i {
+        color: #FF6B35;
+    }
+
+    /* ==========================
+       SKIP CONTROLS
+    ========================== */
+
+    .premium-skip-controls {
+        padding: 0 12px;
+    }
+
+    .glassic-skip-btn {
+        width: 48px;
+        height: 48px;
+    }
+
+    .glassic-skip-btn i {
+        font-size: 18px;
+    }
+
+    .skip-label {
+        font-size: 11px;
+    }
+
+    /* ==========================
+       BOTTOM CONTROLS
+    ========================== */
+
+    .premium-bottom-controls {
+        padding: 10px 12px;
+    }
+
+    .premium-progress-container {
+        height: 6px;
+        margin-bottom: 12px;
+    }
+
+    .progress-fill {
+        background: linear-gradient(90deg, #FF6B35, #FF8C42);
+        box-shadow: 0 0 8px rgba(255,107,53,.35);
+    }
+
+    .progress-thumb {
+        width: 14px;
+        height: 14px;
+        opacity: 1;
+    }
+
+    /* ==========================
+       CONTROLS ROW
+    ========================== */
+
+    .premium-controls-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;          /* NEVER wrap */
+        width: 100%;
+        gap: 8px;
+    }
+
+    .premium-controls-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+    }
+
+    .premium-controls-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .premium-controls-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+    }
+
+    /* ==========================
+       BUTTONS
+    ========================== */
+
+    .premium-control-btn {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        flex-shrink: 0;
+    }
+
+    .premium-control-btn i {
+        font-size: 18px;
+    }
+
+    #playPauseBtn {
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.30);
+    }
+
+    #fullscreenBtn {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+
+        background: rgba(255,107,53,.22);
+        border: 1px solid rgba(255,107,53,.45);
+    }
+
+    #fullscreenBtn i {
+        font-size: 19px;
+        color: #FF6B35;
+    }
+
+    /* ==========================
+       TIME
+    ========================== */
+
+    .time-display {
+        white-space: nowrap;
+        font-size: 13px;
+        margin: 0 6px;
+    }
+
+    /* ==========================
+       VOLUME
+    ========================== */
+
+    .volume-control-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .volume-slider-container {
+        width: 0;
+        overflow: hidden;
+        transition: width .25s ease;
+    }
+
+    .volume-control-wrapper:hover .volume-slider-container {
+        width: 50px;
+    }
+
+    .volume-slider {
+        width: 50px;
+    }
+
+    /* ==========================
+       HIDE EXTRA BUTTONS
+    ========================== */
+
+    #captionsBtn {
+        display: none;
+    }
+
+    .premium-video-popup.fullscreen-active #captionsBtn {
+        display: flex;
+    }
+
     #prevVideoBtn,
     #nextVideoBtn {
         display: none;
     }
+
+    /* ==========================
+       MENUS
+    ========================== */
+
+    .premium-settings-menu,
+    .premium-options-menu {
+        right: 8px;
+        bottom: 70px;
+        min-width: 240px;
+        max-width: 260px;
+    }
+
+    .settings-menu-content,
+    .options-menu-content {
+        padding: 10px;
+    }
+
+    .settings-header,
+    .options-header {
+        padding-bottom: 8px;
+    }
+
+    .settings-item,
+    .option-item {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    /* ==========================
+       ULTRA-SMALL SETTINGS MENU
+    ========================== */
+
+    .ultra-small-settings-menu {
+        position: fixed;
+        bottom: 80px;
+        left: 8px;
+        right: 8px;
+        background: rgba(20, 20, 20, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 12px;
+        max-height: 320px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 10000;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+        pointer-events: auto !important;
+    }
+
+    .ultra-small-settings-menu.active {
+        display: flex;
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .ultra-settings-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 8px;
+    }
+
+    .ultra-settings-header span {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .ultra-settings-close {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        padding: 4px;
+        transition: color 0.2s;
+    }
+
+    .ultra-settings-close:hover {
+        color: #ffffff;
+    }
+
+    .ultra-settings-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #ffffff;
+        font-size: 13px;
+    }
+
+    .ultra-settings-item:hover {
+        background: rgba(255, 107, 53, 0.15);
+    }
+
+    .ultra-settings-item i {
+        color: #FF6B35;
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .ultra-settings-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 4px 0;
+    }
+
+    /* Scrollbar styling */
+    .ultra-small-settings-menu::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .ultra-small-settings-menu::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 2px;
+    }
+
+    .ultra-small-settings-menu::-webkit-scrollbar-thumb {
+        background: rgba(255, 107, 53, 0.5);
+        border-radius: 2px;
+    }
+
+    .ultra-small-settings-menu::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 107, 53, 0.7);
+    }
 }
+
+
 
 /* Responsive Design for Medium Screens */
 @media (min-width: 481px) and (max-width: 768px) {

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>BhaktiTube - Responsive Test</title>
+    
+    <!-- CSS Framework -->
+    <link rel="stylesheet" href="theme-system.css"/>
+    <link rel="stylesheet" href="responsive-system.css"/>
+    <link rel="stylesheet" href="ultra-responsive-framework.css"/>
+    <link rel="stylesheet" href="overflow-prevention.css"/>
+    <link rel="stylesheet" href="viewport-fix.css"/>
+    
+    <style>
+        /* Test-specific styles */
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: var(--space-4);
+            min-height: 100dvh;
+        }
+        
+        .test-header {
+            text-align: center;
+            padding: var(--space-6) 0;
+            border-bottom: 1px solid var(--border-primary);
+            margin-bottom: var(--space-6);
+        }
+        
+        .test-header h1 {
+            font-size: var(--font-display-lg);
+            margin-bottom: var(--space-2);
+        }
+        
+        .test-section {
+            margin-bottom: var(--space-8);
+            padding: var(--space-4);
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-primary);
+        }
+        
+        .test-section h2 {
+            font-size: var(--font-display-sm);
+            margin-bottom: var(--space-4);
+            color: var(--brand-primary);
+        }
+        
+        .viewport-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+        
+        .info-card {
+            background: var(--bg-elevated);
+            padding: var(--space-3);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-primary);
+        }
+        
+        .info-card strong {
+            display: block;
+            font-size: var(--font-ui-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-1);
+        }
+        
+        .info-card span {
+            font-size: var(--font-body-base);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .fluid-typography-test {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+        
+        .typography-sample {
+            padding: var(--space-3);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+        }
+        
+        .spacing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: var(--space-4);
+        }
+        
+        .spacing-box {
+            background: var(--brand-primary);
+            color: white;
+            padding: var(--space-2);
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-size: var(--font-ui-sm);
+        }
+        
+        .safe-area-test {
+            position: fixed;
+            top: var(--safe-top);
+            left: var(--safe-left);
+            right: var(--safe-right);
+            bottom: var(--safe-bottom);
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px dashed var(--brand-primary);
+            display: none;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        .safe-area-test.active {
+            display: block;
+        }
+        
+        .overflow-test {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .overflow-test img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .grid-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: var(--space-4);
+        }
+        
+        .grid-item {
+            background: var(--bg-elevated);
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-primary);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .test-controls {
+            position: fixed;
+            bottom: var(--space-4);
+            right: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+            z-index: 1000;
+        }
+        
+        .test-btn {
+            padding: var(--space-2) var(--space-4);
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: var(--font-ui-sm);
+            font-weight: var(--font-weight-semibold);
+            transition: var(--transition-smooth);
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-brand);
+        }
+        
+        .orientation-badge {
+            display: inline-block;
+            padding: var(--space-1) var(--space-3);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-full);
+            font-size: var(--font-ui-sm);
+            font-weight: var(--font-weight-semibold);
+        }
+    </style>
+</head>
+<body>
+    <!-- Safe Area Visualizer -->
+    <div class="safe-area-test" id="safeAreaTest"></div>
+    
+    <!-- Test Controls -->
+    <div class="test-controls">
+        <button class="test-btn" onclick="toggleSafeArea()">Toggle Safe Area</button>
+        <button class="test-btn" onclick="refreshViewport()">Refresh Viewport</button>
+    </div>
+    
+    <!-- Header -->
+    <div class="test-header">
+        <h1>🧪 Responsive Framework Test</h1>
+        <p>Testing ultra-responsive design system</p>
+        <span class="orientation-badge" id="orientationBadge">Orientation: Detecting...</span>
+    </div>
+    
+    <!-- Viewport Information -->
+    <div class="test-section">
+        <h2>📐 Viewport Information</h2>
+        <div class="viewport-info">
+            <div class="info-card">
+                <strong>Window Width</strong>
+                <span id="windowWidth">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Window Height</strong>
+                <span id="windowHeight">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Screen Width</strong>
+                <span id="screenWidth">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Screen Height</strong>
+                <span id="screenHeight">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Device Pixel Ratio</strong>
+                <span id="devicePixelRatio">1</span>
+            </div>
+            <div class="info-card">
+                <strong>Safe Area Top</strong>
+                <span id="safeTop">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Safe Area Bottom</strong>
+                <span id="safeBottom">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Safe Area Left</strong>
+                <span id="safeLeft">0px</span>
+            </div>
+            <div class="info-card">
+                <strong>Safe Area Right</strong>
+                <span id="safeRight">0px</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fluid Typography Test -->
+    <div class="test-section">
+        <h2>🔤 Fluid Typography Test</h2>
+        <div class="fluid-typography-test">
+            <div class="typography-sample">
+                <span style="font-size: var(--font-display-xs)">Display XS - clamp(20px, 1.25rem + 0.5vw, 28px)</span>
+            </div>
+            <div class="typography-sample">
+                <span style="font-size: var(--font-display-sm)">Display SM - clamp(24px, 1.5rem + 0.6vw, 36px)</span>
+            </div>
+            <div class="typography-sample">
+                <span style="font-size: var(--font-display-md)">Display MD - clamp(32px, 2rem + 0.8vw, 48px)</span>
+            </div>
+            <div class="typography-sample">
+                <span style="font-size: var(--font-display-lg)">Display LG - clamp(40px, 2.5rem + 1vw, 64px)</span>
+            </div>
+            <div class="typography-sample">
+                <span style="font-size: var(--font-body-base)">Body Base - clamp(15px, 0.9375rem + 0.15vw, 17px)</span>
+            </div>
+            <div class="typography-sample">
+                <span style="font-size: var(--font-ui-sm)">UI Small - clamp(12px, 0.75rem + 0.12vw, 14px)</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fluid Spacing Test -->
+    <div class="test-section">
+        <h2>📏 Fluid Spacing Test</h2>
+        <div class="spacing-grid">
+            <div class="spacing-box" style="padding: var(--space-1)">Space 1</div>
+            <div class="spacing-box" style="padding: var(--space-2)">Space 2</div>
+            <div class="spacing-box" style="padding: var(--space-3)">Space 3</div>
+            <div class="spacing-box" style="padding: var(--space-4)">Space 4</div>
+            <div class="spacing-box" style="padding: var(--space-6)">Space 6</div>
+            <div class="spacing-box" style="padding: var(--space-8)">Space 8</div>
+        </div>
+    </div>
+    
+    <!-- Grid System Test -->
+    <div class="test-section">
+        <h2>🔲 Grid System Test</h2>
+        <div class="grid-test">
+            <div class="grid-item">Grid Item 1</div>
+            <div class="grid-item">Grid Item 2</div>
+            <div class="grid-item">Grid Item 3</div>
+            <div class="grid-item">Grid Item 4</div>
+            <div class="grid-item">Grid Item 5</div>
+            <div class="grid-item">Grid Item 6</div>
+        </div>
+    </div>
+    
+    <!-- Text Overflow Test -->
+    <div class="test-section">
+        <h2>📝 Text Overflow Test</h2>
+        <div class="fluid-typography-test">
+            <div class="typography-sample">
+                <p class="text-truncate-single">This is a very long text that should be truncated with ellipsis when it exceeds the container width.</p>
+            </div>
+            <div class="typography-sample">
+                <p class="text-truncate-2">This is a very long text that should be truncated with ellipsis when it exceeds the container width. It should show only two lines and then truncate the rest of the content.</p>
+            </div>
+            <div class="typography-sample">
+                <p class="text-truncate-3">This is a very long text that should be truncated with ellipsis when it exceeds the container width. It should show only three lines and then truncate the rest of the content. This is the third line of text to demonstrate the line clamping functionality.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Border Radius Test -->
+    <div class="test-section">
+        <h2>🔳 Border Radius Test</h2>
+        <div class="spacing-grid">
+            <div class="spacing-box" style="border-radius: var(--radius-xs)">XS</div>
+            <div class="spacing-box" style="border-radius: var(--radius-sm)">SM</div>
+            <div class="spacing-box" style="border-radius: var(--radius-md)">MD</div>
+            <div class="spacing-box" style="border-radius: var(--radius-lg)">LG</div>
+            <div class="spacing-box" style="border-radius: var(--radius-xl)">XL</div>
+            <div class="spacing-box" style="border-radius: var(--radius-full)">Full</div>
+        </div>
+    </div>
+    
+    <!-- Shadow Test -->
+    <div class="test-section">
+        <h2>🌑 Shadow Test</h2>
+        <div class="spacing-grid">
+            <div class="spacing-box" style="box-shadow: var(--shadow-xs)">XS</div>
+            <div class="spacing-box" style="box-shadow: var(--shadow-sm)">SM</div>
+            <div class="spacing-box" style="box-shadow: var(--shadow-md)">MD</div>
+            <div class="spacing-box" style="box-shadow: var(--shadow-lg)">LG</div>
+            <div class="spacing-box" style="box-shadow: var(--shadow-xl)">XL</div>
+            <div class="spacing-box" style="box-shadow: var(--shadow-2xl)">2XL</div>
+        </div>
+    </div>
+    
+    <script>
+        // Update viewport information
+        function updateViewportInfo() {
+            document.getElementById('windowWidth').textContent = window.innerWidth + 'px';
+            document.getElementById('windowHeight').textContent = window.innerHeight + 'px';
+            document.getElementById('screenWidth').textContent = screen.width + 'px';
+            document.getElementById('screenHeight').textContent = screen.height + 'px';
+            document.getElementById('devicePixelRatio').textContent = window.devicePixelRatio.toFixed(2);
+            
+            // Safe area insets
+            const safeTop = getComputedStyle(document.documentElement).getPropertyValue('--safe-top').trim() || '0px';
+            const safeBottom = getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom').trim() || '0px';
+            const safeLeft = getComputedStyle(document.documentElement).getPropertyValue('--safe-left').trim() || '0px';
+            const safeRight = getComputedStyle(document.documentElement).getPropertyValue('--safe-right').trim() || '0px';
+            
+            document.getElementById('safeTop').textContent = safeTop;
+            document.getElementById('safeBottom').textContent = safeBottom;
+            document.getElementById('safeLeft').textContent = safeLeft;
+            document.getElementById('safeRight').textContent = safeRight;
+            
+            // Orientation
+            const orientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
+            document.getElementById('orientationBadge').textContent = 'Orientation: ' + orientation;
+        }
+        
+        // Toggle safe area visualizer
+        function toggleSafeArea() {
+            document.getElementById('safeAreaTest').classList.toggle('active');
+        }
+        
+        // Refresh viewport info
+        function refreshViewport() {
+            updateViewportInfo();
+        }
+        
+        // Initialize
+        updateViewportInfo();
+        
+        // Update on resize
+        window.addEventListener('resize', updateViewportInfo);
+        window.addEventListener('orientationchange', updateViewportInfo);
+    </script>
+</body>
+</html>

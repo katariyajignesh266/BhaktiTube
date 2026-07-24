@@ -22,15 +22,25 @@
     --usable-viewport-height: 100dvh;
     --viewport-scale: 1;
     
-    /* Safe area insets */
+    /* Safe area insets with enhanced support */
     --safe-area-inset-top: env(safe-area-inset-top, 0px);
     --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-inset-left: env(safe-area-inset-left, 0px);
     --safe-area-inset-right: env(safe-area-inset-right, 0px);
     
+    /* Enhanced safe area calculations */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-area-horizontal: calc(var(--safe-left) + var(--safe-right));
+    --safe-area-vertical: calc(var(--safe-top) + var(--safe-bottom));
+    
     /* Calculated usable viewport */
     --player-height: var(--usable-viewport-height);
     --player-width: var(--viewport-width);
+    --usable-width: calc(100dvw - var(--safe-area-horizontal));
+    --usable-height: calc(100dvh - var(--safe-area-vertical));
 }
 
 /* ==========================================================================
@@ -42,10 +52,17 @@ html, body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    min-width: 320px; /* Prevent horizontal scroll on small devices */
     
     /* Use dynamic viewport height */
     min-height: var(--viewport-height);
     min-height: 100dvh; /* Fallback */
+    
+    /* Prevent text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 
 body {
@@ -56,6 +73,48 @@ body {
 body.keyboard-open {
     /* Adjust layout when keyboard is open */
     --player-height: var(--viewport-height-with-keyboard, var(--viewport-height));
+}
+
+/* ==========================================================================
+   ENHANCED MOBILE VIEWPORT HANDLING
+   ========================================================================== */
+
+/* Prevent zoom on input focus (iOS Safari) */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* Prevent pull-to-refresh on mobile */
+body {
+    overscroll-behavior-y: contain;
+    overscroll-behavior-x: none;
+}
+
+/* Smooth scrolling with reduced motion support */
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* ==========================================================================
+   DYNAMIC TOOLBAR HANDLING (Chrome Mobile)
+   ========================================================================== */
+
+/* Use dvh for elements that should adapt to dynamic toolbar */
+.dynamic-viewport-height {
+    height: 100dvh;
+    height: 100vh; /* Fallback */
+}
+
+/* Use svh for elements that should use stable viewport */
+.stable-viewport-height {
+    height: 100svh;
+    height: 100vh; /* Fallback */
 }
 
 /* ==========================================================================

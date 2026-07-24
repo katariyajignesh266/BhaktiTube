@@ -1,0 +1,585 @@
+/* ==========================================================================
+   ⚡ BHAKTITUBE OVERFLOW PREVENTION SYSTEM
+   ==========================================================================
+   Comprehensive overflow and clipping prevention across all viewports.
+   
+   KEY FEATURES:
+   - Zero horizontal scroll prevention
+   - Text overflow handling
+   - Image and video overflow protection
+   - Container query support
+   - Safe area overflow handling
+   ========================================================================== */
+
+/* ==========================================================================
+   1. ROOT LEVEL OVERFLOW PREVENTION
+   ========================================================================== */
+
+/* Prevent horizontal scroll at document level */
+html {
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 320px;
+}
+
+body {
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 320px;
+    max-width: 100%;
+    
+    /* Prevent text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+/* Universal overflow prevention */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. CONTAINER OVERFLOW PREVENTION
+   ========================================================================== */
+
+.safe-container {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.safe-container-x {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.safe-container-y {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* ==========================================================================
+   3. TEXT OVERFLOW PREVENTION
+   ========================================================================== */
+
+.text-truncate-single {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.text-truncate-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* ==========================================================================
+   4. IMAGE OVERFLOW PREVENTION
+   ========================================================================== */
+
+.img-safe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.img-cover {
+    max-width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.img-contain {
+    max-width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   5. VIDEO OVERFLOW PREVENTION
+   ========================================================================== */
+
+.video-safe {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.video-cover {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ==========================================================================
+   6. FLEXBOX OVERFLOW PREVENTION
+   ========================================================================== */
+
+.flex-safe {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+}
+
+.flex-safe-nowrap {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   7. GRID OVERFLOW PREVENTION
+   ========================================================================== */
+
+.grid-safe {
+    display: grid;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.grid-safe-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   8. IFRAME OVERFLOW PREVENTION
+   ========================================================================== */
+
+.iframe-safe {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border: none;
+    display: block;
+}
+
+.iframe-responsive {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.iframe-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border: none;
+}
+
+/* ==========================================================================
+   9. TABLE OVERFLOW PREVENTION
+   ========================================================================== */
+
+.table-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-safe table {
+    width: 100%;
+    min-width: 600px; /* Ensure table doesn't get too cramped */
+}
+
+/* ==========================================================================
+   10. SCROLLABLE CONTAINER WITH SAFE OVERFLOW
+   ========================================================================== */
+
+.scroll-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.scroll-safe-x {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: hidden;
+}
+
+.scroll-safe-y {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   11. BUTTON OVERFLOW PREVENTION
+   ========================================================================== */
+
+.btn-safe {
+    width: auto;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-safe-wrap {
+    width: auto;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* ==========================================================================
+   12. INPUT OVERFLOW PREVENTION
+   ========================================================================== */
+
+.input-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.input-safe-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+/* ==========================================================================
+   13. CARD OVERFLOW PREVENTION
+   ========================================================================== */
+
+.card-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.card-content-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   14. MODAL/POPUP OVERFLOW PREVENTION
+   ========================================================================== */
+
+.modal-safe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100dvh;
+    max-height: 100vh;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.modal-content-safe {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   15. RESPONSIVE BREAKPOINT OVERFLOW HANDLING
+   ========================================================================== */
+
+/* Extra small devices (320px and below) */
+@media (max-width: 320px) {
+    * {
+        max-width: 100%;
+    }
+    
+    .text-truncate-single,
+    .text-truncate-2,
+    .text-truncate-3,
+    .text-truncate-4 {
+        font-size: 14px;
+    }
+}
+
+/* Small devices (321px to 375px) */
+@media (min-width: 321px) and (max-width: 375px) {
+    .grid-safe-auto {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Medium devices (376px to 428px) */
+@media (min-width: 376px) and (max-width: 428px) {
+    .grid-safe-auto {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    }
+}
+
+/* Large devices (429px to 768px) */
+@media (min-width: 429px) and (max-width: 768px) {
+    .grid-safe-auto {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    }
+}
+
+/* ==========================================================================
+   16. SAFE AREA OVERFLOW HANDLING
+   ========================================================================== */
+
+.safe-area-overflow {
+    width: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
+    height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-width: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   17. ORIENTATION-SPECIFIC OVERFLOW HANDLING
+   ========================================================================== */
+
+/* Portrait mode */
+@media (orientation: portrait) {
+    .orientation-safe {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+}
+
+/* Landscape mode */
+@media (orientation: landscape) {
+    .orientation-safe {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    /* Prevent horizontal scroll in landscape */
+    body {
+        overflow-x: hidden;
+    }
+}
+
+/* ==========================================================================
+   18. DYNAMIC TOOLBAR OVERFLOW HANDLING (Chrome Mobile)
+   ========================================================================== */
+
+.dynamic-toolbar-safe {
+    width: 100dvw;
+    height: 100dvh;
+    max-width: 100dvw;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   19. ACCESSIBILITY OVERFLOW HANDLING
+   ========================================================================== */
+
+/* Reduced motion - disable scroll animations */
+@media (prefers-reduced-motion: reduce) {
+    .scroll-safe,
+    .scroll-safe-x,
+    .scroll-safe-y {
+        scroll-behavior: auto;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .safe-container,
+    .safe-container-x,
+    .safe-container-y {
+        border: 1px solid currentColor;
+    }
+}
+
+/* ==========================================================================
+   20. PRINT OVERFLOW HANDLING
+   ========================================================================== */
+
+@media print {
+    * {
+        overflow: visible !important;
+        max-width: none !important;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   21. UTILITY CLASSES FOR COMMON OVERFLOW SCENARIOS
+   ========================================================================== */
+
+.w-full {
+    width: 100%;
+    max-width: 100%;
+}
+
+.h-full {
+    height: 100%;
+    max-height: 100%;
+}
+
+.max-w-full {
+    max-width: 100%;
+}
+
+.max-h-full {
+    max-height: 100%;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.overflow-scroll {
+    overflow: scroll;
+}
+
+.overflow-x-hidden {
+    overflow-x: hidden;
+}
+
+.overflow-y-hidden {
+    overflow-y: hidden;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+/* ==========================================================================
+   22. COMPONENT-SPECIFIC OVERFLOW PREVENTION
+   ========================================================================== */
+
+/* Video card overflow prevention */
+.video-card-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.video-card-safe img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+/* Channel card overflow prevention */
+.channel-card-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+/* Header overflow prevention */
+.header-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Navigation overflow prevention */
+.nav-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Sidebar overflow prevention */
+.sidebar-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Footer overflow prevention */
+.footer-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}

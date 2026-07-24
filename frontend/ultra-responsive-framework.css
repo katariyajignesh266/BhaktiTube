@@ -1,0 +1,738 @@
+/* ==========================================================================
+   ⚡ BHAKTITUBE ULTRA-RESPONSIVE FRAMEWORK
+   ==========================================================================
+   Premium hyper-responsive design system for seamless adaptation across
+   all mobile screen sizes and viewport dimensions.
+   
+   KEY FEATURES:
+   - Fluid typography with advanced clamp() calculations
+   - Dynamic viewport units (dvh, dvw, svh, svw) for all scenarios
+   - Advanced safe-area handling for notched devices
+   - Zero overflow/clipping prevention
+   - Premium aesthetics with smooth transitions
+   - Pixel-perfect scaling across iOS and Android
+   ========================================================================== */
+
+/* ==========================================================================
+   1. ADVANCED FLUID TYPOGRAPHY SYSTEM
+   ========================================================================== */
+:root {
+    /* Ultra-fluid base font size - adapts from 320px to 1920px+ */
+    --font-base-ultra: clamp(14px, 0.875rem + 0.15vw, 18px);
+    
+    /* Premium heading scale with fluid transitions */
+    --font-display-xs: clamp(20px, 1.25rem + 0.5vw, 28px);
+    --font-display-sm: clamp(24px, 1.5rem + 0.6vw, 36px);
+    --font-display-md: clamp(32px, 2rem + 0.8vw, 48px);
+    --font-display-lg: clamp(40px, 2.5rem + 1vw, 64px);
+    --font-display-xl: clamp(48px, 3rem + 1.2vw, 80px);
+    --font-display-2xl: clamp(64px, 4rem + 1.6vw, 120px);
+    
+    /* Body text with perfect readability */
+    --font-body-sm: clamp(13px, 0.8125rem + 0.12vw, 15px);
+    --font-body-base: clamp(15px, 0.9375rem + 0.15vw, 17px);
+    --font-body-lg: clamp(17px, 1.0625rem + 0.18vw, 20px);
+    --font-body-xl: clamp(20px, 1.25rem + 0.25vw, 24px);
+    
+    /* UI elements */
+    --font-ui-xs: clamp(11px, 0.6875rem + 0.1vw, 12px);
+    --font-ui-sm: clamp(12px, 0.75rem + 0.12vw, 14px);
+    --font-ui-base: clamp(14px, 0.875rem + 0.15vw, 16px);
+    --font-ui-lg: clamp(16px, 1rem + 0.18vw, 18px);
+    
+    /* Premium line heights for readability */
+    --leading-display: 1.1;
+    --leading-heading: 1.2;
+    --leading-body: 1.6;
+    --leading-tight: 1.25;
+    --leading-relaxed: 1.8;
+    
+    /* Font weights with semantic meaning */
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+}
+
+/* ==========================================================================
+   2. ADVANCED FLUID SPACING SYSTEM
+   ========================================================================== */
+:root {
+    /* Ultra-fluid spacing scale - adapts proportionally */
+    --space-0: 0;
+    --space-px: clamp(1px, 0.0625rem + 0.02vw, 2px);
+    --space-1: clamp(4px, 0.25rem + 0.08vw, 8px);
+    --space-2: clamp(8px, 0.5rem + 0.12vw, 12px);
+    --space-3: clamp(12px, 0.75rem + 0.16vw, 16px);
+    --space-4: clamp(16px, 1rem + 0.2vw, 24px);
+    --space-5: clamp(20px, 1.25rem + 0.25vw, 32px);
+    --space-6: clamp(24px, 1.5rem + 0.3vw, 40px);
+    --space-8: clamp(32px, 2rem + 0.4vw, 48px);
+    --space-10: clamp(40px, 2.5rem + 0.5vw, 64px);
+    --space-12: clamp(48px, 3rem + 0.6vw, 80px);
+    --space-16: clamp(64px, 4rem + 0.8vw, 96px);
+    --space-20: clamp(80px, 5rem + 1vw, 128px);
+    --space-24: clamp(96px, 6rem + 1.2vw, 160px);
+    --space-32: clamp(128px, 8rem + 1.6vw, 192px);
+    --space-40: clamp(160px, 10rem + 2vw, 256px);
+    --space-48: clamp(192px, 12rem + 2.4vw, 320px);
+    --space-56: clamp(224px, 14rem + 2.8vw, 384px);
+    --space-64: clamp(256px, 16rem + 3.2vw, 448px);
+}
+
+/* ==========================================================================
+   3. ADVANCED VIEWPORT UNIT SYSTEM
+   ========================================================================== */
+:root {
+    /* Dynamic viewport units for Chrome mobile */
+    --viewport-width-dynamic: 100dvw;
+    --viewport-height-dynamic: 100dvh;
+    
+    /* Static viewport units for fixed elements */
+    --viewport-width-static: 100vw;
+    --viewport-height-static: 100vh;
+    
+    /* Small viewport units for compact mode */
+    --viewport-width-small: 100svw;
+    --viewport-height-small: 100svh;
+    
+    /* Fluid viewport calculations */
+    --vw-fluid: 1vw;
+    --vh-fluid: 1vh;
+    --vmin-fluid: 1vmin;
+    --vmax-fluid: 1vmax;
+    
+    /* Safe area insets with fallbacks */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    
+    /* Calculated safe areas */
+    --safe-area-horizontal: calc(var(--safe-left) + var(--safe-right));
+    --safe-area-vertical: calc(var(--safe-top) + var(--safe-bottom));
+    
+    /* Usable viewport dimensions */
+    --usable-width: calc(100dvw - var(--safe-area-horizontal));
+    --usable-height: calc(100dvh - var(--safe-area-vertical));
+}
+
+/* ==========================================================================
+   4. FLUID BORDER RADIUS SYSTEM
+   ========================================================================== */
+:root {
+    --radius-none: 0;
+    --radius-xs: clamp(2px, 0.125rem + 0.04vw, 4px);
+    --radius-sm: clamp(4px, 0.25rem + 0.08vw, 8px);
+    --radius-md: clamp(8px, 0.5rem + 0.12vw, 12px);
+    --radius-lg: clamp(12px, 0.75rem + 0.16vw, 16px);
+    --radius-xl: clamp(16px, 1rem + 0.2vw, 24px);
+    --radius-2xl: clamp(24px, 1.5rem + 0.3vw, 32px);
+    --radius-3xl: clamp(32px, 2rem + 0.4vw, 48px);
+    --radius-full: clamp(9999px, 624.9375rem + 125vw, 9999px);
+}
+
+/* ==========================================================================
+   5. FLUID SHADOW SYSTEM
+   ========================================================================== */
+:root {
+    /* Premium shadow scale with depth */
+    --shadow-xs: 0 1px 2px clamp(0px, 0rem + 0.1vw, 4px) rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px clamp(0px, 0rem + 0.1vw, 4px), 0 1px 2px clamp(0px, 0rem + 0.1vw, 2px) rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px clamp(-1px, -0.0625rem + 0.1vw, -1px), 0 2px 4px clamp(-1px, -0.0625rem + 0.1vw, -2px) rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px clamp(-3px, -0.1875rem + 0.2vw, -3px), 0 4px 6px clamp(-2px, -0.125rem + 0.1vw, -2px) rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px clamp(-5px, -0.3125rem + 0.3vw, -5px), 0 10px 10px clamp(-5px, -0.3125rem + 0.2vw, -5px) rgba(0, 0, 0, 0.1);
+    --shadow-2xl: 0 25px 50px clamp(-12px, -0.75rem + 0.5vw, -12px) rgba(0, 0, 0, 0.25);
+    
+    /* Colored shadows for brand elements */
+    --shadow-brand: 0 4px 14px clamp(0px, 0rem + 0.2vw, 6px) rgba(255, 0, 0, 0.3);
+    --shadow-brand-lg: 0 8px 24px clamp(0px, 0rem + 0.3vw, 12px) rgba(255, 0, 0, 0.4);
+    
+    /* Inner shadows for depth */
+    --shadow-inner: inset 0 2px 4px clamp(0px, 0rem + 0.1vw, 4px) rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================================
+   6. FLUID TRANSITION SYSTEM
+   ========================================================================== */
+:root {
+    /* Premium transition timings */
+    --transition-instant: 100ms;
+    --transition-fast: 150ms;
+    --transition-normal: 250ms;
+    --transition-slow: 350ms;
+    --transition-slower: 500ms;
+    --transition-slowest: 700ms;
+    
+    /* Easing functions */
+    --ease-linear: linear;
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    
+    /* Combined transition shortcuts */
+    --transition-smooth: all var(--transition-normal) var(--ease-out);
+    --transition-bounce: all var(--transition-slow) var(--ease-bounce);
+    --transition-elastic: all var(--transition-slower) var(--ease-elastic);
+}
+
+/* ==========================================================================
+   7. ZERO OVERFLOW PREVENTION SYSTEM
+   ========================================================================== */
+* {
+    /* Prevent horizontal overflow at root level */
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+html, body {
+    /* Ensure no horizontal scroll */
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 320px; /* Minimum safe width */
+    
+    /* Prevent text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+/* Container queries for safe content */
+.container-safe {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Text overflow prevention */
+.text-safe {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-safe-multiline {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Image overflow prevention */
+.image-safe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Video overflow prevention */
+.video-safe {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 100%;
+}
+
+/* ==========================================================================
+   8. ADVANCED SAFE AREA HANDLING
+   ========================================================================== */
+.safe-area-pad {
+    padding-top: var(--safe-top);
+    padding-right: var(--safe-right);
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+}
+
+.safe-area-pad-top {
+    padding-top: var(--safe-top);
+}
+
+.safe-area-pad-bottom {
+    padding-bottom: var(--safe-bottom);
+}
+
+.safe-area-pad-left {
+    padding-left: var(--safe-left);
+}
+
+.safe-area-pad-right {
+    padding-right: var(--safe-right);
+}
+
+/* Safe area margin utilities */
+.safe-area-margin-top {
+    margin-top: var(--safe-top);
+}
+
+.safe-area-margin-bottom {
+    margin-bottom: var(--safe-bottom);
+}
+
+/* Safe area positioning */
+.position-safe-top {
+    top: var(--safe-top);
+}
+
+.position-safe-bottom {
+    bottom: var(--safe-bottom);
+}
+
+.position-safe-left {
+    left: var(--safe-left);
+}
+
+.position-safe-right {
+    right: var(--safe-right);
+}
+
+/* ==========================================================================
+   9. FLUID GRID SYSTEM
+   ========================================================================== */
+.grid-fluid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.grid-fluid-2 {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+
+.grid-fluid-3 {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+}
+
+/* Responsive grid breakpoints */
+@media (min-width: 768px) {
+    .grid-fluid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-fluid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .grid-fluid-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1440px) {
+    .grid-fluid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .grid-fluid-2 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .grid-fluid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ==========================================================================
+   10. FLUID FLEXBOX SYSTEM
+   ========================================================================== */
+.flex-fluid {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.flex-fluid-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+}
+
+.flex-fluid-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+
+.flex-fluid-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+/* ==========================================================================
+   11. PREMIUM AESTHETICS
+   ========================================================================== */
+
+/* Glassmorphism effect */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Premium gradients */
+.gradient-premium {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-brand {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+}
+
+.gradient-mesh {
+    background: 
+        radial-gradient(at 40% 20%, rgba(255, 0, 0, 0.3) 0px, transparent 50%),
+        radial-gradient(at 80% 0%, rgba(255, 100, 0, 0.2) 0px, transparent 50%),
+        radial-gradient(at 0% 50%, rgba(255, 50, 50, 0.2) 0px, transparent 50%),
+        radial-gradient(at 80% 50%, rgba(255, 0, 0, 0.15) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(255, 50, 0, 0.2) 0px, transparent 50%),
+        radial-gradient(at 80% 100%, rgba(255, 0, 0, 0.1) 0px, transparent 50%);
+}
+
+/* Smooth hover effects */
+.hover-lift {
+    transition: transform var(--transition-normal) var(--ease-out),
+                box-shadow var(--transition-normal) var(--ease-out);
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.hover-scale {
+    transition: transform var(--transition-normal) var(--ease-out);
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+/* Premium button styles */
+.btn-premium {
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-ui-base);
+    font-weight: var(--font-weight-semibold);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+}
+
+.btn-premium-primary {
+    background: var(--gradient-brand);
+    color: white;
+    box-shadow: var(--shadow-brand);
+}
+
+.btn-premium-primary:hover {
+    box-shadow: var(--shadow-brand-lg);
+    transform: translateY(-2px);
+}
+
+.btn-premium-secondary {
+    background: var(--glass-dark);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-premium-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ==========================================================================
+   12. MOBILE-FIRST RESPONSIVE UTILITIES
+   ========================================================================== */
+
+/* Hide elements on specific breakpoints */
+.hide-mobile {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .hide-mobile {
+        display: block;
+    }
+    
+    .hide-tablet {
+        display: none;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hide-tablet {
+        display: block;
+    }
+    
+    .hide-desktop {
+        display: none;
+    }
+}
+
+/* Show elements on specific breakpoints */
+.show-mobile-only {
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .show-mobile-only {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   13. ORIENTATION HANDLING
+   ========================================================================== */
+
+/* Portrait optimizations */
+@media (orientation: portrait) {
+    :root {
+        --orientation-factor: 1;
+    }
+    
+    .orientation-aware {
+        flex-direction: column;
+    }
+}
+
+/* Landscape optimizations */
+@media (orientation: landscape) {
+    :root {
+        --orientation-factor: 0.75;
+    }
+    
+    .orientation-aware {
+        flex-direction: row;
+    }
+    
+    /* Adjust spacing in landscape */
+    .landscape-compact {
+        --space-4: clamp(12px, 0.75rem + 0.16vw, 16px);
+        --space-6: clamp(16px, 1rem + 0.2vw, 24px);
+    }
+}
+
+/* ==========================================================================
+   14. DEVICE-SPECIFIC OPTIMIZATIONS
+   ========================================================================== */
+
+/* iPhone notch handling */
+@supports (padding: env(safe-area-inset-top)) {
+    .iphone-notch-aware {
+        padding-top: calc(var(--space-4) + var(--safe-top));
+        padding-bottom: calc(var(--space-4) + var(--safe-bottom));
+    }
+}
+
+/* Small screen devices (under 375px) */
+@media (max-width: 374px) {
+    :root {
+        --font-base-ultra: 13px;
+        --space-4: 12px;
+        --space-6: 16px;
+    }
+}
+
+/* Large screen devices (over 1920px) */
+@media (min-width: 1921px) {
+    :root {
+        --font-base-ultra: 18px;
+        --space-4: 24px;
+        --space-6: 32px;
+    }
+}
+
+/* ==========================================================================
+   15. ACCESSIBILITY & REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --shadow-xs: none;
+        --shadow-sm: none;
+        --shadow-md: none;
+        --shadow-lg: none;
+        --shadow-xl: none;
+    }
+    
+    .glass,
+    .glass-dark {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(0, 0, 0, 0.8);
+    }
+}
+
+/* ==========================================================================
+   16. PRINT STYLES
+   ========================================================================== */
+@media print {
+    * {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   17. PERFORMANCE OPTIMIZATIONS
+   ========================================================================== */
+
+/* Hardware acceleration for smooth animations */
+.gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Contain layout for performance */
+.contain-layout {
+    contain: layout;
+}
+
+.contain-paint {
+    contain: paint;
+}
+
+.contain-size {
+    contain: size;
+}
+
+.contain-all {
+    contain: strict;
+}
+
+/* ==========================================================================
+   18. FLUID ASPECT RATIOS
+    ========================================================================== */
+.aspect-fluid-16-9 {
+    aspect-ratio: 16/9;
+    width: 100%;
+    height: auto;
+}
+
+.aspect-fluid-4-3 {
+    aspect-ratio: 4/3;
+    width: 100%;
+    height: auto;
+}
+
+.aspect-fluid-1-1 {
+    aspect-ratio: 1/1;
+    width: 100%;
+    height: auto;
+}
+
+.aspect-fluid-9-16 {
+    aspect-ratio: 9/16;
+    width: 100%;
+    height: auto;
+}
+
+/* ==========================================================================
+   19. FLUID ICON SIZES
+    ========================================================================== */
+.icon-xs {
+    width: clamp(12px, 0.75rem + 0.15vw, 16px);
+    height: clamp(12px, 0.75rem + 0.15vw, 16px);
+}
+
+.icon-sm {
+    width: clamp(16px, 1rem + 0.2vw, 20px);
+    height: clamp(16px, 1rem + 0.2vw, 20px);
+}
+
+.icon-md {
+    width: clamp(20px, 1.25rem + 0.25vw, 24px);
+    height: clamp(20px, 1.25rem + 0.25vw, 24px);
+}
+
+.icon-lg {
+    width: clamp(24px, 1.5rem + 0.3vw, 32px);
+    height: clamp(24px, 1.5rem + 0.3vw, 32px);
+}
+
+.icon-xl {
+    width: clamp(32px, 2rem + 0.4vw, 48px);
+    height: clamp(32px, 2rem + 0.4vw, 48px);
+}
+
+.icon-2xl {
+    width: clamp(48px, 3rem + 0.6vw, 64px);
+    height: clamp(48px, 3rem + 0.6vw, 64px);
+}
+
+/* ==========================================================================
+   20. SCROLLBAR CUSTOMIZATION
+    ========================================================================== */
+.scrollbar-premium::-webkit-scrollbar {
+    width: clamp(6px, 0.375rem + 0.1vw, 10px);
+    height: clamp(6px, 0.375rem + 0.1vw, 10px);
+}
+
+.scrollbar-premium::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-full);
+}
+
+.scrollbar-premium::-webkit-scrollbar-thumb {
+    background: rgba(255, 0, 0, 0.5);
+    border-radius: var(--radius-full);
+    transition: background var(--transition-normal);
+}
+
+.scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 0, 0, 0.7);
+}
+
+/* Firefox scrollbar */
+.scrollbar-premium {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 0, 0, 0.5) rgba(0, 0, 0, 0.1);
+}

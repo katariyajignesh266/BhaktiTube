@@ -79,7 +79,9 @@ function handleOverlayClick(e) {
         e.target.closest('.glassic-back-btn') ||
         e.target.closest('.premium-icon-btn') ||
         e.target.closest('.premium-settings-menu') ||
-        e.target.closest('.premium-options-menu')) {
+        e.target.closest('.premium-options-menu') ||
+        e.target.closest('.ultra-small-settings-menu') ||
+        e.target.closest('.ultra-settings-item')) {
         return;
     }
     
@@ -166,6 +168,12 @@ function updatePlayPauseIcon() {
     const centerPlayIcon = centerPlayOverlay?.querySelector('i');
     if (centerPlayIcon) {
         centerPlayIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+    }
+    
+    // Update ultra settings menu play icon
+    const ultraPlayIcon = document.getElementById('ultraPlayIcon');
+    if (ultraPlayIcon) {
+        ultraPlayIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
     }
 }
 
@@ -387,6 +395,50 @@ function toggleCaptions() {
     }
 }
 
+// Toggle Ultra-Small Settings Menu
+function toggleUltraSettingsMenu() {
+    console.log('toggleUltraSettingsMenu called');
+    const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+    if (!ultraSettingsMenu) {
+        console.log('Ultra settings menu not found');
+        return;
+    }
+    
+    const isActive = ultraSettingsMenu.classList.contains('active');
+    ultraSettingsMenu.classList.toggle('active', !isActive);
+    
+    console.log('Ultra settings menu toggled:', !isActive);
+    
+    // Update play icon in menu
+    const ultraPlayIcon = document.getElementById('ultraPlayIcon');
+    if (ultraPlayIcon) {
+        ultraPlayIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+    }
+    
+    // Close menu when clicking outside
+    if (!isActive) {
+        setTimeout(() => {
+            document.addEventListener('click', closeUltraSettingsMenuOutside);
+        }, 0);
+    } else {
+        document.removeEventListener('click', closeUltraSettingsMenuOutside);
+    }
+}
+
+// Make function globally accessible
+window.toggleUltraSettingsMenu = toggleUltraSettingsMenu;
+
+// Close ultra settings menu when clicking outside
+function closeUltraSettingsMenuOutside(e) {
+    const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+    const settingsBtn = document.getElementById('settingsBtn');
+    
+    if (ultraSettingsMenu && !ultraSettingsMenu.contains(e.target) && !settingsBtn.contains(e.target)) {
+        ultraSettingsMenu.classList.remove('active');
+        document.removeEventListener('click', closeUltraSettingsMenuOutside);
+    }
+}
+
 // Settings Menu
 function toggleSettingsMenu() {
     const isActive = settingsMenu.classList.contains('active');
@@ -493,16 +545,49 @@ function toggleAnnotations() {
 
 // Play Previous Video
 function playPreviousVideo() {
-    alert('Previous video feature coming soon!');
+    // Try to get previous video from current playlist
+    if (window.currentVideoIndex > 0 && window.videoPlaylist) {
+        window.currentVideoIndex--;
+        const prevVideo = window.videoPlaylist[window.currentVideoIndex];
+        if (prevVideo && prevVideo.videoId) {
+            playVideo(prevVideo.videoId, prevVideo, false);
+        }
+    } else {
+        // Show toast or feedback
+        console.log('No previous video available');
+        const toast = document.createElement('div');
+        toast.textContent = 'No previous video';
+        toast.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 4px; z-index: 10001;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
 }
 
 // Play Next Video
 function playNextVideo() {
-    if (autoplayEnabled) {
-        // Implement autoplay logic
-        alert('Autoplay: Playing next video...');
+    // Try to get next video from current playlist
+    if (window.videoPlaylist && window.currentVideoIndex < window.videoPlaylist.length - 1) {
+        window.currentVideoIndex++;
+        const nextVideo = window.videoPlaylist[window.currentVideoIndex];
+        if (nextVideo && nextVideo.videoId) {
+            playVideo(nextVideo.videoId, nextVideo, false);
+        }
+    } else if (autoplayEnabled) {
+        // Try to find next video from feed
+        console.log('Autoplay: Looking for next video...');
+        const toast = document.createElement('div');
+        toast.textContent = 'Autoplay enabled';
+        toast.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 4px; z-index: 10001;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
     } else {
-        alert('Next video feature coming soon!');
+        // Show feedback
+        console.log('No next video available');
+        const toast = document.createElement('div');
+        toast.textContent = 'No next video';
+        toast.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 4px; z-index: 10001;';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
     }
 }
 
@@ -656,6 +741,29 @@ if (document.readyState === 'loading') {
     initializePremiumPlayer();
 }
 
+// Global event delegation for settings button
+document.addEventListener('click', function(e) {
+    const settingsBtn = e.target.closest('#settingsBtn');
+    if (settingsBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        console.log('Settings button clicked via delegation');
+        const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+        if (ultraSettingsMenu) {
+            ultraSettingsMenu.classList.toggle('active');
+            console.log('Menu toggled:', ultraSettingsMenu.classList.contains('active'));
+        }
+    }
+    
+    // Close ultra settings menu when clicking outside
+    const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+    if (ultraSettingsMenu && ultraSettingsMenu.classList.contains('active')) {
+        if (!e.target.closest('#settingsBtn') && !e.target.closest('.ultra-small-settings-menu')) {
+            ultraSettingsMenu.classList.remove('active');
+        }
+    }
+}, true);
+
 // Export functions for global access
 window.premiumPlayerFunctions = {
     togglePlayPause,
@@ -665,7 +773,11 @@ window.premiumPlayerFunctions = {
     toggleFullScreen,
     toggleTheaterMode,
     toggleMiniPlayer,
+    togglePictureInPicture,
     toggleSettingsMenu,
+    toggleUltraSettingsMenu,
+    toggleSpeedOptions,
+    toggleQualityOptions,
     setPlaybackSpeed,
     setQuality,
     toggleAutoplay,
@@ -677,3 +789,24 @@ window.premiumPlayerFunctions = {
     updateVideoInfo,
     updateProgress
 };
+
+// Also export individual functions for direct HTML onclick access
+window.togglePlayPause = togglePlayPause;
+window.skipTime = skipTime;
+window.toggleVolume = toggleVolume;
+window.setVolume = setVolume;
+window.toggleFullScreen = toggleFullScreen;
+window.toggleTheaterMode = toggleTheaterMode;
+window.toggleMiniPlayer = toggleMiniPlayer;
+window.togglePictureInPicture = togglePictureInPicture;
+window.toggleSettingsMenu = toggleSettingsMenu;
+window.toggleSpeedOptions = toggleSpeedOptions;
+window.toggleQualityOptions = toggleQualityOptions;
+window.setPlaybackSpeed = setPlaybackSpeed;
+window.setQuality = setQuality;
+window.toggleAutoplay = toggleAutoplay;
+window.toggleAnnotations = toggleAnnotations;
+window.playPreviousVideo = playPreviousVideo;
+window.playNextVideo = playNextVideo;
+window.handleBackAction = handleBackAction;
+window.toggleCaptions = toggleCaptions;

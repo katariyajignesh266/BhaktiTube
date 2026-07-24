@@ -45,18 +45,31 @@
     box-sizing: border-box;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent !important;
-    transition: background-color 0.4s ease, border-color 0.4s ease;
+    
+    /* Premium smooth transitions */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    
+    /* Prevent horizontal overflow */
+    max-width: 100%;
 }
 
 body {
     background-color: var(--bg-master-stream);
-    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: 100vh; /* Fallback */
     overflow-x: hidden;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--text-master-solid);
+    
+    /* Enhanced mobile viewport handling */
+    min-width: 320px;
+    
+    /* Prevent text overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* 2. AMBIENT GLOW BACKGROUND ORBS SYSTEMS */
@@ -137,6 +150,7 @@ body {
 }
 .gradient-text {
     background: linear-gradient(135deg, #ff1a1a 0%, #ff8080 100%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -238,9 +252,17 @@ body {
     border: 1px solid var(--border-luxury-tint);
     backdrop-filter: blur(24px) saturate(120%);
     -webkit-backdrop-filter: blur(24px) saturate(120%);
-    padding: 40px 32px;
-    border-radius: 24px;
+    padding: clamp(32px, 2rem + 0.5vw, 40px) clamp(24px, 1.5rem + 0.4vw, 32px);
+    border-radius: clamp(16px, 1rem + 0.3vw, 24px);
     box-shadow: var(--shadow-premium-depth);
+    
+    /* Premium smooth transitions */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card-anchor:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
 }
 
 /* 6. CARD FORM INTERNAL SUB-COMPONENTS UI ELEMENTS */
@@ -415,25 +437,28 @@ body {
 /* 8. MASTER ACTION SUBMIT BUTTON MATRIX COMPONENTS */
 .core-premium-submit-btn {
     width: 100%;
-    padding: 15px;
+    padding: clamp(14px, 0.875rem + 0.3vw, 16px);
     background: var(--brand-gradient-glow);
     border: none;
-    border-radius: 12px;
+    border-radius: clamp(10px, 0.625rem + 0.2vw, 12px);
     color: #ffffff;
-    font-size: 0.98rem;
+    font-size: clamp(0.9rem, 0.9rem + 0.1vw, 0.98rem);
     font-weight: 700;
     letter-spacing: 0.01em;
     cursor: pointer;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(255, 0, 0, 0.25);
+    
+    /* Premium smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .core-premium-submit-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 0, 0, 0.5);
 }
 .core-premium-submit-btn:active {
-    transform: translateY(1px);
+    transform: translateY(0);
 }
 .core-premium-submit-btn .btn-loading-spinner-layer {
     display: none;

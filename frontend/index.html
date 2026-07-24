@@ -49,6 +49,8 @@ viewport-fit=cover">
   <!-- CSS -->
   <link rel="stylesheet" href="theme-system.css"/>
   <link rel="stylesheet" href="responsive-system.css"/>
+  <link rel="stylesheet" href="ultra-responsive-framework.css"/>
+  <link rel="stylesheet" href="overflow-prevention.css"/>
   <link rel="stylesheet" href="viewport-fix.css"/>
   <link rel="stylesheet" href="channel-card.css"/>
   <link rel="stylesheet" href="style.css"/>
@@ -478,6 +480,9 @@ viewport-fit=cover">
               <button class="premium-icon-btn" id="castBtn" onclick="event.stopPropagation(); toggleCast();">
                 <i class="fa-solid fa-tv"></i>
               </button>
+              <button class="premium-icon-btn" id="exitFullscreenBtn" onclick="event.stopPropagation(); exitFullscreen();">
+                <i class="fa-solid fa-compress"></i>
+              </button>
             </div>
           </div>
 
@@ -521,6 +526,9 @@ viewport-fit=cover">
               
               <!-- Left Controls -->
               <div class="premium-controls-left">
+                <button class="premium-control-btn" id="settingsBtn" onclick="event.preventDefault(); event.stopPropagation(); toggleUltraSettingsMenu();">
+                  <i class="fa-solid fa-gear"></i>
+                </button>
                 <button class="premium-control-btn" id="playPauseBtn" onclick="togglePlayPause();">
                   <i class="fa-solid fa-play" id="playPauseIcon"></i>
                 </button>
@@ -554,9 +562,6 @@ viewport-fit=cover">
                 <button class="premium-control-btn" id="captionsBtn" onclick="toggleCaptions();">
                   <i class="fa-solid fa-closed-captioning"></i>
                 </button>
-                <button class="premium-control-btn" id="settingsBtn" onclick="toggleSettingsMenu();">
-                  <i class="fa-solid fa-gear"></i>
-                </button>
                 <button class="premium-control-btn" id="theaterBtn" onclick="toggleTheaterMode();">
                   <i class="fa-solid fa-film"></i>
                 </button>
@@ -569,6 +574,89 @@ viewport-fit=cover">
               </div>
             </div>
 
+          </div>
+        </div>
+
+        <!-- Ultra-Small Screen Settings Menu -->
+        <div class="ultra-small-settings-menu" id="ultraSettingsMenu">
+          <div class="ultra-settings-header">
+            <span>Video Controls</span>
+            <button class="ultra-settings-close" onclick="document.getElementById('ultraSettingsMenu').classList.remove('active');">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          
+          <!-- Playback Controls -->
+          <div class="ultra-settings-item" onclick="togglePlayPause(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-play" id="ultraPlayIcon"></i>
+            <span>Play/Pause</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="skipTime(-10); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>Rewind 10s</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="skipTime(10); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>Forward 10s</span>
+          </div>
+          
+          <div class="ultra-settings-divider"></div>
+          
+          <!-- Video Navigation -->
+          <div class="ultra-settings-item" onclick="playPreviousVideo(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-backward-step"></i>
+            <span>Previous Video</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="playNextVideo(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-forward-step"></i>
+            <span>Next Video</span>
+          </div>
+          
+          <div class="ultra-settings-divider"></div>
+          
+          <!-- Display Options -->
+          <div class="ultra-settings-item" onclick="toggleCaptions(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-closed-captioning"></i>
+            <span>Captions</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="toggleTheaterMode(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-film"></i>
+            <span>Theater Mode</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="toggleMiniPlayer(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-regular fa-square"></i>
+            <span>Mini Player</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="togglePictureInPicture(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-clone"></i>
+            <span>Picture-in-Picture</span>
+          </div>
+          
+          <div class="ultra-settings-divider"></div>
+          
+          <!-- Playback Settings -->
+          <div class="ultra-settings-item" onclick="toggleSpeedOptions(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Playback Speed</span>
+          </div>
+          
+          <div class="ultra-settings-item" onclick="toggleQualityOptions(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-display"></i>
+            <span>Quality</span>
+          </div>
+          
+          <div class="ultra-settings-divider"></div>
+          
+          <!-- Advanced Settings -->
+          <div class="ultra-settings-item" onclick="toggleSettingsMenu(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+            <i class="fa-solid fa-gear"></i>
+            <span>More Settings</span>
           </div>
         </div>
 
@@ -680,6 +768,39 @@ viewport-fit=cover">
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="premium-player.js"></script>
+  <script>
+    // Fallback function for ultra settings menu
+    function toggleUltraSettingsMenu() {
+      console.log('Fallback toggleUltraSettingsMenu called');
+      const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+      if (ultraSettingsMenu) {
+        ultraSettingsMenu.classList.toggle('active');
+        console.log('Menu toggled, active class:', ultraSettingsMenu.classList.contains('active'));
+      } else {
+        console.log('Menu element not found');
+      }
+    }
+    
+    // Direct event listener for settings button
+    document.addEventListener('DOMContentLoaded', function() {
+      const settingsBtn = document.getElementById('settingsBtn');
+      if (settingsBtn) {
+        settingsBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          console.log('Settings button clicked directly');
+          const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+          if (ultraSettingsMenu) {
+            ultraSettingsMenu.classList.toggle('active');
+            console.log('Menu toggled via direct listener:', ultraSettingsMenu.classList.contains('active'));
+          }
+        });
+        console.log('Settings button event listener attached');
+      } else {
+        console.log('Settings button not found on DOM load');
+      }
+    });
+  </script>
   <script type="module" src="script.js"></script>
   
 
