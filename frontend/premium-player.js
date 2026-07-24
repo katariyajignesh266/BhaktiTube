@@ -60,6 +60,7 @@ function setupEventListeners() {
     if (progressBarTrack) {
         progressBarTrack.addEventListener('click', handleProgressClick);
         progressBarTrack.addEventListener('mousedown', handleProgressDragStart);
+        progressBarTrack.addEventListener('touchstart', handleProgressDragStart, { passive: false });
     }
 
     // Volume slider
@@ -126,8 +127,9 @@ function handleBackAction() {
 
 // Close Video
 function closeVideo() {
-    if (premiumPlayer) {
-        premiumPlayer.stopVideo();
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (player) {
+        player.stopVideo();
     }
     
     videoPopup.classList.remove('active');
@@ -142,14 +144,15 @@ function closeVideo() {
 
 // Toggle Play/Pause
 function togglePlayPause() {
-    if (!premiumPlayer) return;
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (!player) return;
     
     if (isPlaying) {
-        premiumPlayer.pauseVideo();
+        player.pauseVideo();
         isPlaying = false;
         centerPlayOverlay.classList.add('visible');
     } else {
-        premiumPlayer.playVideo();
+        player.playVideo();
         isPlaying = true;
         centerPlayOverlay.classList.remove('visible');
     }
@@ -179,11 +182,12 @@ function updatePlayPauseIcon() {
 
 // Skip Time
 function skipTime(seconds) {
-    if (!premiumPlayer) return;
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (!player) return;
     
-    const currentTime = premiumPlayer.getCurrentTime();
+    const currentTime = player.getCurrentTime();
     const newTime = Math.max(0, currentTime + seconds);
-    premiumPlayer.seekTo(newTime, true);
+    player.seekTo(newTime, true);
     
     resetOverlayTimeout();
 }
@@ -206,8 +210,9 @@ function toggleVolume() {
 function setVolume(value) {
     currentVolume = parseInt(value);
     
-    if (premiumPlayer) {
-        premiumPlayer.setVolume(currentVolume);
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (player) {
+        player.setVolume(currentVolume);
     }
     
     if (volumeSlider) {
@@ -238,43 +243,59 @@ function updateVolumeIcon() {
 
 // Handle Progress Click
 function handleProgressClick(e) {
-    if (!premiumPlayer) return;
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (!player) return;
     
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const rect = progressBarTrack.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    const duration = premiumPlayer.getDuration();
+    const percent = (clientX - rect.left) / rect.width;
+    const duration = player.getDuration();
     const newTime = duration * percent;
     
-    premiumPlayer.seekTo(newTime, true);
+    player.seekTo(newTime, true);
 }
 
 // Handle Progress Drag
 let isDragging = false;
 function handleProgressDragStart(e) {
+    e.preventDefault();
     isDragging = true;
     document.addEventListener('mousemove', handleProgressDrag);
     document.addEventListener('mouseup', handleProgressDragEnd);
+    document.addEventListener('touchmove', handleProgressDrag, { passive: false });
+    document.addEventListener('touchend', handleProgressDragEnd);
 }
 
 function handleProgressDrag(e) {
-    if (!isDragging || !premiumPlayer) return;
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (!isDragging || !player) return;
+    e.preventDefault();
     
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const rect = progressBarTrack.getBoundingClientRect();
-    const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const duration = premiumPlayer.getDuration();
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const duration = player.getDuration();
     
     if (progressFill) {
         progressFill.style.width = (percent * 100) + '%';
     }
     
+    // Update progress thumb position during drag
+    const progressThumb = document.getElementById('progressThumb');
+    if (progressThumb) {
+        progressThumb.style.left = (percent * 100) + '%';
+    }
+    
     const newTime = duration * percent;
-    premiumPlayer.seekTo(newTime, true);
+    player.seekTo(newTime, true);
 }
 
 function handleProgressDragEnd() {
     isDragging = false;
     document.removeEventListener('mousemove', handleProgressDrag);
     document.removeEventListener('mouseup', handleProgressDragEnd);
+    document.removeEventListener('touchmove', handleProgressDrag);
+    document.removeEventListener('touchend', handleProgressDragEnd);
 }
 
 // Toggle Fullscreen
@@ -467,8 +488,9 @@ function closeSpeedOptions() {
 function setPlaybackSpeed(speed) {
     playbackSpeed = speed;
     
-    if (premiumPlayer) {
-        premiumPlayer.setPlaybackSpeed(speed);
+    const player = window.premiumPlayer || window.ytPlayer;
+    if (player) {
+        player.setPlaybackSpeed(speed);
     }
     
     // Update UI
@@ -704,6 +726,13 @@ function updateProgress(currentTime, duration) {
     if (progressFill && duration > 0) {
         const percent = (currentTime / duration) * 100;
         progressFill.style.width = percent + '%';
+    }
+    
+    // Update progress thumb position
+    const progressThumb = document.getElementById('progressThumb');
+    if (progressThumb && duration > 0) {
+        const percent = (currentTime / duration) * 100;
+        progressThumb.style.left = percent + '%';
     }
 }
 

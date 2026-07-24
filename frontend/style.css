@@ -4452,7 +4452,7 @@ body{
 /* Top Right Actions */
 .top-right-actions {
     display: flex;
-    gap: clamp(8px, 1vw, 12px);
+    gap: clamp(16px, 2vw, 20px);
 }
 
 .premium-icon-btn {
@@ -4477,16 +4477,34 @@ body{
 
 .premium-icon-btn i {
     color: #ffffff;
-    font-size: clamp(16px, 2.2vw, 20px);
+    font-size: clamp(20px, 2.2vw, 20px);
 }
 
 /* Exit Fullscreen Button - Only visible in fullscreen mode */
 #exitFullscreenBtn {
     display: none;
+    width: clamp(60px, 7.5vw, 72px);
+    height: clamp(60px, 7.5vw, 72px);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
 .fullscreen-mode #exitFullscreenBtn {
     display: flex;
+}
+
+#exitFullscreenBtn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+#exitFullscreenBtn:active {
+    transform: scale(0.95);
 }
 
 /* Center Play Overlay */
@@ -4627,6 +4645,8 @@ body{
     height: 100%;
     width: 100%;
     cursor: pointer;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .progress-fill {
@@ -4643,15 +4663,15 @@ body{
 .progress-thumb {
     position: absolute;
     top: 50%;
-    right: -6px;
-    transform: translateY(-50%);
+    left: 0;
+    transform: translate(-50%, -50%);
     width: clamp(12px, 1.5vw, 14px);
     height: clamp(12px, 1.5vw, 14px);
     background: #FF6B35;
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(255, 107, 53, 0.5);
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease, left 0.1s linear;
 }
 
 .premium-progress-container:hover .progress-thumb {
@@ -4674,7 +4694,7 @@ body{
 .premium-controls-right {
     display: flex;
     align-items: center;
-    gap: clamp(6px, 0.8vw, 10px);
+    gap: clamp(10px, 0.8vw, 10px);
 }
 
 .premium-controls-left {
@@ -4719,7 +4739,7 @@ body{
 }
 
 .premium-control-btn i {
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(20px, 2vw, 20px);
 }
 
 /* Volume Control Wrapper */
@@ -5202,38 +5222,37 @@ body{
 /* Responsive Design for Ultra Small Screens (<360px) */
 @media (max-width: 360px) {
     .premium-top-bar {
-        padding: 8px 10px;
+        padding: 23px 10px;
     }
     
     .glassic-back-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
     }
     
     .glassic-back-btn i {
-        font-size: 16px;
+        font-size: 20px;
     }
     
     .premium-video-title {
-        font-size: 12px;
-        max-width: 120px;
+        font-size: 14px;
+        max-width: 180px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
     
     .premium-channel-name {
-        font-size: 10px;
-        display: none;
+        font-size: 13px;
     }
     
     .premium-icon-btn {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
     }
     
     .premium-icon-btn i {
-        font-size: 14px;
+        font-size: 18px;
     }
     
     .premium-skip-controls {
@@ -5246,7 +5265,7 @@ body{
     }
     
     .glassic-skip-btn i {
-        font-size: 16px;
+        font-size: 20px;
     }
     
     .skip-label {
@@ -5254,7 +5273,7 @@ body{
     }
     
     .premium-bottom-controls {
-        padding: 8px 10px;
+        padding: 20px 15px;
     }
     
     .premium-progress-container {
@@ -5316,14 +5335,14 @@ body{
     }
     
     .premium-control-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         flex-shrink: 0;
         min-width: 36px;
     }
     
     .premium-control-btn i {
-        font-size: 16px;
+        font-size: 20px;
     }
     
     /* Hide non-essential buttons on ultra-small screens */
@@ -5360,7 +5379,7 @@ body{
     }
     
     #fullscreenBtn i {
-        font-size: 18px;
+        font-size: 20px;
         color: #FF6B35;
     }
     
@@ -5387,7 +5406,7 @@ body{
     }
     
     .time-display {
-        font-size: 11px;
+        font-size: 19px;
         margin: 0 4px;
     }
     
@@ -5548,7 +5567,7 @@ body{
 }
 
 /* Responsive Design for Very Small Screens (360px-399px) */
-@media (min-width: 359px) and (max-width: 399px) {
+@media (min-width: 360px) and (max-width: 399px) {
 
     /* ==========================
        TOP BAR
