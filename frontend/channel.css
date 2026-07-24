@@ -335,6 +335,7 @@ cursor:pointer;
     height: 100% !important;
     border: none !important;
     display: block;
+    pointer-events: none;
 }
 
 /* જ્યારે YouTube Player ફૂલસ્ક્રીન મોડમાં હોય (મોબાઈલ આડો થાય ત્યારે) */

@@ -4328,6 +4328,7 @@ body{
     border: none;
     display: block;
     object-fit: contain;
+    pointer-events: none;
 }
 
 /* Premium Overlay with Glassmorphism */
@@ -4512,8 +4513,8 @@ body{
     height: clamp(60px, 8vw, 80px);
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4592,9 +4593,8 @@ body{
 
 /* Premium Bottom Controls */
 .premium-bottom-controls {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     padding: clamp(12px, 1.5vw, 20px) clamp(16px, 2vw, 24px);
     padding-bottom: calc(clamp(12px, 1.5vw, 20px) + env(safe-area-inset-bottom, 0px));
     transition: opacity 0.3s ease;
