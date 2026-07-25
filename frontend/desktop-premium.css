@@ -1,0 +1,540 @@
+/* ==========================================================================
+   👑 BHAKTITUBE PREMIUM DESKTOP & LAPTOP LAYOUT SYSTEM
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+    /* 1. Reset and base body modifications */
+    body {
+        padding-top: 70px !important;
+        background-color: var(--bg-primary) !important;
+        overflow-x: hidden !important;
+    }
+
+    /* 2. Top Header adjustments */
+    .header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 70px !important;
+        z-index: 1000 !important;
+        padding: 0 24px !important;
+        background: var(--header-bg) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid var(--border-primary) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .left-header i.fa-bars {
+        margin-right: 16px !important;
+        color: var(--text-primary) !important;
+        font-size: 20px !important;
+        padding: 8px !important;
+        border-radius: 50% !important;
+        transition: background-color 0.2s ease !important;
+    }
+
+    .left-header i.fa-bars:hover {
+        background-color: var(--bg-surface-hover) !important;
+    }
+
+    /* 3. Hide bottom mobile navigation */
+    .bottom-nav {
+        display: none !important;
+    }
+
+    /* 4. Collapsible Persistent Sidebar styling */
+    #sidebar {
+        position: fixed !important;
+        top: 70px !important;
+        left: 0 !important;
+        width: 240px !important;
+        height: calc(100vh - 70px) !important;
+        z-index: 999 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        background: var(--bg-secondary) !important;
+        border-right: 1px solid var(--border-primary) !important;
+        box-shadow: none !important;
+        padding: 16px 0 !important;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+
+    #sidebarOverlay {
+        display: none !important;
+    }
+
+    .sidebar-brand {
+        display: none !important; /* Logo is already in top header */
+    }
+
+    /* Menu Links in default expanded view */
+    #sidebar a {
+        display: flex;
+        align-items: center !important;
+        gap: 20px !important;
+        padding: 12px 24px !important;
+        margin: 4px 12px !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: var(--text-primary) !important;
+        background: transparent !important;
+        border: none !important;
+        transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease !important;
+        transform: none !important; /* Disable mobile shift hover effect */
+        box-shadow: none !important;
+    }
+
+    /* Fail-safe override for links hidden programmatically via inline display: none */
+    #sidebar a[style*="display: none"] {
+        display: none !important;
+    }
+
+    #sidebar a i {
+        font-size: 18px !important;
+        color: var(--text-primary) !important;
+        width: 24px !important;
+        text-align: center !important;
+        transition: color 0.2s ease, text-shadow 0.2s ease !important;
+        text-shadow: none !important;
+    }
+
+    #sidebar a:hover {
+        background-color: var(--bg-surface-hover) !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    #sidebar a.active {
+        background-color: var(--bg-surface-hover) !important;
+        color: var(--brand-primary) !important;
+        font-weight: 600 !important;
+        box-shadow: none !important;
+    }
+
+    #sidebar a.active i {
+        color: var(--brand-primary) !important;
+        text-shadow: none !important;
+    }
+
+    .sidebar-bottom {
+        margin-bottom: 16px !important;
+        gap: 8px !important;
+    }
+
+    /* Collapsed Sidebar states (Triggered by .sidebar-collapsed on body) */
+    body.sidebar-collapsed #sidebar {
+        width: 80px !important;
+    }
+
+    body.sidebar-collapsed #sidebar a {
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 14px 0 !important;
+        margin: 4px 6px !important;
+        border-radius: 10px !important;
+    }
+
+    body.sidebar-collapsed #sidebar a i {
+        font-size: 20px !important;
+        width: auto !important;
+    }
+
+    body.sidebar-collapsed #sidebar a span {
+        display: block !important;
+        font-size: 10px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+        font-weight: 500 !important;
+    }
+
+    body.sidebar-collapsed #sidebar a#downloadBtn span {
+        font-size: 9px !important;
+    }
+
+    /* 5. Main content shift offset rules */
+    .category-section,
+    .continue-section,
+    .channels-section,
+    #premiumChannelFeed,
+    #allChannelsFeed,
+    #videosLoader,
+    .videos-container,
+    .journey-section {
+        margin-left: 240px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+        max-width: calc(100% - 240px) !important;
+        box-sizing: border-box !important;
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    body.sidebar-collapsed .category-section,
+    body.sidebar-collapsed .continue-section,
+    body.sidebar-collapsed .channels-section,
+    body.sidebar-collapsed #premiumChannelFeed,
+    body.sidebar-collapsed #allChannelsFeed,
+    body.sidebar-collapsed #videosLoader,
+    body.sidebar-collapsed .videos-container,
+    body.sidebar-collapsed .journey-section {
+        margin-left: 80px !important;
+        max-width: calc(100% - 80px) !important;
+    }
+
+    /* 6. Sticky Categories Bar on desktop */
+    .category-section {
+        position: fixed !important;
+        top: 70px !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 56px !important;
+        z-index: 998 !important;
+        background: var(--bg-primary) !important;
+        border-bottom: 1px solid var(--border-primary) !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 24px !important;
+        overflow: hidden !important;
+    }
+
+    .category-section button {
+        padding: 8px 16px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        border-radius: 20px !important;
+        background: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-primary) !important;
+        transition: background-color 0.2s ease, border-color 0.2s ease !important;
+    }
+
+    .category-section button:hover {
+        background: var(--bg-surface-hover) !important;
+        border-color: var(--border-hover) !important;
+    }
+
+    .category-section button.active {
+        background: var(--text-primary) !important;
+        color: var(--bg-primary) !important;
+        border-color: var(--text-primary) !important;
+    }
+
+    /* Offset for all content blocks so they don't hide behind sticky category bar */
+    .continue-section,
+    .channels-section,
+    #premiumChannelFeed,
+    #allChannelsFeed,
+    #videosLoader,
+    .videos-container,
+    .journey-section {
+        padding-top: 76px !important; /* 56px category bar + 20px spacer */
+    }
+
+    /* 7. Premium Videos Grid */
+    .videos-container {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 24px !important;
+        padding-bottom: 40px !important;
+        background: transparent !important;
+    }
+
+    @media (min-width: 1440px) {
+        .videos-container {
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+            gap: 32px !important;
+        }
+    }
+
+    /* Premium YouTube-like Video Card design */
+    .video-card {
+        background: var(--bg-secondary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important;
+    }
+
+    .video-card:hover {
+        transform: translateY(-4px) scale(1.01) !important;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
+        border-color: var(--brand-primary) !important;
+    }
+
+    .video-card .thumbnail {
+        position: relative !important;
+        width: 100% !important;
+        aspect-ratio: 16/9 !important;
+        overflow: hidden !important;
+        border-radius: 0 !important;
+    }
+
+    .video-card .thumbnail img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        transition: transform 0.3s ease !important;
+    }
+
+    .video-card:hover .thumbnail img {
+        transform: scale(1.04) !important;
+    }
+
+    .video-card .video-info {
+        padding: 16px !important;
+        display: flex !important;
+        gap: 12px !important;
+        align-items: flex-start !important;
+    }
+
+    .video-card .channel-logo {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        background: var(--brand-primary) !important;
+        color: white !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        flex-shrink: 0 !important;
+        border: 1px solid var(--border-primary) !important;
+    }
+
+    .video-card .video-details {
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+
+    .video-card .video-details h3 {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.4 !important;
+        color: var(--text-primary) !important;
+        margin: 0 0 6px 0 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        height: 38px !important; /* Keep aligned cards even with different title lengths */
+    }
+
+    .video-card .video-details .channel-name {
+        font-size: 12px !important;
+        color: var(--text-secondary) !important;
+        margin: 0 0 2px 0 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .video-card .video-details .video-stats {
+        font-size: 12px !important;
+        color: var(--text-secondary) !important;
+        margin: 0 !important;
+    }
+
+    /* 8. My Bhakti Journey Dashboard layout */
+    .journey-section {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 24px !important;
+        padding-top: 76px !important;
+    }
+
+    .journey-header {
+        padding: 32px !important;
+        border-radius: 20px !important;
+    }
+
+    /* 9. All Channels Feed Responsive Grid layout */
+    body.all-channels-dashboard-mode {
+        display: block !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+    }
+
+    body.all-channels-dashboard-mode .all-channels-feed {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .all-channels-feed,
+    #allChannelsFeedContent {
+        background-color: var(--bg-primary) !important;
+    }
+
+    .all-channels-videos-container {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 24px !important;
+        padding: 24px 0 !important;
+        background: transparent !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    @media (min-width: 1440px) {
+        .all-channels-videos-container {
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+            gap: 32px !important;
+        }
+    }
+
+    /* Video cards inside All Channels Feed */
+    .all-channels-videos-container .video-card {
+        background: var(--bg-secondary) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .all-channels-videos-container .video-card:hover {
+        transform: translateY(-4px) scale(1.01) !important;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
+        border-color: var(--brand-primary) !important;
+    }
+
+    .all-channels-videos-container .video-thumbnail-wrapper {
+        position: relative !important;
+        width: 100% !important;
+        aspect-ratio: 16/9 !important;
+        overflow: hidden !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+
+    .all-channels-videos-container .video-thumbnail {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        transition: transform 0.3s ease !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+
+    .all-channels-videos-container .video-card:hover .video-thumbnail {
+        transform: scale(1.04) !important;
+    }
+
+    .all-channels-videos-container .video-metadata-row {
+        padding: 16px !important;
+        display: flex !important;
+        gap: 12px !important;
+        align-items: flex-start !important;
+        margin: 0 !important;
+        border: none !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .all-channels-videos-container .channel-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+        flex-shrink: 0 !important;
+        border: 1px solid var(--border-primary) !important;
+        margin: 0 !important;
+        background-color: var(--bg-primary) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .all-channels-videos-container .channel-avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .all-channels-videos-container .video-info-section {
+        flex: 1 !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+    }
+
+    .all-channels-videos-container .video-title {
+        font-size: 18px !important;
+        font-weight: 500 !important;
+        line-height: 1.4 !important;
+        color: var(--text-primary) !important;
+        margin: 0 0 6px 0 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        height: 50px !important;
+    }
+
+    .all-channels-videos-container .video-meta-line {
+        font-size: 12px !important;
+        color: var(--text-secondary) !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 4px !important;
+        margin: 0 !important;
+        line-height: 1.3 !important;
+    }
+
+    .all-channels-videos-container .video-meta-line .channel-name {
+        color: var(--text-secondary) !important;
+        font-weight: 500 !important;
+    }
+
+    .all-channels-videos-container .video-meta-line .separator {
+        color: var(--text-secondary) !important;
+    }
+
+    .all-channels-videos-container .video-meta-line .view-count,
+    .all-channels-videos-container .video-meta-line .publish-time {
+        color: var(--text-secondary) !important;
+    }
+
+    .all-channels-videos-container .video-menu-btn {
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 50% !important;
+        color: var(--text-secondary) !important;
+        transition: background-color 0.2s !important;
+        margin: 0 !important;
+    }
+
+    .all-channels-videos-container .video-menu-btn:hover {
+        background-color: var(--bg-surface-hover) !important;
+        color: var(--text-primary) !important;
+    }
+}

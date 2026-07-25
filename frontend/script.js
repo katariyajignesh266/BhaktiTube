@@ -99,9 +99,9 @@ const ADMIN_ACCESS_EMAIL = "katariyajignesh266266@gmail.com";
 
 
 function isAuthorizedAdmin(user) {
-
-    return !!user && user.email?.toLowerCase() === ADMIN_ACCESS_EMAIL.toLowerCase();
-
+    if (!user || !user.email) return false;
+    const email = user.email.toLowerCase();
+    return email === "katariyajignesh266266@gmail.com" || email === "katariyajignesh266@gmail.com";
 }
 
 
@@ -209,6 +209,14 @@ function toggleTheme() {
 document.addEventListener("DOMContentLoaded", () => {
 
     initializeTheme();
+
+    // Initialize sidebar collapsed state on desktop
+    if (window.innerWidth >= 1024) {
+        const isCollapsed = localStorage.getItem("bt_sidebar_collapsed") === "true";
+        if (isCollapsed) {
+            document.body.classList.add("sidebar-collapsed");
+        }
+    }
 
     
 
@@ -2502,18 +2510,14 @@ document.getElementById("sidebarOverlay");
 
 
 
-menuBtn.addEventListener("click",()=>{
-
-
-
-sidebar.classList.add("active");
-
-
-
-sidebarOverlay.classList.add("active");
-
-
-
+menuBtn.addEventListener("click", () => {
+    if (window.innerWidth >= 1024) {
+        document.body.classList.toggle("sidebar-collapsed");
+        localStorage.setItem("bt_sidebar_collapsed", document.body.classList.contains("sidebar-collapsed"));
+    } else {
+        sidebar.classList.add("active");
+        sidebarOverlay.classList.add("active");
+    }
 });
 
 

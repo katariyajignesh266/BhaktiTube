@@ -35,7 +35,9 @@ console.log("⚡ PREMIUM BHAKTITUBE CORE ENGINE ACTIVE");
 const ADMIN_ACCESS_EMAIL = "katariyajignesh266266@gmail.com";
 
 function isAuthorizedAdmin(user) {
-    return !!user && user.email?.toLowerCase() === ADMIN_ACCESS_EMAIL.toLowerCase();
+    if (!user || !user.email) return false;
+    const email = user.email.toLowerCase();
+    return email === "katariyajignesh266266@gmail.com" || email === "katariyajignesh266@gmail.com";
 }
 
 // VARIABLE FOR API FETCH CONTAINER POINTER
