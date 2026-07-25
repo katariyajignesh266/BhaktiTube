@@ -691,12 +691,31 @@ height:100%;
 .play-pause-center-btn,
 .center-action-overlay,
 .ytp-chrome-top,
-.ytp-gradient-top {
+.ytp-gradient-top,
+.ytp-title,
+.ytp-channel-name,
+.ytp-logo,
+.ytp-chrome-bottom,
+.ytp-gradient-bottom,
+.ytp-watermark,
+.ytp-paid-content-overlay,
+.ytp-captions-window,
+.ytp-caption-segment,
+.caption-viewport,
+.ytp-caption-window-container {
     display: none !important;
     width: 0px !important;
     height: 0px !important;
     opacity: 0 !important;
     visibility: hidden !important;
+}
+
+/* Make all iframes negligible - hide YouTube native UI */
+.youtube-player iframe,
+.short-card iframe,
+#yt-main-element {
+    pointer-events: none !important;
+    opacity: 0.95 !important;
 }
 
 /* Bottom Navigation Bar Styles */

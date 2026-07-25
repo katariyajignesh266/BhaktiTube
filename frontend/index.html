@@ -1,82 +1,166 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8"/>
+
   <script>
+
     (function () {
+
       try {
+
         if (sessionStorage.getItem("bt_skip_shorts_redirect")) {
+
           sessionStorage.removeItem("bt_skip_shorts_redirect");
+
           return; // user just came back from Shorts intentionally — show dashboard
+
         }
+
         if (localStorage.getItem("bt_shorts_first_mode") === "true") {
+
           window.location.replace("shorts.html");
+
         }
+
       } catch (e) { /* localStorage/sessionStorage unavailable — fail open to dashboard */ }
+
     })();
+
   </script>
+
   <meta
+
 name="viewport"
+
 content="width=device-width,
+
 initial-scale=1,
+
 maximum-scale=1,
+
 minimum-scale=1,
+
 user-scalable=no,
+
 viewport-fit=cover">
+
   
+
   <!-- PWA Meta Tags -->
+
   <meta name="mobile-web-app-capable" content="yes">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
+
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <meta name="apple-mobile-web-app-title" content="BhaktiTube">
+
   <meta name="theme-color" content="#FF6B35">
+
   <meta name="msapplication-TileColor" content="#FF6B35">
+
   <meta name="msapplication-config" content="./browserconfig.xml">
+
   
+
   <!-- Performance Optimizations -->
+
   <link rel="preconnect" href="https://res.cloudinary.com">
+
   <link rel="preconnect" href="https://www.youtube.com">
+
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
   <link rel="dns-prefetch" href="https://res.cloudinary.com">
+
   <link rel="dns-prefetch" href="https://www.youtube.com">
+
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
   
+
   <!-- PWA Manifest -->
+
   <link rel="manifest" href="./manifest.json">
+
+
 
   <title>BhaktiTube</title>
 
+
+
   <!-- CSS -->
+
   <link rel="stylesheet" href="theme-system.css"/>
+
   <link rel="stylesheet" href="responsive-system.css"/>
+
   <link rel="stylesheet" href="ultra-responsive-framework.css"/>
+
   <link rel="stylesheet" href="overflow-prevention.css"/>
+
   <link rel="stylesheet" href="viewport-fix.css"/>
+
   <link rel="stylesheet" href="channel-card.css"/>
+
   <link rel="stylesheet" href="style.css"/>
+
   <link rel="stylesheet" href="channel-card-themes.css"/>
+
   <link rel="stylesheet" href="premium-channel-feed.css"/>
+
   <link rel="stylesheet" href="all-channels-feed.css"/>
+
   
+
   <!-- PWA CSS -->
+
   <link rel="stylesheet" href="install-manager.css"/>
+
   <link rel="stylesheet" href="update-manager.css"/>
+
   <link rel="stylesheet" href="network-manager.css"/>
 
+
+
   <!-- ICONS -->
+
   <link
+
     rel="icon"
+
     href="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+
   />
+
   <link
+
     rel="stylesheet"
+
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+
   />
+
 </head>
+
+
 
 <body>
 
+
+
   
+
+
+
+
+
+
 
 
 
@@ -84,173 +168,343 @@ viewport-fit=cover">
 
   <!-- HEADER -->
 
+
+
   <header class="header">
+
+
 
     <div class="left-header">
 
+
+
       <i class="fa-solid fa-bars"></i>
+
+
 
       <div href="index.html" class="logo">
 
+
+
   <img
+
     src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+
     alt="BhaktiTube Logo"
+
     class="site-logo"
+
   >
+
 </div>
+
+
 
 <div href="index.html" class="logo">
+
   <span>BhaktiTube</span>
+
 </div>
 
+
+
     </div>
+
+
+
+
 
 
 
     <div class="right-header">
 
+
+
       <div class="search-overlay" id="searchOverlay">
+
+
 
     <div class="search-wrapper">
 
+
+
     <input
+
     type="text"
+
     id="searchInput"
+
     placeholder="Search videos...">
 
+
+
     <button id="closeSearch">
+
         ✕
+
     </button>
+
+
 
     <button id="voiceBtn">
+
         <i class="fa-solid fa-microphone"></i>
+
     </button>
 
-</div>
+
 
 </div>
+
+
+
+</div>
+
+
 
       <i class="fa-solid fa-magnifying-glass" id="searchBtn"> </i>
 
+
+
       <div class="theme-toggle" id="themeToggle">
+
         <i class="fa-solid fa-moon" id="themeIcon"></i>
+
       </div>
+
+
 
       <div class="notification-wrapper">
 
+
+
     <i class="fa-solid fa-bell"></i>
 
+
+
     <span id="notificationCount">
+
         0
+
     </span>
 
+
+
 </div>
+
+
 
       <div id="notificationPopup">
 
+
+
     <div class="notification-header">
+
+
 
         🔔 New Videos
 
+
+
     </div>
+
+
 
     <div id="notificationList">
 
+
+
     </div>
+
+
 
 </div>
 
+
+
       <div class="profile" id="profileBtn">
 
+
+
     <img
+
     id="profilePhoto"
+
+
 
     src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780734336/bdb9892b-22d0-404d-ac50-075eb8fc006c_ollmi3.jpg"
 
+
+
     alt="Profile">
 
-    </div>
+
 
     </div>
+
+
+
+    </div>
+
+
+
+
 
 
 
     <!-- SIDEBAR -->
 
+
+
 <div id="sidebarOverlay"></div>
+
+
 
 <div id="sidebar">
 
+
+
     <div class="sidebar-top">
 
+
+
         <div class="sidebar-brand"
+
      onclick="window.location.href='index.html'">
 
+
+
     <img
+
       src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780742623/My_Bhaktitude_website_logo_gxf2b1.png"
+
       class="sidebar-brand-logo"
+
       alt="BhaktiTube">
 
+
+
     <span>
+
       BhaktiTube
+
     </span>
+
+
 
 </div>
 
+
+
         <a href="#" id="dashboardBtn">
+
             <i class="fa-solid fa-house"></i>
+
             Dashboard
+
         </a>
+
+
 
         <a href="#" id="videosBtn">
+
             <i class="fa-solid fa-play"></i>
+
             Videos
+
         </a>
+
+
 
         <a href="#" id="channelsBtn">
+
             <i class="fa-solid fa-users"></i>
+
             Channels
+
         </a>
+
+
 
         <a href="#" id="journeyBtn">
+
             <i class="fa-solid fa-chart-line"></i>
+
             My Bhakti Journey
+
         </a>
+
+
 
         <a href="#" id="adminBtn">
+
             <i class="fa-solid fa-user-shield"></i>
+
             Admin
+
         </a>
 
+
+
     </div>
+
+
 
     <div class="sidebar-bottom">
 
+
+
         <a href="#" id="settingsBtn">
+
             <i class="fa-solid fa-gear"></i>
+
             Settings
+
         </a>
+
+
 
         <a href="#" id="logoutBtn">
+
             <i class="fa-solid fa-right-from-bracket"></i>
+
             Logout
+
         </a>
+
+
 
         <a href="#" id="downloadBtn">
+
             <i class="fa-solid fa-download"></i>
+
             Download App
+
         </a>
 
+
+
     </div>
+
+
 
 </div>
 
 
-    
 
 
 
     
+
+
+
+
+
+
+
+    
+
+
 
   </header>
 
@@ -260,65 +514,137 @@ viewport-fit=cover">
 
 
 
+
+
+
+
+
+
+
+
   <!-- CATEGORY -->
 
+
+
 <section class="category-section" id="categorySection" style="display: none;">
+
     <button class="active">All</button>
+
     <button>Bhakti</button>
+
     <button>Gujarati</button>
+
     <button>Motivation</button>
+
     <button>Katha</button>
+
     <button>Comedy</button>
+
+
 
   </section>
 
+
+
 <section class="continue-section" id="continueWatchingSection" style="display: none;">
+
   <div class="section-heading-row">
+
     <div>
+
       <h2>Continue Watching</h2>
+
       <p>Resume your devotional videos</p>
+
     </div>
+
   </div>
+
   <div id="continueWatchingList" class="continue-row"></div>
+
 </section>
+
+
 
 <!-- CHANNELS SECTION -->
 
+
+
 <section class="channels-section" id="channelsSection" style="display: none;">
+
+
 
   <h2>Featured Channels</h2>
 
+
+
   <div id="channelsLoader" class="section-loader">
+
   <div class="spinner"></div>
+
 </div>
 
+
+
   <div id="channelsContainer"
+
        class="channels-container">
 
+
+
   </div>
+
+
 
 </section>
 
+
+
 <!-- PREMIUM CHANNEL FEED (Hidden by default, shown when enabled) -->
 
+
+
 <div id="premiumChannelFeed" class="premium-channel-feed" style="display: none;">
+
   <div id="premiumFeedContent"></div>
+
 </div>
 
+
+
 <div id="premiumScrollIndicator" class="premium-scroll-indicator" style="display: none;">
+
   <i class="fa-solid fa-chevron-down"></i>
+
   <span>Scroll for more</span>
+
 </div>
+
+
 
 <!-- ALL CHANNELS FEED (Hidden by default, shown when enabled) -->
 
+
+
 <div id="allChannelsFeed" class="all-channels-feed" style="display: none;">
+
   <div class="all-channels-feed-loader">
+
     <div class="spinner"></div>
+
   </div>
+
   <div id="allChannelsFeedContent"></div>
+
   <div id="allChannelsLoadMoreTrigger"></div>
+
 </div>
+
+
+
+
+
+
 
 
 
@@ -326,95 +652,190 @@ viewport-fit=cover">
 
   <!-- VIDEOS -->
 
+
+
   <div id="videosLoader" class="section-loader" style="display: none;">
+
   <div class="spinner"></div>
+
 </div>
 
 
+
+
+
   <div
+
     class="videos-container"
+
     id="videosContainer"
+
     style="display: none;">
+
   </div>
+
+
+
+
 
 
 
 <section class="journey-section" id="journeySection">
+
   <div class="journey-header">
+
     <div>
+
       <span id="journeyGreeting">My Bhakti Journey</span>
+
       <h1 id="journeyUserName">Bhakti Progress</h1>
+
       <p id="journeyQuickSummary">Loading your devotional activity...</p>
+
     </div>
+
     <div class="journey-streak-card">
+
       <span>Current Streak</span>
+
       <strong id="journeyStreak">0 days</strong>
+
     </div>
+
   </div>
+
+
 
   <div class="journey-stats-grid" id="journeyStatsGrid"></div>
 
+
+
   <div class="journey-insight-layout">
+
     <div class="journey-panel progress-hero-panel">
+
       <div class="panel-title-row">
+
         <h2>Bhakti Progress</h2>
+
         <span id="journeyConsistencyBadge">0%</span>
+
       </div>
+
       <div class="progress-ring-wrap">
+
         <div class="progress-ring" id="journeyCompletionRing">
+
           <span id="journeyCompletionText">0%</span>
+
         </div>
+
         <div>
+
           <p>Completion Rate</p>
+
           <strong id="journeyCompletionLabel">0 completed videos</strong>
+
         </div>
+
       </div>
+
       <div class="goal-row">
+
         <span>Weekly Bhakti Time</span>
+
         <div class="goal-bar"><div id="journeyWeeklyBar"></div></div>
+
         <strong id="journeyWeeklyLabel">0m</strong>
+
       </div>
+
       <div class="goal-row">
+
         <span>Monthly Bhakti Time</span>
+
         <div class="goal-bar"><div id="journeyMonthlyBar"></div></div>
+
         <strong id="journeyMonthlyLabel">0m</strong>
+
       </div>
+
     </div>
 
+
+
     <div class="journey-panel">
+
       <div class="panel-title-row">
+
         <h2>Watch Time Trend</h2>
+
         <span>7 days</span>
+
       </div>
+
       <div id="watchTimeChart" class="bar-chart"></div>
+
     </div>
+
   </div>
+
+
 
   <div class="journey-chart-grid">
+
     <div class="journey-panel">
+
       <div class="panel-title-row">
+
         <h2>Top Categories</h2>
+
         <span id="favoriteCategoryLabel">--</span>
+
       </div>
+
       <div id="categoryBreakdown" class="breakdown-list"></div>
+
     </div>
+
     <div class="journey-panel">
+
       <div class="panel-title-row">
+
         <h2>Top Channels</h2>
+
         <span id="favoriteChannelLabel">--</span>
+
       </div>
+
       <div id="channelBreakdown" class="breakdown-list"></div>
+
     </div>
+
   </div>
 
+
+
   <div class="journey-panel">
+
     <div class="panel-title-row">
+
       <h2>Recent History</h2>
+
       <span id="historyCountLabel">0 videos</span>
+
     </div>
+
     <div id="journeyHistoryList" class="history-list"></div>
+
   </div>
+
 </section>
+
+
+
+
+
 
 
 
@@ -423,335 +844,736 @@ viewport-fit=cover">
 
 
 
+
+
+
+
 <!-- REDESIGNED PREMIUM LUXURY ADVERTISEMENT POPUP -->
+
 <div id="adPopup" class="ad-popup">
+
   <div class="ad-content-card">
+
     <div class="ad-media-container">
+
       <video id="adVideo" playsinline autoplay></video>
+
       <div class="ad-progress-container">
+
         <div class="ad-progress-bar" id="adProgressBar"></div>
+
       </div>
+
       <div class="ad-badge">Sponsored</div>
+
     </div>
+
     <div class="ad-details-container">
+
       <div class="ad-info">
+
         <h2 id="adTitleText" class="ad-title">Sponsored Advertisement</h2>
+
         <p id="adDescText" class="ad-description">Support our sponsors to continue enjoying free devotional content.</p>
+
       </div>
+
       <div class="ad-actions">
+
         <button id="visitAdBtn" class="ad-btn-primary">
+
           <i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Website
+
         </button>
+
         <button id="skipAdBtn" class="ad-btn-secondary" disabled>
+
           Skip Ad (5)
+
         </button>
+
       </div>
+
     </div>
+
   </div>
+
 </div>
 
 
 
 
+
+
+
+
+
   <!-- PREMIUM GLASSMORPHIC VIDEO PLAYER -->
+
   <div class="premium-video-popup" id="videoPopup">
+
     <div class="premium-popup-content">
+
       <div class="premium-video-wrapper" id="videoContainer">
-        <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen" class="premium-iframe"></iframe>
+
+        <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen; picture-in-picture" class="premium-iframe"></iframe>
+
         
+
         <!-- Premium Glassmorphic Overlay -->
+
         <div id="premiumOverlay" class="premium-overlay">
+
           
+
           <!-- Top Bar with Glassic Back Button -->
+
           <div class="premium-top-bar">
+
             <button class="glassic-back-btn" id="premiumBackBtn" onclick="event.stopPropagation(); handleBackAction();">
+
               <div class="glassic-btn-inner">
+
                 <i class="fa-solid fa-arrow-left"></i>
+
               </div>
+
             </button>
+
             <div class="video-info-overlay">
+
               <h3 class="premium-video-title" id="premiumVideoTitle">Video Title</h3>
+
               <p class="premium-channel-name" id="premiumChannelName">Channel Name</p>
+
             </div>
+
             <div class="top-right-actions">
+
               <button class="premium-icon-btn" id="pipBtn" onclick="event.stopPropagation(); togglePictureInPicture();">
+
                 <i class="fa-solid fa-clone"></i>
+
               </button>
+
               <button class="premium-icon-btn" id="castBtn" onclick="event.stopPropagation(); toggleCast();">
+
                 <i class="fa-solid fa-tv"></i>
+
               </button>
+
+              <button class="premium-icon-btn" id="settingsBtn" onclick="event.stopPropagation(); toggleUltraSettingsMenu();">
+
+                <i class="fa-solid fa-gear"></i>
+
+              </button>
+
               <button class="premium-icon-btn" id="exitFullscreenBtn" onclick="event.stopPropagation(); exitFullscreen();">
+
                 <i class="fa-solid fa-compress"></i>
+
               </button>
+
             </div>
+
           </div>
+
+
 
           <!-- Center Play/Pause Overlay (Tap to play/pause) -->
+
           <div class="center-play-overlay" id="centerPlayOverlay" onclick="event.stopPropagation(); togglePlayPause();">
+
             <div class="play-icon-large">
+
               <i class="fa-solid fa-play"></i>
+
             </div>
+
           </div>
+
+
 
           <!-- Skip Controls -->
+
           <div class="premium-skip-controls">
+
             <button class="glassic-skip-btn" onclick="event.stopPropagation(); skipTime(-10)">
+
               <div class="skip-btn-inner">
+
                 <i class="fa-solid fa-rotate-left"></i>
+
                 <span class="skip-label">10</span>
+
               </div>
+
             </button>
+
             <button class="glassic-skip-btn" onclick="event.stopPropagation(); skipTime(10)">
+
               <div class="skip-btn-inner">
+
                 <i class="fa-solid fa-rotate-right"></i>
+
                 <span class="skip-label">10</span>
+
               </div>
+
             </button>
+
           </div>
+
+
 
           <!-- Bottom Controls with Glassmorphism -->
+
           <div class="premium-bottom-controls" onclick="event.stopPropagation();">
+
             
+
             <!-- Progress Bar with Buffer -->
+
             <div class="premium-progress-container">
+
               <div class="progress-buffer" id="progressBuffer"></div>
+
               <div class="progress-bar-track" id="progressBarTrack">
+
                 <div class="progress-fill" id="progressFill"></div>
+
                 <div class="progress-thumb" id="progressThumb"></div>
+
               </div>
+
             </div>
+
+
 
             <!-- Controls Row -->
+
             <div class="premium-controls-row">
+
               
+
               <!-- Left Controls -->
+
               <div class="premium-controls-left">
-                <button class="premium-control-btn" id="settingsBtn" onclick="event.preventDefault(); event.stopPropagation(); toggleUltraSettingsMenu();">
-                  <i class="fa-solid fa-gear"></i>
-                </button>
+
                 <button class="premium-control-btn" id="playPauseBtn" onclick="togglePlayPause();">
+
                   <i class="fa-solid fa-play" id="playPauseIcon"></i>
+
                 </button>
+
                 <button class="premium-control-btn" id="prevVideoBtn" onclick="playPreviousVideo();">
+
                   <i class="fa-solid fa-backward-step"></i>
+
                 </button>
+
                 <button class="premium-control-btn" id="nextVideoBtn" onclick="playNextVideo();">
+
                   <i class="fa-solid fa-forward-step"></i>
+
                 </button>
+
                 <div class="volume-control-wrapper">
+
                   <button class="premium-control-btn" id="volumeBtn" onclick="toggleVolume();">
+
                     <i class="fa-solid fa-volume-high" id="volumeIcon"></i>
+
                   </button>
+
                   <div class="volume-slider-container" id="volumeSliderContainer">
+
                     <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value);">
+
                   </div>
+
                 </div>
+
               </div>
+
+
 
               <!-- Center Time Display -->
+
               <div class="premium-controls-center">
+
                 <span class="time-display">
+
                   <span id="currentTime">0:00</span>
+
                   <span class="time-divider">/</span>
+
                   <span id="totalTime">0:00</span>
+
                 </span>
+
               </div>
+
+
 
               <!-- Right Controls -->
+
               <div class="premium-controls-right">
+
                 <button class="premium-control-btn" id="captionsBtn" onclick="toggleCaptions();">
+
                   <i class="fa-solid fa-closed-captioning"></i>
+
                 </button>
+
                 <button class="premium-control-btn" id="theaterBtn" onclick="toggleTheaterMode();">
+
                   <i class="fa-solid fa-film"></i>
+
                 </button>
+
                 <button class="premium-control-btn" id="miniPlayerBtn" onclick="toggleMiniPlayer();">
+
                   <i class="fa-regular fa-square"></i>
+
                 </button>
+
                 <button class="premium-control-btn" id="fullscreenBtn" onclick="toggleFullScreen();">
+
                   <i class="fa-solid fa-expand" id="fullscreenIcon"></i>
+
                 </button>
+
               </div>
+
             </div>
 
+
+
           </div>
+
         </div>
+
+
 
         <!-- Ultra-Small Screen Settings Menu -->
+
         <div class="ultra-small-settings-menu" id="ultraSettingsMenu">
+
           <div class="ultra-settings-header">
+
             <span>Video Controls</span>
+
             <button class="ultra-settings-close" onclick="document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
               <i class="fa-solid fa-xmark"></i>
+
             </button>
+
           </div>
+
           
+
           <!-- Playback Controls -->
+
           <div class="ultra-settings-item" onclick="togglePlayPause(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-play" id="ultraPlayIcon"></i>
+
             <span>Play/Pause</span>
+
           </div>
+
           
+
           <div class="ultra-settings-item" onclick="skipTime(-10); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-rotate-left"></i>
+
             <span>Rewind 10s</span>
+
           </div>
+
           
+
           <div class="ultra-settings-item" onclick="skipTime(10); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-rotate-right"></i>
+
             <span>Forward 10s</span>
+
           </div>
+
           
+
           <div class="ultra-settings-divider"></div>
+
           
+
           <!-- Video Navigation -->
+
           <div class="ultra-settings-item" onclick="playPreviousVideo(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-backward-step"></i>
+
             <span>Previous Video</span>
+
           </div>
+
           
+
           <div class="ultra-settings-item" onclick="playNextVideo(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-forward-step"></i>
+
             <span>Next Video</span>
+
           </div>
+
           
+
           <div class="ultra-settings-divider"></div>
+
           
+
           <!-- Display Options -->
+
           <div class="ultra-settings-item" onclick="toggleCaptions(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-closed-captioning"></i>
+
             <span>Captions</span>
+
           </div>
+
           
+
           <div class="ultra-settings-item" onclick="toggleTheaterMode(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-film"></i>
+
             <span>Theater Mode</span>
+
           </div>
+
           
+
           <div class="ultra-settings-item" onclick="toggleMiniPlayer(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-regular fa-square"></i>
+
             <span>Mini Player</span>
+
           </div>
+
           
+
           <div class="ultra-settings-item" onclick="togglePictureInPicture(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-clone"></i>
+
             <span>Picture-in-Picture</span>
+
           </div>
+
           
+
           <div class="ultra-settings-divider"></div>
+
           
-          <!-- Playback Settings -->
-          <div class="ultra-settings-item" onclick="toggleSpeedOptions(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
-            <i class="fa-solid fa-gauge-high"></i>
-            <span>Playback Speed</span>
+
+          <!-- Theme Settings -->
+
+          <div class="ultra-settings-item" onclick="toggleTheme(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+            <i class="fa-solid fa-moon" id="themeIconUltra"></i>
+
+            <span id="themeTextUltra">Dark Mode</span>
+
           </div>
+
           
-          <div class="ultra-settings-item" onclick="toggleQualityOptions(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+          <div class="ultra-settings-divider"></div>
+
+          
+
+          <!-- Playback Speed Controls -->
+
+          <div class="ultra-settings-item" onclick="decreaseSpeed(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+            <i class="fa-solid fa-backward"></i>
+
+            <span>Decrease Speed</span>
+
+          </div>
+
+          
+
+          <div class="ultra-settings-item" onclick="increaseSpeed(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+            <i class="fa-solid fa-forward"></i>
+
+            <span>Increase Speed</span>
+
+          </div>
+
+          
+
+          <div class="ultra-settings-item" onclick="resetSpeed(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+            <i class="fa-solid fa-gauge"></i>
+
+            <span>Normal Speed</span>
+
+          </div>
+
+          
+
+          <div class="ultra-settings-divider"></div>
+
+          
+
+          <!-- Quality Controls -->
+
+          <div class="ultra-settings-item" onclick="decreaseQuality(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+            <i class="fa-solid fa-arrow-down"></i>
+
+            <span>Lower Quality</span>
+
+          </div>
+
+          
+
+          <div class="ultra-settings-item" onclick="increaseQuality(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
+            <i class="fa-solid fa-arrow-up"></i>
+
+            <span>Higher Quality</span>
+
+          </div>
+
+          
+
+          <div class="ultra-settings-item" onclick="setQuality('auto'); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-display"></i>
-            <span>Quality</span>
+
+            <span>Auto Quality</span>
+
           </div>
+
           
+
           <div class="ultra-settings-divider"></div>
+
           
+
           <!-- Advanced Settings -->
+
           <div class="ultra-settings-item" onclick="toggleSettingsMenu(); document.getElementById('ultraSettingsMenu').classList.remove('active');">
+
             <i class="fa-solid fa-gear"></i>
+
             <span>More Settings</span>
+
           </div>
+
         </div>
+
+
 
         <!-- Settings Menu -->
+
         <div class="premium-settings-menu" id="settingsMenu">
+
           <div class="settings-menu-content">
+
             <div class="settings-header">
+
               <span>Settings</span>
+
               <button class="settings-close-btn" onclick="toggleSettingsMenu();">
+
                 <i class="fa-solid fa-xmark"></i>
+
               </button>
+
             </div>
+
             <div class="settings-body">
+
               <div class="settings-item">
+
                 <span class="settings-label">Playback Speed</span>
+
                 <div class="settings-value" onclick="toggleSpeedOptions();">
+
                   <span id="currentSpeed">Normal</span>
+
                   <i class="fa-solid fa-chevron-right"></i>
+
                 </div>
+
               </div>
+
               <div class="settings-item">
+
                 <span class="settings-label">Quality</span>
+
                 <div class="settings-value" onclick="toggleQualityOptions();">
+
                   <span id="currentQuality">Auto</span>
+
                   <i class="fa-solid fa-chevron-right"></i>
+
                 </div>
+
               </div>
+
               <div class="settings-item">
+
                 <span class="settings-label">Autoplay</span>
+
                 <div class="settings-toggle" onclick="toggleAutoplay();">
+
                   <div class="toggle-switch" id="autoplayToggle">
+
                     <div class="toggle-slider"></div>
+
                   </div>
+
                 </div>
+
               </div>
+
               <div class="settings-item">
+
                 <span class="settings-label">Annotations</span>
+
                 <div class="settings-toggle" onclick="toggleAnnotations();">
+
                   <div class="toggle-switch active" id="annotationsToggle">
+
                     <div class="toggle-slider"></div>
+
                   </div>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <!-- Speed Options Menu -->
+
         <div class="premium-options-menu" id="speedOptionsMenu">
+
           <div class="options-menu-content">
+
             <div class="options-header">
+
               <span>Playback Speed</span>
+
               <button class="options-close-btn" onclick="closeSpeedOptions();">
+
                 <i class="fa-solid fa-xmark"></i>
+
               </button>
+
             </div>
+
             <div class="options-body">
+
               <div class="option-item" onclick="setPlaybackSpeed(0.25);">0.25x</div>
+
               <div class="option-item" onclick="setPlaybackSpeed(0.5);">0.5x</div>
+
               <div class="option-item" onclick="setPlaybackSpeed(0.75);">0.75x</div>
+
               <div class="option-item active" onclick="setPlaybackSpeed(1);">Normal</div>
+
               <div class="option-item" onclick="setPlaybackSpeed(1.25);">1.25x</div>
+
               <div class="option-item" onclick="setPlaybackSpeed(1.5);">1.5x</div>
+
               <div class="option-item" onclick="setPlaybackSpeed(1.75);">1.75x</div>
+
               <div class="option-item" onclick="setPlaybackSpeed(2);">2x</div>
+
             </div>
+
           </div>
+
         </div>
+
+
 
         <!-- Quality Options Menu -->
+
         <div class="premium-options-menu" id="qualityOptionsMenu">
+
           <div class="options-menu-content">
+
             <div class="options-header">
+
               <span>Quality</span>
+
               <button class="options-close-btn" onclick="closeQualityOptions();">
+
                 <i class="fa-solid fa-xmark"></i>
+
               </button>
+
             </div>
+
             <div class="options-body">
+
               <div class="option-item active" onclick="setQuality('auto');">Auto</div>
+
               <div class="option-item" onclick="setQuality('144p');">144p</div>
+
               <div class="option-item" onclick="setQuality('240p');">240p</div>
+
               <div class="option-item" onclick="setQuality('360p');">360p</div>
+
               <div class="option-item" onclick="setQuality('480p');">480p</div>
+
               <div class="option-item" onclick="setQuality('720p');">720p HD</div>
+
               <div class="option-item" onclick="setQuality('1080p');">1080p HD</div>
+
               <div class="option-item" onclick="setQuality('1440p');">1440p HD</div>
+
               <div class="option-item" onclick="setQuality('2160p');">4K</div>
+
             </div>
+
           </div>
+
         </div>
 
+
+
       </div>
+
     </div>
+
   </div>
+
+
+
+
+
+
+
 
 
 
@@ -760,129 +1582,257 @@ viewport-fit=cover">
 
   <!-- JS -->
 
+
+
   <!-- PWA Scripts -->
+
   <script src="sw-register.js"></script>
+
   <script src="install-manager.js"></script>
+
   <script src="update-manager.js"></script>
+
   <script src="network-manager.js"></script>
 
+
+
   <script src="https://www.youtube.com/iframe_api"></script>
+
   <script src="premium-player.js"></script>
+
   <script>
+
     // Fallback function for ultra settings menu
+
     function toggleUltraSettingsMenu() {
+
       console.log('Fallback toggleUltraSettingsMenu called');
+
       const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+
       if (ultraSettingsMenu) {
+
         ultraSettingsMenu.classList.toggle('active');
+
         console.log('Menu toggled, active class:', ultraSettingsMenu.classList.contains('active'));
+
       } else {
+
         console.log('Menu element not found');
+
       }
+
     }
+
     
+
     // Direct event listener for settings button
+
     document.addEventListener('DOMContentLoaded', function() {
+
       const settingsBtn = document.getElementById('settingsBtn');
+
       if (settingsBtn) {
+
         settingsBtn.addEventListener('click', function(e) {
+
           e.stopPropagation();
+
           e.preventDefault();
+
           console.log('Settings button clicked directly');
+
           const ultraSettingsMenu = document.getElementById('ultraSettingsMenu');
+
           if (ultraSettingsMenu) {
+
             ultraSettingsMenu.classList.toggle('active');
+
             console.log('Menu toggled via direct listener:', ultraSettingsMenu.classList.contains('active'));
+
           }
+
         });
+
         console.log('Settings button event listener attached');
+
       } else {
+
         console.log('Settings button not found on DOM load');
+
       }
+
     });
+
   </script>
+
   <script type="module" src="script.js"></script>
+
   
+
+
 
   <div id="voicePopup" class="voice-popup">
 
+
+
     <div class="voice-box">
+
+
 
         <div class="wave"></div>
 
+
+
         <p>Listening...</p>
+
+
 
     </div>
 
+
+
 </div>
+
+
+
 
 
 <!-- SETTINGS POPUP -->
 
+
+
 <div id="settingsModal" class="settings-modal">
+
+
 
   <div class="settings-box">
 
+
+
     <h2>Settings</h2>
 
+
+
     <button id="darkModeBtn">
+
       🌙 Dark Mode
+
     </button>
+
+
 
     <button id="lightModeBtn">
+
       ☀️ Light Mode
+
     </button>
 
+
+
     <button id="closeSettings">
+
       Close
+
     </button>
+
+
 
   </div>
 
+
+
 </div>
+
+
 
 <!-- Bottom Navigation Bar -->
+
 <nav class="bottom-nav">
+
     <a href="#" class="nav-item active" id="bottomHomeBtn">
+
         <i class="fa-solid fa-house"></i>
+
         <span>Home</span>
+
     </a>
+
     <a href="shorts.html" class="nav-item">
+
         <i class="fa-solid fa-play"></i>
+
         <span>Shorts</span>
+
     </a>
+
     <a href="#" class="nav-item journey-btn" id="bottomJourneyBtn">
+
         <i class="fa-solid fa-chart-line"></i>
+
         <span>Journey</span>
+
     </a>
+
     <a href="#" class="nav-item" id="bottomChannelsBtn">
+
         <i class="fa-solid fa-rectangle-list"></i>
+
         <span>Channels</span>
+
     </a>
+
     <a href="user/profile.html" class="nav-item profile-item">
+
         <img id="bottomNavProfilePhoto" src="https://res.cloudinary.com/dastne5qy/image/upload/q_auto/f_auto/v1780734336/bdb9892b-22d0-404d-ac50-075eb8fc006c_ollmi3.jpg" class="profile-thumb" alt="Profile">
+
         <span>You</span>
+
     </a>
+
 </nav>
 
+
+
 <!-- NEW CHANNEL ANNOUNCEMENT MODAL -->
+
 <div id="channelAnnouncementModal" class="channel-announcement-modal">
+
     <div class="announcement-backdrop"></div>
+
     <div class="announcement-content">
+
         <div class="announcement-header">
+
             <div class="announcement-badge">🎉 New Channel</div>
+
             <button id="closeAnnouncementBtn" class="announcement-close-btn">
+
                 <i class="fa-solid fa-xmark"></i>
+
             </button>
+
         </div>
+
         <div class="announcement-body">
+
             <div id="announcementChannelCard"></div>
+
             <div id="announcementBannerContainer" class="announcement-banner-container">
+
                 <img id="announcementBannerImage" class="announcement-banner-image" alt="Channel Preview Banner">
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
+
+
 </body>
+
 </html>
+

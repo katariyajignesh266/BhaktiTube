@@ -1567,6 +1567,42 @@ color: var(--text-primary);
     aspect-ratio:16/9;
     border:none;
     border-radius:12px;
+    
+    /* Make iframe negligible - hide YouTube native UI */
+    pointer-events: none !important;
+    opacity: 0.95 !important;
+}
+
+/* Hide YouTube iframe native UI elements */
+#youtubePlayer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 9999;
+    pointer-events: none !important;
+}
+
+/* Hide YouTube title, channel name, logo, and buttons inside iframe */
+.ytp-title,
+.ytp-channel-name,
+.ytp-logo,
+.ytp-chrome-top,
+.ytp-chrome-bottom,
+.ytp-gradient-top,
+.ytp-gradient-bottom,
+.ytp-watermark,
+.ytp-paid-content-overlay,
+.ytp-captions-window,
+.ytp-caption-segment,
+.caption-viewport,
+.ytp-caption-window-container {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 .close-btn{
@@ -4304,6 +4340,16 @@ body{
     align-items: center;
 }
 
+/* Allow body scrolling when mini-player is active */
+body.mini-player-active {
+    overflow: auto !important;
+    overflow-x: hidden !important;
+}
+
+body.mini-player-active .premium-video-popup {
+    display: none !important;
+}
+
 .premium-popup-content {
     width: 100vw;
     height: 100dvh;
@@ -4326,9 +4372,12 @@ body{
     width: 100%;
     height: 100%;
     border: none;
+    
+    /* Make iframe negligible - hide YouTube native UI */
+    pointer-events: none !important;
+    opacity: 0.95 !important;
     display: block;
     object-fit: contain;
-    pointer-events: none;
 }
 
 /* Premium Overlay with Glassmorphism */
@@ -4340,10 +4389,10 @@ body{
     justify-content: space-between;
     background: linear-gradient(
         to bottom,
-        rgba(0, 0, 0, 0.7) 0%,
-        transparent 20%,
-        transparent 60%,
-        rgba(0, 0, 0, 0.8) 100%
+        rgba(0, 0, 0, 0.3) 0%,
+        transparent 15%,
+        transparent 85%,
+        rgba(0, 0, 0, 0.4) 100%
     );
     opacity: 1;
     transition: opacity 0.3s ease;
@@ -5437,133 +5486,6 @@ body{
         padding: 6px 8px;
         font-size: 12px;
     }
-    
-    /* Ultra-Small Screen Settings Menu */
-    .ultra-small-settings-menu {
-        position: fixed;
-        bottom: 80px;
-        left: 8px;
-        right: 8px;
-        background: rgba(20, 20, 20, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 12px;
-        max-height: 280px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        display: none;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 10000;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-        pointer-events: auto !important;
-    }
-    
-    .ultra-small-settings-menu.active {
-        display: flex;
-        animation: slideUp 0.3s ease;
-    }
-    
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .ultra-settings-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 8px;
-    }
-    
-    .ultra-settings-header span {
-        color: #ffffff;
-        font-size: 14px;
-        font-weight: 600;
-    }
-    
-    .ultra-settings-close {
-        background: transparent;
-        border: none;
-        color: rgba(255, 255, 255, 0.6);
-        cursor: pointer;
-        padding: 4px;
-        font-size: 16px;
-    }
-    
-    .ultra-settings-close:hover {
-        color: #ffffff;
-    }
-    
-    .ultra-settings-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.05);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-    }
-    
-    .ultra-settings-item:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 107, 53, 0.3);
-    }
-    
-    .ultra-settings-item:active {
-        background: rgba(255, 107, 53, 0.15);
-    }
-    
-    .ultra-settings-item i {
-        color: #ffffff;
-        font-size: 16px;
-        width: 20px;
-        text-align: center;
-    }
-    
-    .ultra-settings-item span {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 13px;
-        font-weight: 500;
-    }
-    
-    .ultra-settings-divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.1);
-        margin: 4px 0;
-    }
-    
-    /* Scrollbar styling for premium look */
-    .ultra-small-settings-menu::-webkit-scrollbar {
-        width: 4px;
-    }
-    
-    .ultra-small-settings-menu::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 2px;
-    }
-    
-    .ultra-small-settings-menu::-webkit-scrollbar-thumb {
-        background: rgba(255, 107, 53, 0.5);
-        border-radius: 2px;
-    }
-    
-    .ultra-small-settings-menu::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 107, 53, 0.7);
-    }
 }
 
 /* Responsive Design for Very Small Screens (360px-399px) */
@@ -5826,125 +5748,8 @@ body{
         font-size: 13px;
     }
 
-    /* ==========================
-       ULTRA-SMALL SETTINGS MENU
-    ========================== */
-
-    .ultra-small-settings-menu {
-        position: fixed;
-        bottom: 80px;
-        left: 8px;
-        right: 8px;
-        background: rgba(20, 20, 20, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 12px;
-        max-height: 320px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        display: none;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 10000;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-        pointer-events: auto !important;
-    }
-
-    .ultra-small-settings-menu.active {
-        display: flex;
-        animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .ultra-settings-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 8px;
-    }
-
-    .ultra-settings-header span {
-        color: #ffffff;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .ultra-settings-close {
-        background: none;
-        border: none;
-        color: rgba(255, 255, 255, 0.6);
-        cursor: pointer;
-        padding: 4px;
-        transition: color 0.2s;
-    }
-
-    .ultra-settings-close:hover {
-        color: #ffffff;
-    }
-
-    .ultra-settings-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: #ffffff;
-        font-size: 13px;
-    }
-
-    .ultra-settings-item:hover {
-        background: rgba(255, 107, 53, 0.15);
-    }
-
-    .ultra-settings-item i {
-        color: #FF6B35;
-        font-size: 16px;
-        width: 20px;
-        text-align: center;
-    }
-
-    .ultra-settings-divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.1);
-        margin: 4px 0;
-    }
-
-    /* Scrollbar styling */
-    .ultra-small-settings-menu::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .ultra-small-settings-menu::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 2px;
-    }
-
-    .ultra-small-settings-menu::-webkit-scrollbar-thumb {
-        background: rgba(255, 107, 53, 0.5);
-        border-radius: 2px;
-    }
-
-    .ultra-small-settings-menu::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 107, 53, 0.7);
-    }
+    /* ULTRA-SMALL SETTINGS MENU - REMOVED DUPLICATE */
+    /* Using default ultra-small-settings-menu styles instead */
 }
 
 
@@ -6017,7 +5822,7 @@ body.theater-mode .videos-container {
 /* Mini Player */
 .mini-player {
     position: fixed;
-    bottom: 80px;
+    bottom: 90px;
     right: 20px;
     width: 320px;
     height: 180px;
@@ -6028,10 +5833,48 @@ body.theater-mode .videos-container {
     z-index: 9999998;
     display: none;
     animation: slideIn 0.3s ease;
+    pointer-events: auto;
 }
 
 .mini-player.active {
     display: block;
+}
+
+/* Ensure mini-player doesn't block page interactions */
+body.mini-player-active {
+    overflow: auto !important;
+    overflow-x: hidden !important;
+}
+
+body.mini-player-active * {
+    pointer-events: auto;
+}
+
+body.mini-player-active .mini-player {
+    pointer-events: auto;
+}
+
+/* Mini player mobile positioning */
+@media (max-width: 768px) {
+    .mini-player {
+        bottom: 85px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .mini-player {
+        bottom: 80px;
+        right: 8px;
+        left: 8px;
+        width: auto;
+        max-width: 280px;
+        height: 160px;
+    }
 }
 
 @keyframes slideIn {
@@ -6084,5 +5927,522 @@ body.theater-mode .videos-container {
 .fullscreen-mode .premium-iframe {
     width: 100vw;
     height: 100dvh;
+}
+
+/* Default Ultra Settings Menu - Works on all screen sizes */
+.ultra-small-settings-menu {
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    width: 300px;
+    max-height: 70vh;
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10001;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.ultra-small-settings-menu.active {
+    display: flex;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ultra-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 12px;
+}
+
+.ultra-settings-header span {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.ultra-settings-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
+}
+
+.ultra-settings-close:hover {
+    color: #ffffff;
+}
+
+.ultra-settings-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.ultra-settings-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.ultra-settings-item:active {
+    background: rgba(255, 107, 53, 0.15);
+}
+
+.ultra-settings-item i {
+    color: #ffffff;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.ultra-settings-item span {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ultra-settings-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 8px 0;
+}
+
+/* Scrollbar styling for ultra settings menu */
+.ultra-small-settings-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ultra-small-settings-menu::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+}
+
+.ultra-small-settings-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 53, 0.5);
+    border-radius: 2px;
+}
+
+.ultra-small-settings-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 107, 53, 0.7);
+}
+
+/* Ultra Settings Menu in Fullscreen Mode */
+.fullscreen-mode .ultra-small-settings-menu {
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    width: 300px;
+    max-height: 70vh;
+    z-index: 10001;
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.fullscreen-mode .ultra-small-settings-menu.active {
+    display: flex;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fullscreen-mode .ultra-settings-header {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.fullscreen-mode .ultra-settings-header span {
+    font-size: 16px;
+}
+
+.fullscreen-mode .ultra-settings-item {
+    padding: 14px 16px;
+    font-size: 15px;
+}
+
+.fullscreen-mode .ultra-settings-item i {
+    font-size: 18px;
+    width: 24px;
+}
+
+.fullscreen-mode .ultra-settings-item span {
+    font-size: 15px;
+}
+
+.fullscreen-mode .ultra-settings-divider {
+    margin: 8px 0;
+}
+
+/* ============================================================
+   👑 ENHANCED MINI PLAYER STYLES
+   ============================================================ */
+
+.mini-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-2xl);
+    z-index: 999998;
+    overflow: hidden;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: block !important;
+    visibility: hidden;
+}
+
+.mini-player.active {
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+.mini-player-video-container {
+    width: 100%;
+    position: relative;
+    background: var(--bg-primary);
+    overflow: hidden;
+    /* Use padding-top to maintain aspect ratio - 16:9 default */
+    padding-top: 56.25%;
+}
+
+.mini-player-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--radius-xl);
+}
+
+.mini-player-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mini-player:hover .mini-player-controls {
+    opacity: 1;
+}
+
+.mini-player-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mini-player-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.mini-player-btn i {
+    font-size: 14px;
+}
+
+.mini-player-close {
+    background: rgba(255, 0, 0, 0.3);
+}
+
+.mini-player-close:hover {
+    background: rgba(255, 0, 0, 0.5);
+}
+
+/* Premium Close Button - Top Right Corner */
+.mini-player-premium-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mini-player-premium-close:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
+    border-color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.mini-player-premium-close i {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.mini-player-volume {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+.mini-player-volume-slider {
+    width: 60px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.mini-player-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.mini-player-volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.mini-player-volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.mini-player-volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Mobile Responsive Mini Player */
+@media (max-width: 768px) {
+    .mini-player {
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        height: 200px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .mini-player-controls {
+        padding: 10px;
+        gap: 6px;
+    }
+    
+    .mini-player-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .mini-player-btn i {
+        font-size: 12px;
+    }
+    
+    .mini-player-volume-slider {
+        width: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mini-player {
+        bottom: 70px;
+        right: 8px;
+        left: 90px;
+        height: 180px;
+        border-radius: var(--radius-lg);
+    }
+    
+    .mini-player-controls {
+        padding: 8px;
+        gap: 4px;
+    }
+    
+    .mini-player-btn {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .mini-player-btn i {
+        font-size: 11px;
+    }
+    
+    .mini-player-volume-slider {
+        width: 40px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mini-player {
+        height: 160px;
+    }
+    
+    .mini-player-controls {
+        padding: 6px;
+    }
+    
+    .mini-player-btn {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .mini-player-btn i {
+        font-size: 10px;
+    }
+}
+
+/* Large Desktop Mini Player */
+@media (min-width: 1440px) {
+    .mini-player {
+        width: 400px;
+        height: 225px;
+        bottom: 30px;
+        right: 30px;
+    }
+    
+    .mini-player-controls {
+        padding: 14px;
+        gap: 10px;
+    }
+    
+    .mini-player-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .mini-player-btn i {
+        font-size: 16px;
+    }
+    
+    .mini-player-volume-slider {
+        width: 80px;
+    }
+}
+
+/* Mini Player Drag Animation */
+.mini-player.dragging {
+    transition: none;
+    cursor: grabbing;
+}
+
+/* Mini Player Focus States */
+.mini-player-btn:focus {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+}
+
+/* Mini Player Loading State */
+.mini-player.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--brand-primary);
+    border-radius: 50%;
+    animation: miniPlayerSpin 1s linear infinite;
+}
+
+@keyframes miniPlayerSpin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Mini Player Progress Indicator */
+.mini-player-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    width: 0%;
+    transition: width 0.1s linear;
+    z-index: 1;
 }
 

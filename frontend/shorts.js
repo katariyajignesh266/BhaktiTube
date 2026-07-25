@@ -188,6 +188,7 @@ function initPlayers() {
                 playsinline: 1,
                 autoplay: 1,
                 iv_load_policy: 3,
+                cc_load_policy: 3,     // Disable captions
                 disablekb: 1,
                 fs: 0,
                 showinfo: 0,            
@@ -195,7 +196,18 @@ function initPlayers() {
                 origin: window.location.origin 
             },
             events: {
-                onReady: () => {
+                onReady: (event) => {
+                    // Force disable captions programmatically
+                    try {
+                        event.target.setOption('captions', 'track', { languageCode: 'off' });
+                        event.target.setOption('captions', 'reload', false);
+                    } catch (e) {
+                        console.log('Caption disable attempt:', e);
+                    }
+                    
+                    // Start caption remover for shorts
+                    startShortsCaptionRemover();
+                    
                     isPlayerReady = true;
                     checkAndInitializePreloader(resolve);
                 },
@@ -246,6 +258,7 @@ function checkAndInitializePreloader(resolve) {
             autoplay: 0,
             mute: 1, 
             playsinline: 1,
+            cc_load_policy: 3,     // Disable captions
             origin: window.location.origin
         },
         events: {
@@ -900,6 +913,94 @@ function loadYoutubeAPIAndInitPlayers() {
             };
         }
     });
+}
+
+// Caption Remover for Shorts
+let shortsCaptionRemoverObserver = null;
+let shortsCaptionRemovalInterval = null;
+
+function startShortsCaptionRemover() {
+  if (shortsCaptionRemoverObserver) {
+    shortsCaptionRemoverObserver.disconnect();
+  }
+  if (shortsCaptionRemovalInterval) {
+    clearInterval(shortsCaptionRemovalInterval);
+  }
+
+  const shortsContainer = document.querySelector('.shorts-container') || document.body;
+  if (!shortsContainer) return;
+
+  shortsCaptionRemoverObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) {
+          const captionSelectors = [
+            '.ytp-captions-window',
+            '.ytp-caption-segment',
+            '.caption-viewport',
+            '.ytp-caption-window-container',
+            '[class*="caption"]',
+            '[class*="subtitle"]'
+          ];
+
+          captionSelectors.forEach(selector => {
+            const elements = node.querySelectorAll ? node.querySelectorAll(selector) : [];
+            elements.forEach(el => {
+              el.style.display = 'none !important';
+              el.style.opacity = '0 !important';
+              el.style.visibility = 'hidden !important';
+            });
+          });
+
+          if (node.classList && (
+            node.classList.contains('ytp-captions-window') ||
+            node.classList.contains('ytp-caption-segment') ||
+            node.classList.contains('caption-viewport') ||
+            node.classList.contains('ytp-caption-window-container') ||
+            String(node.className).includes('caption') ||
+            String(node.className).includes('subtitle')
+          )) {
+            node.style.display = 'none !important';
+            node.style.opacity = '0 !important';
+            node.style.visibility = 'hidden !important';
+          }
+        }
+      });
+    });
+  });
+
+  shortsCaptionRemoverObserver.observe(shortsContainer, {
+    childList: true,
+    subtree: true
+  });
+
+  removeShortsCaptions();
+
+  // Continuous interval check for shorts
+  shortsCaptionRemovalInterval = setInterval(() => {
+    removeShortsCaptions();
+  }, 500);
+}
+
+function removeShortsCaptions() {
+  const captionSelectors = [
+    '.ytp-captions-window',
+    '.ytp-caption-segment',
+    '.caption-viewport',
+    '.ytp-caption-window-container',
+    '[class*="caption"]',
+    '[class*="subtitle"]'
+  ];
+
+  captionSelectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(el => {
+      el.style.display = 'none !important';
+      el.style.opacity = '0 !important';
+      el.style.visibility = 'hidden !important';
+      el.remove(); // Remove from DOM entirely
+    });
+  });
 }
 
 // ઇન્ટરસેક્શન ઓબ્ઝર્વર

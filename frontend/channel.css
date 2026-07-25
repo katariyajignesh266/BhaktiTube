@@ -335,7 +335,40 @@ cursor:pointer;
     height: 100% !important;
     border: none !important;
     display: block;
-    pointer-events: none;
+    pointer-events: none !important;
+    opacity: 0.95 !important;
+}
+
+/* Hide YouTube iframe native UI elements */
+#youtubePlayer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 9999;
+    pointer-events: none !important;
+}
+
+/* Hide YouTube title, channel name, logo, and buttons inside iframe */
+.ytp-title,
+.ytp-channel-name,
+.ytp-logo,
+.ytp-chrome-top,
+.ytp-chrome-bottom,
+.ytp-gradient-top,
+.ytp-gradient-bottom,
+.ytp-watermark,
+.ytp-paid-content-overlay,
+.ytp-captions-window,
+.ytp-caption-segment,
+.caption-viewport,
+.ytp-caption-window-container {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 /* જ્યારે YouTube Player ફૂલસ્ક્રીન મોડમાં હોય (મોબાઈલ આડો થાય ત્યારે) */
